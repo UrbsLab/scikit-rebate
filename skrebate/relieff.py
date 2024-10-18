@@ -43,7 +43,9 @@ class ReliefF(BaseEstimator):
              * For ReliefF, the setting of k is <= to the number of instances that have the least frequent class label
              (binary and multiclass endpoint data. """
 
-    def __init__(self, n_features_to_select=10, n_neighbors=100, discrete_threshold=10, verbose=False, n_jobs=1,weight_final_scores=False,rank_absolute=False):
+    def __init__(self, n_features_to_select=10, n_neighbors=100, 
+                 categorical_features=None, discrete_threshold=10, 
+                 verbose=False, n_jobs=1,weight_final_scores=False,rank_absolute=False):
         """Sets up ReliefF to perform feature selection. Note that an approximation of the original 'Relief'
         algorithm may be run by setting 'n_features_to_select' to 1. Also note that the original Relief parameter 'm'
         is not included in this software. 'm' specifies the number of random training instances out of 'n' (total
@@ -61,7 +63,11 @@ class ReliefF(BaseEstimator):
             importance scores. If a float number is provided, that percentage of
             training samples is used as the number of neighbors.
             More neighbors results in more accurate scores, but takes longer.
+        categorical_features: list (default: None)
+            list of index columns indicating features to be treated as categorical.
+            Any features not explicitly listed will be treated as quantitative by default.
         discrete_threshold: int (default: 10)
+            # TODO: delete this part since we are not using threshold anymore
             Value used to determine if a feature is discrete or continuous.
             If the number of unique levels in a feature is > discrete_threshold, then it is
             considered continuous, or discrete otherwise.
@@ -78,6 +84,7 @@ class ReliefF(BaseEstimator):
         """
         self.n_features_to_select = n_features_to_select
         self.n_neighbors = n_neighbors
+        self.categorical_features = categorical_features
         self.discrete_threshold = discrete_threshold
         self.verbose = verbose
         self.n_jobs = n_jobs
@@ -293,7 +300,9 @@ class ReliefF(BaseEstimator):
         """ Preprocess the training dataset to identify which features/attributes are discrete vs. continuous valued. Ignores missing values in this determination."""
         attr = dict()
         d = 0
-        limit = self.discrete_threshold
+        # limit = self.discrete_threshold
+        if self.categorical_features is None:
+            self.categorical_features = []
         w = self._X.transpose()
 
         for idx in range(len(w)):
@@ -301,8 +310,9 @@ class ReliefF(BaseEstimator):
             z = w[idx]
             if self._missing_data_count > 0:
                 z = z[np.logical_not(np.isnan(z))]  # Exclude any missing values from consideration
-            zlen = len(np.unique(z))
-            if zlen <= limit:
+            # zlen = len(np.unique(z))
+            if idx in self.categorical_features:
+            # if zlen <= limit:
                 attr[h] = ('discrete', 0, 0, 0, 0)
                 d += 1
             else:
@@ -310,6 +320,23 @@ class ReliefF(BaseEstimator):
                 mn = np.min(z)
                 sd = np.std(z)
                 attr[h] = ('continuous', mx, mn, mx - mn, sd)
+
+        # Original threshold version
+        # for idx in range(len(w)):
+        #     h = self._headers[idx]
+        #     z = w[idx]
+        #     if self._missing_data_count > 0:
+        #         z = z[np.logical_not(np.isnan(z))]  # Exclude any missing values from consideration
+        #     zlen = len(np.unique(z))
+        #     if zlen <= limit:
+        #         attr[h] = ('discrete', 0, 0, 0, 0)
+        #         d += 1
+        #     else:
+        #         mx = np.max(z)
+        #         mn = np.min(z)
+        #         sd = np.std(z)
+        #         attr[h] = ('continuous', mx, mn, mx - mn, sd)
+
         # For each feature/attribute we store (type, max value, min value, max min difference, average, standard deviation) - the latter three values are set to zero if feature is discrete.
         return attr
 
@@ -330,7 +357,8 @@ class ReliefF(BaseEstimator):
                 cmin = self.attr[i][2]
                 diff = self.attr[i][3]
                 x[:, idx] -= cmin
-                x[:, idx] /= diff
+                x[:, idx] = x[:, idx].astype(float) / diff
+                # x[:, idx] /= diff
                 idx += 1
             return x
         #------------------------------------------#
@@ -445,6 +473,11 @@ class ReliefF(BaseEstimator):
 
         return np.array(dist_array)
     # ==================================================================#
+
+    # For verbose - gather information to print
+    def summary(self):
+        data_type = [v[0] for v in self.attr.values()]
+        return {'data type': data_type}
 
 ############################# ReliefF ############################################
 
