@@ -36,14 +36,19 @@ class SURF(ReliefF):
     for the Genetic Analysis of Complex Human Diseases.
     """
 
-    def __init__(self, n_features_to_select=10, discrete_threshold=10, verbose=False, n_jobs=1,weight_final_scores=False,rank_absolute=False):
+    def __init__(self, n_features_to_select=10, categorical_features=None, 
+                 discrete_threshold=10, verbose=False, n_jobs=1,weight_final_scores=False,rank_absolute=False):
         """Sets up ReliefF to perform feature selection.
         Parameters
         ----------
         n_features_to_select: int (default: 10)
             the number of top features (according to the relieff score) to
             retain after feature selection is applied.
+        categorical_features: list (default: None)
+            list of index columns indicating features to be treated as categorical.
+            Any features not explicitly listed will be treated as quantitative by default.
         discrete_threshold: int (default: 10)
+            # TODO: delete this part since we are not using threshold anymore
             Value used to determine if a feature is discrete or continuous.
             If the number of unique levels in a feature is > discrete_threshold, then it is
             considered continuous, or discrete otherwise.
@@ -59,6 +64,8 @@ class SURF(ReliefF):
             Whether to give top features as by ranking features by absolute value.
         """
         self.n_features_to_select = n_features_to_select
+        self.categorical_features = categorical_features
+        # TODO: delete this
         self.discrete_threshold = discrete_threshold
         self.verbose = verbose
         self.n_jobs = n_jobs

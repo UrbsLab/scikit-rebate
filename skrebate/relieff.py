@@ -85,6 +85,7 @@ class ReliefF(BaseEstimator):
         self.n_features_to_select = n_features_to_select
         self.n_neighbors = n_neighbors
         self.categorical_features = categorical_features
+        # TODO: delete this
         self.discrete_threshold = discrete_threshold
         self.verbose = verbose
         self.n_jobs = n_jobs
@@ -300,7 +301,7 @@ class ReliefF(BaseEstimator):
         """ Preprocess the training dataset to identify which features/attributes are discrete vs. continuous valued. Ignores missing values in this determination."""
         attr = dict()
         d = 0
-        # limit = self.discrete_threshold
+        # limit = self.discrete_threshold TODO: delete this
         if self.categorical_features is None:
             self.categorical_features = []
         w = self._X.transpose()
@@ -321,7 +322,7 @@ class ReliefF(BaseEstimator):
                 sd = np.std(z)
                 attr[h] = ('continuous', mx, mn, mx - mn, sd)
 
-        # Original threshold version
+        # Original threshold version TODO: delete this
         # for idx in range(len(w)):
         #     h = self._headers[idx]
         #     z = w[idx]
