@@ -45,7 +45,8 @@ class ReliefF(BaseEstimator):
 
     def __init__(self, n_features_to_select=10, n_neighbors=100, 
                  categorical_features=None, discrete_threshold=10, 
-                 verbose=False, n_jobs=1,weight_final_scores=False,rank_absolute=False):
+                 verbose=False, n_jobs=1,weight_final_scores=False,rank_absolute=False,
+                 label_type=None):
         """Sets up ReliefF to perform feature selection. Note that an approximation of the original 'Relief'
         algorithm may be run by setting 'n_features_to_select' to 1. Also note that the original Relief parameter 'm'
         is not included in this software. 'm' specifies the number of random training instances out of 'n' (total
@@ -67,7 +68,6 @@ class ReliefF(BaseEstimator):
             list of index columns indicating features to be treated as categorical.
             Any features not explicitly listed will be treated as quantitative by default.
         discrete_threshold: int (default: 10)
-            # TODO: delete this part since we are not using threshold anymore
             Value used to determine if a feature is discrete or continuous.
             If the number of unique levels in a feature is > discrete_threshold, then it is
             considered continuous, or discrete otherwise.
@@ -81,16 +81,20 @@ class ReliefF(BaseEstimator):
             Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given.
         rank_absolute: bool (default: False)
             Whether to give top features as by ranking features by absolute value.
+        lable_type: str (default: None)
+            The default value is None, in which case the function automatically infers the label type
+            based on the number of unique labels: 2 for 'binary', 3-10 for 'multiclass', and >10 for 'continuous'.
+            Alternatively, you can specify one of the following strings: 'binary', 'multiclass', or 'continuous'.
         """
         self.n_features_to_select = n_features_to_select
         self.n_neighbors = n_neighbors
         self.categorical_features = categorical_features
-        # TODO: delete this
         self.discrete_threshold = discrete_threshold
         self.verbose = verbose
         self.n_jobs = n_jobs
         self.weight_final_scores = weight_final_scores
         self.rank_absolute = rank_absolute
+        self.label_type = label_type
 
     #=========================================================================#
     def fit(self, X, y, weights=None):
@@ -136,23 +140,33 @@ class ReliefF(BaseEstimator):
 
         # Number of unique outcome (label) values (used to determine outcome variable type)
         self._label_list = list(set(self._y))
-        # Determine if label is discrete
-        discrete_label = (len(self._label_list) <= self.discrete_threshold)
 
-        # Identify label type (binary, multiclass, or continuous)
-        if discrete_label:
+        # If label_type is provided, use it; otherwise, identify label type (binary, multiclass, or continuous)
+        if len(self._label_list) == 1:
+            raise ValueError('All labels are of the same class.')
+        if self.label_type:
+            if self.label_type not in ['binary', 'multiclass', 'continuous']:
+                raise ValueError("Invalid label_type. Choose from 'binary', 'multiclass', or 'continuous'.")
+            if self.label_type == 'binary' and len(self._label_list) != 2:
+                raise ValueError("Specified 'binary' label type, but the number of unique labels is not 2.") 
+            if self.verbose:
+                print(f"Manually set up label type as {self.label_type}")
+            self._class_type = self.label_type
+        else:
             if len(self._label_list) == 2:
                 self._class_type = 'binary'
-                self.mcmap = 0
-            elif len(self._label_list) > 2:
+            elif len(self._label_list) <= 10:
                 self._class_type = 'multiclass'
-                self.mcmap = self._getMultiClassMap()
             else:
-                raise ValueError('All labels are of the same class.')
+                self._class_type = 'continuous'
+            if self.verbose:
+                print(f"Automatically identify label type as {self._class_type}")
 
-        else:
-            self._class_type = 'continuous'
+        # Set mcmap accordingly
+        if self._class_type in ('binary', 'continuous'):
             self.mcmap = 0
+        else:
+            self.mcmap = self._getMultiClassMap()
 
         # Training labels standard deviation -- only used if the training labels are continuous
         self._labels_std = 0.
