@@ -297,7 +297,7 @@ def test_relieff_pipeline_multiclass():
     """Check: Data (Multiclass Endpoint): ReliefF works in a sklearn pipeline """
     np.random.seed(49082)
 
-    clf = make_pipeline(ReliefF(n_features_to_select=2, n_neighbors=10),
+    clf = make_pipeline(ReliefF(n_features_to_select=2, n_neighbors=10, discrete_threshold=3),
                         Imputer(),
                         RandomForestClassifier(n_estimators=100, n_jobs=-1))
 
@@ -309,7 +309,7 @@ def test_surf_pipeline_multiclass():
     """Check: Data (Multiclass Endpoint): SURF works in a sklearn pipeline"""
     np.random.seed(240932)
 
-    clf = make_pipeline(SURF(n_features_to_select=2),
+    clf = make_pipeline(SURF(n_features_to_select=2, discrete_threshold=3),
                         Imputer(),
                         RandomForestClassifier(n_estimators=100, n_jobs=-1))
 
@@ -321,7 +321,7 @@ def test_surfstar_pipeline_multiclass():
     """Check: Data (Multiclass Endpoint): SURF* works in a sklearn pipeline"""
     np.random.seed(9238745)
 
-    clf = make_pipeline(SURFstar(n_features_to_select=2),
+    clf = make_pipeline(SURFstar(n_features_to_select=2, discrete_threshold=3),
                         Imputer(),
                         RandomForestClassifier(n_estimators=100, n_jobs=-1))
 
@@ -333,7 +333,7 @@ def test_multisurfstar_pipeline_multiclass():
     """Check: Data (Multiclass Endpoint): MultiSURF* works in a sklearn pipeline"""
     np.random.seed(320931)
 
-    clf = make_pipeline(MultiSURFstar(n_features_to_select=2),
+    clf = make_pipeline(MultiSURFstar(n_features_to_select=2, discrete_threshold=3),
                         Imputer(),
                         RandomForestClassifier(n_estimators=100, n_jobs=-1))
 
@@ -345,7 +345,7 @@ def test_multisurf_pipeline_multiclass():
     """Check: Data (Multiclass Endpoint): MultiSURF works in a sklearn pipeline"""
     np.random.seed(320931)
 
-    clf = make_pipeline(MultiSURF(n_features_to_select=2),
+    clf = make_pipeline(MultiSURF(n_features_to_select=2, discrete_threshold=3),
                         Imputer(),
                         RandomForestClassifier(n_estimators=100, n_jobs=-1))
 

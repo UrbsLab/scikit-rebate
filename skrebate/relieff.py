@@ -44,9 +44,9 @@ class ReliefF(BaseEstimator):
              (binary and multiclass endpoint data. """
 
     def __init__(self, n_features_to_select=10, n_neighbors=100, 
-                 categorical_features=None, discrete_threshold=10, 
-                 verbose=False, n_jobs=1,weight_final_scores=False,rank_absolute=False,
-                 label_type=None):
+                 categorical_features=None, discrete_threshold=2, 
+                 verbose=False, n_jobs=1, weight_final_scores=False, 
+                 rank_absolute=False, label_type=None):
         """Sets up ReliefF to perform feature selection. Note that an approximation of the original 'Relief'
         algorithm may be run by setting 'n_features_to_select' to 1. Also note that the original Relief parameter 'm'
         is not included in this software. 'm' specifies the number of random training instances out of 'n' (total
@@ -66,8 +66,8 @@ class ReliefF(BaseEstimator):
             More neighbors results in more accurate scores, but takes longer.
         categorical_features: list (default: None)
             list of index columns indicating features to be treated as categorical.
-            Any features not explicitly listed will be treated as quantitative by default.
-        discrete_threshold: int (default: 10)
+            If set to None, the features will be automatically classified based on the discrete_threshold below.
+        discrete_threshold: int (default: 2)
             Value used to determine if a feature is discrete or continuous.
             If the number of unique levels in a feature is > discrete_threshold, then it is
             considered continuous, or discrete otherwise.
@@ -315,44 +315,41 @@ class ReliefF(BaseEstimator):
         """ Preprocess the training dataset to identify which features/attributes are discrete vs. continuous valued. Ignores missing values in this determination."""
         attr = dict()
         d = 0
-        # limit = self.discrete_threshold TODO: delete this
-        if self.categorical_features is None:
-            self.categorical_features = []
         w = self._X.transpose()
 
-        for idx in range(len(w)):
-            h = self._headers[idx]
-            z = w[idx]
-            if self._missing_data_count > 0:
-                z = z[np.logical_not(np.isnan(z))]  # Exclude any missing values from consideration
-            # zlen = len(np.unique(z))
-            if idx in self.categorical_features:
-            # if zlen <= limit:
-                attr[h] = ('discrete', 0, 0, 0, 0)
-                d += 1
-            else:
-                mx = np.max(z)
-                mn = np.min(z)
-                sd = np.std(z)
-                attr[h] = ('continuous', mx, mn, mx - mn, sd)
-
-        # Original threshold version TODO: delete this
-        # for idx in range(len(w)):
-        #     h = self._headers[idx]
-        #     z = w[idx]
-        #     if self._missing_data_count > 0:
-        #         z = z[np.logical_not(np.isnan(z))]  # Exclude any missing values from consideration
-        #     zlen = len(np.unique(z))
-        #     if zlen <= limit:
-        #         attr[h] = ('discrete', 0, 0, 0, 0)
-        #         d += 1
-        #     else:
-        #         mx = np.max(z)
-        #         mn = np.min(z)
-        #         sd = np.std(z)
-        #         attr[h] = ('continuous', mx, mn, mx - mn, sd)
-
-        # For each feature/attribute we store (type, max value, min value, max min difference, average, standard deviation) - the latter three values are set to zero if feature is discrete.
+        if self.categorical_features is None:
+            limit = self.discrete_threshold
+            for idx in range(len(w)):
+                h = self._headers[idx]
+                z = w[idx]
+                if self._missing_data_count > 0:
+                    z = z[np.logical_not(np.isnan(z))]  # Exclude any missing values from consideration
+                zlen = len(np.unique(z))
+                if zlen <= limit:
+                    attr[h] = ('discrete', 0, 0, 0, 0)
+                    d += 1
+                else:
+                    mx = np.max(z)
+                    mn = np.min(z)
+                    sd = np.std(z)
+                    attr[h] = ('continuous', mx, mn, mx - mn, sd)
+        else:
+            for idx in range(len(w)):
+                h = self._headers[idx]
+                z = w[idx]
+                if self._missing_data_count > 0:
+                    z = z[np.logical_not(np.isnan(z))]  # Exclude any missing values from consideration
+                if idx in self.categorical_features:
+                    attr[h] = ('discrete', 0, 0, 0, 0)
+                    d += 1
+                else:
+                    mx = np.max(z)
+                    mn = np.min(z)
+                    sd = np.std(z)
+                    attr[h] = ('continuous', mx, mn, mx - mn, sd)
+        # For each feature/attribute we store (type, max value, min value, max min difference, average, standard deviation)
+        # the latter three values are set to zero if feature is discrete.
+        
         return attr
 
     def _distarray_no_missing(self, xc, xd):

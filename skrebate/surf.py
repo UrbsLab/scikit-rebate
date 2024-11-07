@@ -37,7 +37,8 @@ class SURF(ReliefF):
     """
 
     def __init__(self, n_features_to_select=10, categorical_features=None, 
-                 discrete_threshold=10, verbose=False, n_jobs=1,weight_final_scores=False,rank_absolute=False):
+                 discrete_threshold=10, verbose=False, n_jobs=1, weight_final_scores=False,
+                 rank_absolute=False, label_type=None):
         """Sets up ReliefF to perform feature selection.
         Parameters
         ----------
@@ -71,6 +72,7 @@ class SURF(ReliefF):
         self.n_jobs = n_jobs
         self.weight_final_scores = weight_final_scores
         self.rank_absolute = rank_absolute
+        self.label_type = label_type
 
 ############################# SURF ############################################
     def _find_neighbors(self, inst, avg_dist):
