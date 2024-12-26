@@ -87,7 +87,7 @@ genetic_data = pd.read_csv(
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
 # Apply the ReliefF algorithm for feature selection
-fs = ReliefF(n_features_to_select=2, discrete_threshold=10)
+fs = ReliefF(discrete_threshold=10)
 fs.fit(features, labels)
 
 # Print out the results
@@ -97,24 +97,24 @@ fs.summary(feature_name=feature_name)
 >>> Feature name   Feature importances    Feature rank   
 >>> P2             0.12330000             1              
 >>> P1             0.11892500             2              
->>> N0             -0.00018125            *              
->>> N10            -0.00075625            *              
->>> N13            -0.00320625            *              
->>> N14            -0.00402500            *              
->>> N4             -0.00582500            *              
->>> N1             -0.00595000            *              
->>> N8             -0.00653750            *              
->>> N12            -0.00696250            *              
->>> N16            -0.00705000            *              
->>> N17            -0.00740625            *              
->>> N5             -0.00788750            *              
->>> N11            -0.00822500            *              
->>> N9             -0.00826250            *              
->>> N2             -0.00871875            *              
->>> N3             -0.00872500            *              
->>> N7             -0.00991875            *              
->>> N6             -0.01038750            *              
->>> N15            -0.01044375            *          
+>>> N0             -0.00018125            3              
+>>> N10            -0.00075625            4              
+>>> N13            -0.00320625            5              
+>>> N14            -0.00402500            6              
+>>> N4             -0.00582500            7              
+>>> N1             -0.00595000            8              
+>>> N8             -0.00653750            9              
+>>> N12            -0.00696250            10              
+>>> N16            -0.00705000            11              
+>>> N17            -0.00740625            12              
+>>> N5             -0.00788750            13              
+>>> N11            -0.00822500            14              
+>>> N9             -0.00826250            15              
+>>> N2             -0.00871875            16              
+>>> N3             -0.00872500            17              
+>>> N7             -0.00991875            18              
+>>> N6             -0.01038750            19              
+>>> N15            -0.01044375            20          
 ```
 
 We have designed the Relief algorithms to be integrated directly into scikit-learn machine learning workflows. For example, the ReliefF algorithm can be used as a feature selection step in a scikit-learn pipeline as follows.

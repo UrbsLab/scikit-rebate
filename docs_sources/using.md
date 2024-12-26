@@ -1,247 +1,322 @@
+# Using skrebate
 We have designed the Relief algorithms to be integrated directly into scikit-learn machine learning workflows. Below, we provide code samples showing how the various Relief algorithms can be used as feature selection methods in scikit-learn pipelines.
 
 For details on the algorithmic differences between the various Relief algorithms, please refer to [this research paper](https://arxiv.org/abs/1711.08477).
 
-## ReliefF
+
+## Using the Core Algorithms
+
+### ReliefF
 
 ReliefF is the most basic of the Relief-based feature selection algorithms, and it requires you to specify the number of nearest neighbors to consider in the scoring algorithm. The parameters for the ReliefF algorithm are as follows:
 
-<table>
-<tr>
-<th>Parameter</th>
-<th width="15%">Valid values</th>
-<th>Effect</th>
-</tr>
-<tr>
-<td>n_features_to_select</td>
-<td>Any positive integer or float</td>
-<td>The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process.</td>
-</tr>
-<tr>
-<td>n_neighbors</td>
-<td>Any positive integer</td>
-<td>The number of neighbors to consider when assigning feature importance scores. If a float number is provided, that percentage of training samples is used as the number of neighbors. More neighbors results in more accurate scores, but takes longer.</td>
-</tr>
-<tr>
-<td>discrete_limit</td>
-<td>Any positive integer</td>
-<td>Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > discrete_threshold, then it is considered continuous, or discrete otherwise.</td>
-</tr>
-<tr>
-<td>n_jobs</td>
-<td>Any positive integer or -1</td>
-<td>The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.</td>
-</tr>
-</table>
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
+| `n_neighbors`         | Any positive integer               | 100     | The number of neighbors to consider when assigning feature importance scores. If a float number is provided, that percentage of training samples is used as the number of neighbors. More neighbors result in more accurate scores, but takes longer. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
+| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+
+```Python
+# Import necessary packages
+import pandas as pd
+from skrebate import ReliefF
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the ReliefF algorithm for feature selection
+fs = ReliefF(discrete_threshold=10)
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.12330000             1              
+>>> P1             0.11892500             2              
+>>> N0             -0.00018125            3              
+>>> N10            -0.00075625            4              
+>>> N13            -0.00320625            5              
+>>> N14            -0.00402500            6              
+>>> N4             -0.00582500            7              
+>>> N1             -0.00595000            8              
+>>> N8             -0.00653750            9              
+>>> N12            -0.00696250            10              
+>>> N16            -0.00705000            11              
+>>> N17            -0.00740625            12              
+>>> N5             -0.00788750            13              
+>>> N11            -0.00822500            14              
+>>> N9             -0.00826250            15              
+>>> N2             -0.00871875            16              
+>>> N3             -0.00872500            17              
+>>> N7             -0.00991875            18              
+>>> N6             -0.01038750            19              
+>>> N15            -0.01044375            20          
+```
+
+### SURF
+
+SURF, SURF*, MultiSURF, and MultiSURF* are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features.
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
+| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
 
 ```python
+# Import necessary packages
 import pandas as pd
-import numpy as np
+from skrebate import SURF
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the ReliefF algorithm for feature selection
+fs = SURF(discrete_threshold=10)
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P1             0.06157283             1              
+>>> P2             0.06155927             2              
+>>> N10            -0.00049277            3              
+>>> N0             -0.00059267            4              
+>>> N13            -0.00132625            5              
+>>> N5             -0.00222361            6              
+>>> N16            -0.00256536            7              
+>>> N1             -0.00269856            8              
+>>> N8             -0.00300784            9              
+>>> N14            -0.00301537            10             
+>>> N9             -0.00302025            11             
+>>> N11            -0.00361912            12             
+>>> N12            -0.00419101            13             
+>>> N7             -0.00423327            14             
+>>> N2             -0.00453031            15             
+>>> N4             -0.00455866            16             
+>>> N15            -0.00468981            17             
+>>> N17            -0.00504565            18             
+>>> N6             -0.00590625            19             
+>>> N3             -0.00634880            20       
+```
+
+### SURF*
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
+| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import SURFstar
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the ReliefF algorithm for feature selection
+fs = SURFstar(discrete_threshold=10)
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.12864101             1              
+>>> P1             0.12792470             2              
+>>> N10            -0.00106372            3              
+>>> N0             -0.00136069            4              
+>>> N13            -0.00307977            5              
+>>> N5             -0.00538099            6              
+>>> N1             -0.00616617            7              
+>>> N16            -0.00650725            8              
+>>> N14            -0.00663881            9              
+>>> N8             -0.00690113            10             
+>>> N7             -0.00765252            11             
+>>> N12            -0.00810566            12             
+>>> N9             -0.00878649            13             
+>>> N4             -0.00882028            14             
+>>> N11            -0.00897106            15             
+>>> N2             -0.00911812            16             
+>>> N15            -0.01001887            17             
+>>> N17            -0.01019251            18             
+>>> N6             -0.01174531            19             
+>>> N3             -0.01225238            20      
+```
+
+### MultiSURF
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
+| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import MultiSURF
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the ReliefF algorithm for feature selection
+fs = MultiSURF(discrete_threshold=10)
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.08845469             1              
+>>> P1             0.08807613             2              
+>>> N0             -0.00049561            3              
+>>> N10            -0.00056682            4              
+>>> N13            -0.00212670            5              
+>>> N14            -0.00467041            6              
+>>> N8             -0.00613933            7              
+>>> N9             -0.00624673            8              
+>>> N1             -0.00625501            9              
+>>> N12            -0.00658989            10             
+>>> N16            -0.00666320            11             
+>>> N11            -0.00764327            12             
+>>> N5             -0.00822562            13             
+>>> N4             -0.00838633            14             
+>>> N15            -0.00857736            15             
+>>> N2             -0.00903556            16             
+>>> N6             -0.00912725            17             
+>>> N7             -0.00916942            18             
+>>> N3             -0.00931820            19             
+>>> N17            -0.00978209            20         
+```
+
+### MultiSURF*
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
+| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import MultiSURFstar
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the algorithm for feature selection
+fs = MultiSURFstar(discrete_threshold=10)
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.17498272             1              
+>>> P1             0.17344628             2              
+>>> N10            -0.00179863            3              
+>>> N0             -0.00181761            4              
+>>> N13            -0.00553229            5              
+>>> N14            -0.01039264            6              
+>>> N8             -0.01294620            7              
+>>> N12            -0.01297249            8              
+>>> N5             -0.01327019            9              
+>>> N1             -0.01362589            10             
+>>> N16            -0.01397024            11             
+>>> N9             -0.01406904            12             
+>>> N11            -0.01442700            13             
+>>> N7             -0.01500246            14             
+>>> N4             -0.01541660            15             
+>>> N15            -0.01603204            16             
+>>> N2             -0.01606567            17             
+>>> N3             -0.01765580            18             
+>>> N17            -0.01826211            19             
+>>> N6             -0.01848672            20             
+```
+
+## Using as End-to-end pipline
+
+```Python
+# Import necessary packages
+import pandas as pd
 from sklearn.pipeline import make_pipeline
 from skrebate import ReliefF
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
-genetic_data = pd.read_csv('https://github.com/EpistasisLab/scikit-rebate/raw/master/data/'
-                           'GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.tsv.gz',
-                           sep='\t', compression='gzip')
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
 
+# Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
-clf = make_pipeline(ReliefF(n_features_to_select=2, n_neighbors=100),
-                    RandomForestClassifier(n_estimators=100))
+# Split the data to training and testing
+X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.3, random_state=42)
 
-print(np.mean(cross_val_score(clf, features, labels)))
->>> 0.795
+# Make pipeline
+clf = make_pipeline(
+    ReliefF(n_features_to_select=2, discrete_threshold=10),
+    RandomForestClassifier(n_estimators=100)
+)
+
+# Train the model
+clf.fit(X_train, y_train)
+
+# Evaluate the model on testing set
+y_pred = clf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.3f}")
+
+>>> Accuracy: 0.781
 ```
 
-## SURF
 
-SURF, SURF*, and MultiSURF are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features.
-
-<table>
-<tr>
-<th>Parameter</th>
-<th width="15%">Valid values</th>
-<th>Effect</th>
-</tr>
-<tr>
-<td>n_features_to_select</td>
-<td>Any positive integer</td>
-<td>The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SURF scoring process.</td>
-</tr>
-<tr>
-<td>discrete_limit</td>
-<td>Any positive integer</td>
-<td>Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > discrete_threshold, then it is considered continuous, or discrete otherwise.</td>
-</tr>
-<tr>
-<td>n_jobs</td>
-<td>Any positive integer or -1</td>
-<td>The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.</td>
-</tr>
-</table>
-
-```python
-import pandas as pd
-import numpy as np
-from sklearn.pipeline import make_pipeline
-from skrebate import SURF
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
-
-genetic_data = pd.read_csv('https://github.com/EpistasisLab/scikit-rebate/raw/master/data/'
-                           'GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.tsv.gz',
-                           sep='\t', compression='gzip')
-
-features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
-
-clf = make_pipeline(SURF(n_features_to_select=2),
-                    RandomForestClassifier(n_estimators=100))
-
-print(np.mean(cross_val_score(clf, features, labels)))
->>> 0.795
-```
-
-## SURF*
-
-<table>
-<tr>
-<th>Parameter</th>
-<th width="15%">Valid values</th>
-<th>Effect</th>
-</tr>
-<tr>
-<td>n_features_to_select</td>
-<td>Any positive integer</td>
-<td>The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SURF* scoring process.</td>
-</tr>
-<tr>
-<td>discrete_limit</td>
-<td>Any positive integer</td>
-<td>Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > discrete_threshold, then it is considered continuous, or discrete otherwise.</td>
-</tr>
-<tr>
-<td>n_jobs</td>
-<td>Any positive integer or -1</td>
-<td>The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.</td>
-</tr>
-</table>
-
-```python
-import pandas as pd
-import numpy as np
-from sklearn.pipeline import make_pipeline
-from skrebate import SURFstar
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
-
-genetic_data = pd.read_csv('https://github.com/EpistasisLab/scikit-rebate/raw/master/data/'
-                           'GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.tsv.gz',
-                           sep='\t', compression='gzip')
-
-features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
-
-clf = make_pipeline(SURFstar(n_features_to_select=2),
-                    RandomForestClassifier(n_estimators=100))
-
-print(np.mean(cross_val_score(clf, features, labels)))
->>> 0.795
-```
-
-## MultiSURF
-
-<table>
-<tr>
-<th>Parameter</th>
-<th width="15%">Valid values</th>
-<th>Effect</th>
-</tr>
-<tr>
-<td>n_features_to_select</td>
-<td>Any positive integer</td>
-<td>The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSURF scoring process.</td>
-</tr>
-<tr>
-<td>discrete_limit</td>
-<td>Any positive integer</td>
-<td>Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > discrete_threshold, then it is considered continuous, or discrete otherwise.</td>
-</tr>
-<tr>
-<td>n_jobs</td>
-<td>Any positive integer or -1</td>
-<td>The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.</td>
-</tr>
-</table>
-
-```python
-import pandas as pd
-import numpy as np
-from sklearn.pipeline import make_pipeline
-from skrebate import MultiSURF
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
-
-genetic_data = pd.read_csv('https://github.com/EpistasisLab/scikit-rebate/raw/master/data/'
-                           'GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.tsv.gz',
-                           sep='\t', compression='gzip')
-
-features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
-
-clf = make_pipeline(MultiSURF(n_features_to_select=2),
-                    RandomForestClassifier(n_estimators=100))
-
-print(np.mean(cross_val_score(clf, features, labels)))
->>> 0.795
-```
-
-## MultiSURF*
-
-<table>
-<tr>
-<th>Parameter</th>
-<th width="15%">Valid values</th>
-<th>Effect</th>
-</tr>
-<tr>
-<td>n_features_to_select</td>
-<td>Any positive integer</td>
-<td>The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSURF* scoring process.</td>
-</tr>
-<tr>
-<td>discrete_limit</td>
-<td>Any positive integer</td>
-<td>Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > discrete_threshold, then it is considered continuous, or discrete otherwise.</td>
-</tr>
-<tr>
-<td>n_jobs</td>
-<td>Any positive integer or -1</td>
-<td>The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.</td>
-</tr>
-</table>
-
-```python
-import pandas as pd
-import numpy as np
-from sklearn.pipeline import make_pipeline
-from skrebate import MultiSURFstar
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
-
-genetic_data = pd.read_csv('https://github.com/EpistasisLab/scikit-rebate/raw/master/data/'
-                           'GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.tsv.gz',
-                           sep='\t', compression='gzip')
-
-features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
-
-clf = make_pipeline(MultiSURFstar(n_features_to_select=2),
-                    RandomForestClassifier(n_estimators=100))
-
-print(np.mean(cross_val_score(clf, features, labels)))
->>> 0.795
-```
-
-## TuRF
+## TuRF wrapper for larger feature set
 TURF advances the feature selection process from a single round to a multi-round process, and can be used in conjunction with any of the Relief-based algorithms. TURF begins with all of the features in the first round, scores them using one of the Relief-based algorithms, then eliminates a portion of them that have the worst scores. With this reduced feature set, TURF again scores the remaining features and eliminates a portion of the worst-scoring features. This process is repeated until a predefined number of features remain or some maximum number of iterations have completed. Presently, there are two ways to run the 'TuRF' iterative feature selection wrapper around any of the given core Relief-based algorithm in scikit-rebate. First, there is a custom TuRF implementation, hard coded into scikit-rebate designed to operate in the same way as specified in the original TuRF paper.  The second, uses the [Recursive Feature Elimination](http://scikit-learn.org/stable/modules/feature_selection.html#recursive-feature-elimination), as [implemented](http://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html) in scikit-learn. These approaches are similar but not equivalent. We recommend using built in scikit-rebate TuRF. Examples for running TuRF using either approach are given below.
 
 
@@ -293,7 +368,9 @@ clf = make_pipeline(RFE(ReliefF(), n_features_to_select=2, step = 0.5),
 print(np.mean(cross_val_score(clf, features, labels)))
 >>> 0.795
 ```
-
+## How to Set Up Feature Type
+### manually
+### automatic threshold
 
 ## Acquiring feature importance scores
 
@@ -459,6 +536,8 @@ fh.close()
 ```
 
 This ordered list and text output can be achieved similarly for any core Relief-based algorithm by just removing the 'if n < scored\_features +1 :' loop and the else statement adding the '*'. 
+
+
 
 
 ## General Usage Guidelines

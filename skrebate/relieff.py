@@ -57,7 +57,7 @@ class ReliefF(BaseEstimator):
         Parameters
         ----------
         n_features_to_select: int (default: 10)
-            the number of top features (according to the relieff score) to
+            The number of top features (according to the relieff score) to
             retain after feature selection is applied.
         n_neighbors: int or float (default: 100)
             The number of neighbors to consider when assigning feature
@@ -65,7 +65,7 @@ class ReliefF(BaseEstimator):
             training samples is used as the number of neighbors.
             More neighbors results in more accurate scores, but takes longer.
         categorical_features: list (default: None)
-            list of index columns indicating features to be treated as categorical.
+            List of index columns indicating features to be treated as categorical.
             If set to None, the features will be automatically classified based on the discrete_threshold below.
         discrete_threshold: int (default: 2)
             Value used to determine if a feature is discrete or continuous.
@@ -77,7 +77,7 @@ class ReliefF(BaseEstimator):
             The number of cores to dedicate to computing the scores with joblib.
             Assigning this parameter to -1 will dedicate as many cores as are available on your system.
             We recommend setting this parameter to -1 to speed up the algorithm as much as possible.
-         weight_final_scores: bool (default: False)
+        weight_final_scores: bool (default: False)
             Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given.
         rank_absolute: bool (default: False)
             Whether to give top features as by ranking features by absolute value.
@@ -487,7 +487,7 @@ class ReliefF(BaseEstimator):
     # ==================================================================#
 
     # For verbose - gather information to print
-    def summary(self, sort=True, feature_name=None):
+    def summary(self, sort=True, feature_name=None, show_data_type=True):
         # default
         # sort = True/False
         # feature name provided
@@ -519,9 +519,15 @@ class ReliefF(BaseEstimator):
             printed_name = printed_name
             column_width = max(longest_name_length+1, min_width)
 
-        print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}")
-        for idx in id_order:
-            print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}")
+        if show_data_type:
+            print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}{'Feature type':<15}")
+            for idx in id_order:
+                print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}{data_type[idx]:<15}")
+
+        else:
+            print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}")
+            for idx in id_order:
+                print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}")
 
         # self.top_features_[:self.n_features_to_select]
         
