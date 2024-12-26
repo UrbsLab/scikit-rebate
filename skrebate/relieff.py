@@ -487,21 +487,26 @@ class ReliefF(BaseEstimator):
     # ==================================================================#
 
     # For verbose - gather information to print
-    def summary(self, sort=True, feature_name=None, show_data_type=True):
-        # default
-        # sort = True/False
-        # feature name provided
-        # feature_importances = self.feature_importances_
-        # top_features = self.top_features_
-        # sorted_names = sorted(scoreDict, key=lambda x: scoreDict[x], reverse=True)
+    def summary(self, sort=True, feature_name=None, show_feature_type=False):
+        """Provides a summary of the features with their importance scores, ranks, and feature types.
+        Parameters
+        ----------
+        sort: bool, optional
+            Whether to sort the features by importance. Default is True.
+        feature_name: list of str or None, optional
+            A list of feature names. If None, feature indicies will be used. Default is None.
+        show_feature_type: bool, optional
+            Whether to display the type of the features. Default if False.
+
+        Returns
+        -------
+        None
+            Prints the summary of the features directly to the console.
+        """
+
         data_type = [v[0] for v in self.attr.values()]
         id_order = self.top_features_ if sort else range(self._num_attributes)
         rank_dict = {feature: rank + 1 for rank, feature in enumerate(self.top_features_)}
-        
-        selected_dict = {
-            feature: "*" if rank <= self.n_features_to_select else " "
-            for feature, rank in rank_dict.items()
-        }
 
         printed_name = feature_name if feature_name is not None else [str(i) for i in range(self._num_attributes)]
 
@@ -519,7 +524,7 @@ class ReliefF(BaseEstimator):
             printed_name = printed_name
             column_width = max(longest_name_length+1, min_width)
 
-        if show_data_type:
+        if show_feature_type:
             print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}{'Feature type':<15}")
             for idx in id_order:
                 print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}{data_type[idx]:<15}")
@@ -528,11 +533,6 @@ class ReliefF(BaseEstimator):
             print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}")
             for idx in id_order:
                 print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}")
-
-        # self.top_features_[:self.n_features_to_select]
-        
-        # return {'label type': self._class_type, 
-        #         'data type': data_type}
 
 ############################# ReliefF ############################################
 
