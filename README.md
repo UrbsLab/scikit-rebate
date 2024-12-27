@@ -117,6 +117,8 @@ fs.summary(feature_name=feature_name)
 >>> N15            -0.01044375            20          
 ```
 
+
+### Using as End-to-end Pipeline
 We have designed the Relief algorithms to be integrated directly into scikit-learn machine learning workflows. For example, the ReliefF algorithm can be used as a feature selection step in a scikit-learn pipeline as follows.
 
 ```Python
@@ -154,6 +156,8 @@ print(f"Accuracy: {accuracy:.3f}")
 >>> Accuracy: 0.781
 ```
 For more information on the Relief algorithms available in this package and how to use them, please refer to our [usage documentation](https://EpistasisLab.github.io/scikit-rebate/using/).
+
+For updated documentation in this forked repository, please refer to this [updated usage documentation](https://urbslab.github.io/scikit-rebate/using/)
 
 ## Contributing to scikit-rebate
 
