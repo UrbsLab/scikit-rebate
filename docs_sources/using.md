@@ -19,7 +19,7 @@ ReliefF is the most basic of the Relief-based feature selection algorithms, and 
 | `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
 | `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
 
-
+Basic usage:
 ```Python
 # Import necessary packages
 import pandas as pd
@@ -62,10 +62,11 @@ fs.summary(feature_name=feature_name)
 >>> N6             -0.01038750            19              
 >>> N15            -0.01044375            20          
 ```
+---
+
+SURF, SURF\*, MultiSURF, and MultiSURF\* are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features.
 
 ### SURF
-
-SURF, SURF*, MultiSURF, and MultiSURF* are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features.
 
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
@@ -88,7 +89,7 @@ genetic_data = pd.read_csv(
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
-# Apply the ReliefF algorithm for feature selection
+# Apply the algorithm for feature selection
 fs = SURF(discrete_threshold=10)
 fs.fit(features, labels)
 
@@ -142,7 +143,7 @@ genetic_data = pd.read_csv(
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
-# Apply the ReliefF algorithm for feature selection
+# Apply the algorithm for feature selection
 fs = SURFstar(discrete_threshold=10)
 fs.fit(features, labels)
 
@@ -194,7 +195,7 @@ genetic_data = pd.read_csv(
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
-# Apply the ReliefF algorithm for feature selection
+# Apply the algorithm for feature selection
 fs = MultiSURF(discrete_threshold=10)
 fs.fit(features, labels)
 
@@ -276,9 +277,11 @@ fs.summary(feature_name=feature_name)
 >>> N17            -0.01826211            19             
 >>> N6             -0.01848672            20             
 ```
+---
+## Using as End-to-end Pipeline
+The Relief algorithms can be seamlessly integrated into scikit-learn workflows as part of the feature selection process. This allows you to streamline the feature filtering step and combine it effortlessly with other machine learning models for end-to-end training and evaluation. Below, we provide examples demonstrating how to use Relief algorithms to construct scikit-learn pipelines, perform single train/test splits, and implement cross-validation.
 
-## Using as End-to-end pipline
-
+### Example of a single train/test split
 ```Python
 # Import necessary packages
 import pandas as pd
@@ -315,8 +318,144 @@ print(f"Accuracy: {accuracy:.3f}")
 >>> Accuracy: 0.781
 ```
 
+### Example of cross-validation
+```Python
+# Import necessary packages
+import pandas as pd
+import numpy as np
+from sklearn.pipeline import make_pipeline
+from skrebate import ReliefF
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
 
-## TuRF wrapper for larger feature set
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Make pipeline
+clf = make_pipeline(
+    ReliefF(n_features_to_select=2, discrete_threshold=10),
+    RandomForestClassifier(n_estimators=100)
+)
+
+print(f"Mean accuracy: {np.mean(cross_val_score(clf, features, labels)):.3f}")
+
+>>> Mean accuracy: 0.793
+```
+
+## Specifying Feature Type
+The algorithms in scikit-rebate allow you to specify how features are treated as **categorical** or **continuous** during the feature selection process. This can be done either automatically by setting a `discrete_threshold` or manually by specifying a list of categorical feature indices using `categorical_features`. Below are two examples demonstrating these methods. 
+
+**Automatic threshold configuration** 
+
+By setting the `discrete_threshold` parameter, features are automatically classified as discrete or continuous based on the number of unique values in each features. If the number of unique levels in a feature is greater than the threshold, it is treated as continuous; otherwise, it is considered discrete. The default setting is using the automatic configuration with `discrete_threshold=2`. That is, only treated the binary features as discrete otherwise continuous.
+
+Example: 
+```Python
+# Import necessary packages
+import pandas as pd
+from skrebate import ReliefF
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_mixed_attribute_a_20s_1600her_0.4__maf_0.2_EDM-2_01.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the ReliefF algorithm for feature selection
+fs = ReliefF(discrete_threshold=10)
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(sort=False, feature_name=feature_name, show_feature_type=True)
+
+>>> Feature name   Feature importances    Feature rank   Feature attribute   
+>>> N0             0.00175000             6              discrete       
+>>> N1             0.00151250             7              discrete       
+>>> N2             0.00364375             3              discrete       
+>>> N3             -0.00049375            10             discrete       
+>>> N4             -0.00167332            14             continuous     
+>>> N5             -0.00006580            9              continuous     
+>>> N6             -0.00186120            15             continuous     
+>>> N7             -0.00221250            18             discrete       
+>>> N8             -0.00221196            17             continuous     
+>>> N9             0.00262500             4              discrete       
+>>> N10            -0.00113065            12             continuous     
+>>> N11            0.00223750             5              discrete       
+>>> N12            -0.00166648            13             continuous     
+>>> N13            -0.00423750            20             discrete       
+>>> N14            -0.00414375            19             discrete       
+>>> N15            -0.00198510            16             continuous     
+>>> N16            0.00032500             8              discrete       
+>>> N17            -0.00103750            11             discrete       
+>>> M0P0           0.01765217             1              continuous     
+>>> M0P1           0.01097106             2              continuous
+```
+
+In this example:
+
+- `discrete_threshold=10` means features with more than 10 unique levels are considered continuous.
+
+**Manual feature type selection**
+
+Alternatively, you can manually specify which features should be treated as categorical by providing their column indices using the `categorical_features` parameter. Note that if the `categorical_features` is provided, the `discrete_threshold` parameter would be ignored.
+
+Example:
+```Python
+# Import necessary packages
+import pandas as pd
+from skrebate import ReliefF
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_mixed_attribute_a_20s_1600her_0.4__maf_0.2_EDM-2_01.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the ReliefF algorithm for feature selection
+fs = ReliefF(categorical_features=[0, 1, 2, 3, 7, 9, 11, 13, 14, 16, 17])
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(sort=False, feature_name=feature_name, show_feature_type=True)
+
+>>> Feature name   Feature importances    Feature rank   Feature attribute   
+>>> N0             0.00175000             6              discrete       
+>>> N1             0.00151250             7              discrete       
+>>> N2             0.00364375             3              discrete       
+>>> N3             -0.00049375            10             discrete       
+>>> N4             -0.00167332            14             continuous     
+>>> N5             -0.00006580            9              continuous     
+>>> N6             -0.00186120            15             continuous     
+>>> N7             -0.00221250            18             discrete       
+>>> N8             -0.00221196            17             continuous     
+>>> N9             0.00262500             4              discrete       
+>>> N10            -0.00113065            12             continuous     
+>>> N11            0.00223750             5              discrete       
+>>> N12            -0.00166648            13             continuous     
+>>> N13            -0.00423750            20             discrete       
+>>> N14            -0.00414375            19             discrete       
+>>> N15            -0.00198510            16             continuous     
+>>> N16            0.00032500             8              discrete       
+>>> N17            -0.00103750            11             discrete       
+>>> M0P0           0.01765217             1              continuous     
+>>> M0P1           0.01097106             2              continuous
+```
+
+In this example:
+
+- The `categorical_features` parameter specifies that features at indices `[0, 1, 2, 3, 7, 8, 9, 11, 13, 14, 16, 17]` are treated as categorical.
+- Other features will be treated as continuous.
+
+
+## TuRF Wrapper for Larger Feature Set
 TURF advances the feature selection process from a single round to a multi-round process, and can be used in conjunction with any of the Relief-based algorithms. TURF begins with all of the features in the first round, scores them using one of the Relief-based algorithms, then eliminates a portion of them that have the worst scores. With this reduced feature set, TURF again scores the remaining features and eliminates a portion of the worst-scoring features. This process is repeated until a predefined number of features remain or some maximum number of iterations have completed. Presently, there are two ways to run the 'TuRF' iterative feature selection wrapper around any of the given core Relief-based algorithm in scikit-rebate. First, there is a custom TuRF implementation, hard coded into scikit-rebate designed to operate in the same way as specified in the original TuRF paper.  The second, uses the [Recursive Feature Elimination](http://scikit-learn.org/stable/modules/feature_selection.html#recursive-feature-elimination), as [implemented](http://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html) in scikit-learn. These approaches are similar but not equivalent. We recommend using built in scikit-rebate TuRF. Examples for running TuRF using either approach are given below.
 
 
@@ -368,11 +507,8 @@ clf = make_pipeline(RFE(ReliefF(), n_features_to_select=2, step = 0.5),
 print(np.mean(cross_val_score(clf, features, labels)))
 >>> 0.795
 ```
-## How to Set Up Feature Type
-### manually
-### automatic threshold
 
-## Acquiring feature importance scores
+## Acquiring Feature Importance Scores
 
 In many cases, it may be useful to compute feature importance scores without actually performing feature selection. We have made it possible to access all Relief-based algorithm's scores via the `feature_importances_` attribute. Below are code examples showing how to access the scores from the any core Relief-based algorithm as well as from TuRF in combination with a Relief-based algorithm. The first example illustrates how scores may be obtained from ReliefF, adding a split of the loaded data into training and testing since we are not running ReliefF as part of a scikit pipeline like above.  
 
