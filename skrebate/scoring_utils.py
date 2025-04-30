@@ -27,7 +27,10 @@ import numpy as np
 # (Subset of continuous-valued feature data, Subset of discrete-valued feature data, max/min difference, instance index, boolean mask for continuous, boolean mask for discrete)
 def get_row_missing(xc, xd, cdiffs, index, cindices, dindices):
     """ Calculate distance between index instance and all other instances. """
-    row = np.empty(0, dtype=np.double)  # initialize empty row
+    # row = np.empty(0, dtype=np.double)  # initialize empty row
+    # initialize a full‐length row of zeros (distance to self and future indices stays 0)
+    n = xc.shape[0]
+    row = np.zeros(n, dtype=np.double)
     cinst1 = xc[index]  # continuous-valued features for index instance
     dinst1 = xd[index]  # discrete-valued features for index instance
     # Boolean mask locating missing values for continuous features for index instance
@@ -75,14 +78,19 @@ def get_row_missing(xc, xd, cdiffs, index, cindices, dindices):
         # Distance normalized by number of features included in distance sum (this seeks to handle missing values neutrally in distance calculation)
         dist = dist/float(tnmc)
 
-        row = np.append(row, dist)
+        # row = np.append(row, dist)
+        # place into the pre‐allocated slot
+        row[j] = dist
 
     return row
 
 # For iter relief
 def get_row_missing_iter(xc, xd, cdiffs, index, cindices, dindices, weights):
     """ Calculate distance between index instance and all other instances. """
-    row = np.empty(0, dtype=np.double)  # initialize empty row
+    # row = np.empty(0, dtype=np.double)  # initialize empty row
+    # initialize a full‐length row of zeros (distance to self and future indices stays 0)
+    n = xc.shape[0]
+    row = np.zeros(n, dtype=np.double)
     cinst1 = xc[index]  # continuous-valued features for index instance
     dinst1 = xd[index]  # discrete-valued features for index instance
     # Boolean mask locating missing values for continuous features for index instance
@@ -135,7 +143,9 @@ def get_row_missing_iter(xc, xd, cdiffs, index, cindices, dindices, weights):
         # Distance normalized by number of features included in distance sum (this seeks to handle missing values neutrally in distance calculation)
         dist = dist/float(tnmc)
 
-        row = np.append(row, dist)
+        # row = np.append(row, dist)
+        # place into the pre‐allocated slot
+        row[j] = dist
 
     return row
 

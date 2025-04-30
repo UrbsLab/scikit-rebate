@@ -425,6 +425,7 @@ class ReliefF(BaseEstimator):
             dist_array = [get_row_missing(xc, xd, cdiffs, index, cindices, dindices)
                           for index in range(self._datalen)]
 
+        # return np.array(dist_array, dtype=object)
         return np.array(dist_array)
     #==================================================================#
     # For Iter Relief
@@ -483,6 +484,7 @@ class ReliefF(BaseEstimator):
             dist_array = [get_row_missing_iter(xc, xd, cdiffs, index, cindices, dindices, weights)
                           for index in range(self._datalen)]
 
+        # return np.array(dist_array, dtype=object)
         return np.array(dist_array)
     # ==================================================================#
 
