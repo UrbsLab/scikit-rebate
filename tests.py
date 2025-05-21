@@ -23,7 +23,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF
 from sklearn.pipeline import make_pipeline
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.impute import SimpleImputer as Imputer
@@ -231,22 +231,22 @@ def test_turf_pipeline():
     """Check: Data (Binary Endpoint, Discrete Features): TuRF with ReliefF works in a sklearn pipeline"""
     np.random.seed(49082)
 
-    # clf = make_pipeline(TuRF(core_algorithm="ReliefF", n_features_to_select=2, pct=0.5, n_neighbors=100),
-    #                     RandomForestClassifier(n_estimators=100, n_jobs=-1))
-    #
-    # assert np.mean(cross_val_score(clf, features, labels, fit_params={
-    #                'turf__headers': headers}, cv=3, n_jobs=-1)) > 0.7
+    clf = make_pipeline(TURF(core_algorithm="ReliefF", n_features_to_select=2, pct=0.5, n_neighbors=100),
+                        RandomForestClassifier(n_estimators=100, n_jobs=-1))
+    
+    assert np.mean(cross_val_score(clf, features, labels, fit_params={
+                   'turf__headers': headers}, cv=3, n_jobs=-1)) > 0.7
 
 
 def test_turf_pipeline_parallel():
     """Check: Data (Binary Endpoint, Discrete Features): TuRF with ReliefF works in a sklearn pipeline when TuRF is parallelized"""
     np.random.seed(49082)
 
-    # clf = make_pipeline(TuRF(core_algorithm="ReliefF", n_features_to_select=2, pct=0.5, n_neighbors=100, n_jobs=-1),
-    #                     RandomForestClassifier(n_estimators=100, n_jobs=-1))
-    #
-    # assert np.mean(cross_val_score(clf, features, labels, fit_params={
-    #                'turf__headers': headers}, cv=3)) > 0.7
+    clf = make_pipeline(TURF(core_algorithm="ReliefF", n_features_to_select=2, pct=0.5, n_neighbors=100, n_jobs=-1),
+                        RandomForestClassifier(n_estimators=100, n_jobs=-1))
+    
+    assert np.mean(cross_val_score(clf, features, labels, fit_params={
+                   'turf__headers': headers}, cv=3)) > 0.7
 
 
 def test_vlsrelief_pipeline():
