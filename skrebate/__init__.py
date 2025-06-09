@@ -33,4 +33,4 @@ from .multisurfstar import MultiSURFstar
 from .turf import TURF
 from .vls import VLS
 from .iter import Iter
-from .swrf import SWRF
+from .swrfstar import SWRFstar

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import pytest
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF, SWRF
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF, SWRFstar
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -18,7 +18,7 @@ datasets = {
 
 # Parametrize over selectors
 selectors = [
-    # Too basic to successfully run
+    # # Too basic to successfully run
     # (ReliefF, {'n_features_to_select': 5, 'n_neighbors': 1}), 
     # Passing to favour SWRF Test
     # (ReliefF, {'n_features_to_select': 5, 'n_neighbors': 10}),
@@ -27,8 +27,8 @@ selectors = [
     # (MultiSURF, {'n_features_to_select': 5}),
     # (MultiSURFstar, {'n_features_to_select': 5}),
     # (TURF, {'relief_object': ReliefF(n_features_to_select=5, n_neighbors=10), 'pct': 0.5, 'num_scores_to_return': 5}),
-    # New SWRF Test
-    (SWRF, {'n_features_to_select': 5}),
+    # New SWRFstar Test
+    (SWRFstar, {'n_features_to_select': 5}),
 ]
 
 @pytest.mark.parametrize("dataset_name,genetic_data", datasets.items())
@@ -40,7 +40,9 @@ def test_selector_on_dataset(cls, kwargs, dataset_name, genetic_data):
     selector = cls(**kwargs)
     selector.fit(features, labels)
     selected_features = [headers[i] for i in selector.top_features_[:5]]
+    selected_features_scores = [selector.feature_importances_[i] for i in selector.top_features_[:5]]
     print(f"Selected features: {selected_features}")
+    print(f"Feature Scores: {selected_features_scores}")
     assert 'M0P0' in selected_features and 'M0P1' in selected_features, (
         f"{cls.__name__} failed to select M0P0 and M0P1 on {dataset_name} dataset"
     )
