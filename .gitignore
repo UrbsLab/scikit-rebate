@@ -5,6 +5,7 @@ run_test.py
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache
 
 # C extensions
 *.so
@@ -75,3 +76,5 @@ testing.ipynb
 .idea/
 
 analysis_pipeline/skrebatewip
+BenchmarkData/
+Scripts/
