@@ -14,7 +14,7 @@ LSF_TEMPLATE = """#!/bin/bash
 #BSUB -W 01:00
 #BSUB -q i2c2_normal
 
-python job_feature_selection.py --algorithm {algorithm} --input_file "{input_file}"
+python job_rebate_analysis.py --algorithm {algorithm} --input_file "{input_file}"
 """
 
 SLURM_TEMPLATE = """#!/bin/bash
@@ -26,7 +26,7 @@ SLURM_TEMPLATE = """#!/bin/bash
 #SBATCH --time=01:00:00
 #SBATCH --partition=defq
 
-python job_feature_selection.py --algorithm {algorithm} --input_file "{input_file}"
+python job_rebate_analysis.py --algorithm {algorithm} --input_file "{input_file}"
 """
 
 def ensure_dir(directory):

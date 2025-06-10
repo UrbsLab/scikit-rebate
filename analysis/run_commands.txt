@@ -1,0 +1,4 @@
+Initial Experiments with core2wayEpistasis and SWRF*, SURF* and MultiSURF*
+
+python run_rebate_analysis.py --datadir=core2wayEpistasis
+python run_process_heatmap.py --basedir ./core2wayEpistasis/
