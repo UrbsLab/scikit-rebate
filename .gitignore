@@ -70,6 +70,7 @@ target/
 .idea/ 
 
 # Files
+demo/data
 BenchmarkData.zip
 analysis_pipeline/
 BenchmarkData/
