@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 import argparse
@@ -7,7 +8,13 @@ import time
 from multiprocessing import Pool, cpu_count
 
 from sklearn.feature_selection import mutual_info_classif
-from skrebate import ReliefF, MultiSURF, MultiSURFstar
+
+# Get the absolute path to the directory containing the package
+package_path = os.path.abspath(os.path.join("..", ".."))
+
+# Add the package path to sys.path
+sys.path.insert(0, package_path)
+from skrebate import SURFstar, MultiSURFstar, SWRFstar
 
 def find_txt_groups(root_dir):
     # Grab all the folders that contain 30 txt files and exclude the file name that contains 'Results'
@@ -108,16 +115,15 @@ if __name__ == "__main__":
 
 
     ############Path and method setting############
-    data_dir = "./data2/AbsVal Benchmark Data/GAMETES_2.2_dev_peter_XOR"
+    data_dir = "../data/"
     result_dir = 'Results'
 
     methods = {
         "RandomShuffle": (None, None),
         "MutualInformation": (None, None),
-        "ReliefF10": (ReliefF, {"discrete_threshold": 10, "n_neighbors": 10}),
-        "ReliefF100": (ReliefF, {"discrete_threshold": 10, "n_neighbors": 100}),
-        "MultiSURF": (MultiSURF, {"discrete_threshold": 10}),
-        "MultiSURFstar": (MultiSURFstar, {"discrete_threshold": 10}),
+        "SURFstar": (SURFstar, {'n_features_to_select': 5}),
+        "MultiSURFstar": (MultiSURFstar, {'n_features_to_select': 5}),
+        "SWRFstar": (SWRFstar, {'n_features_to_select': 5}),
     }
     ############Path and method setting############
 
