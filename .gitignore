@@ -73,4 +73,7 @@ target/
 BenchmarkData.zip
 analysis_pipeline/
 BenchmarkData/
-analysis/datasets/
+analysis/jobs/
+analysis/logs/
+analysis/core2wayEpistasis
+*.zip
