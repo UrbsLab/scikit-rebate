@@ -10,7 +10,7 @@ from multiprocessing import Pool, cpu_count
 from sklearn.feature_selection import mutual_info_classif
 
 # Get the absolute path to the directory containing the package
-package_path = os.path.abspath(os.path.join("..", ".."))
+package_path = os.path.abspath(os.path.join("", ".."))
 
 # Add the package path to sys.path
 sys.path.insert(0, package_path)
@@ -25,7 +25,11 @@ def find_txt_groups(root_dir):
 
         files_count = len(txt_files)
         
-        if files_count == 30 and 'Results' not in root:
+        # if files_count == 30 and 'Results' not in root:
+        #     txt_groups.append(root)
+        # elif files_count != 0:
+        #     print(f"{root} got {len(txt_files)} files")
+        if 'Results' not in root:
             txt_groups.append(root)
         elif files_count != 0:
             print(f"{root} got {len(txt_files)} files")
@@ -39,12 +43,17 @@ def single_file_job(args):
 
     try:
         print(f"\tProcessing with data file {txt_file}...")
-        data = pd.read_csv(os.path.join(exp_dir, txt_file), sep='\t')
-        features, labels = data.drop('Class', axis=1).values, data['Class'].values
+        if txt_file.endswith('.txt'):   
+            data = pd.read_csv(os.path.join(exp_dir, txt_file), sep='\t')
+        elif txt_file.endswith('.csv'):
+            data = pd.read_csv(os.path.join(exp_dir, txt_file))
+        else:
+            raise ValueError(f"Unsupported file format: {txt_file}")
+        features, labels = data.drop('class', axis=1).values, data['class'].values
 
         for method_name, (method, params) in methods.items():
             if method_name == "RandomShuffle":
-                importances = np.random.permutation(len(data.drop('Class', axis=1).columns))
+                importances = np.random.permutation(len(data.drop('class', axis=1).columns))
             elif method_name == "MutualInformation":
                 importances = mutual_info_classif(features, labels)
             else:        
@@ -53,7 +62,7 @@ def single_file_job(args):
                 importances = fs.feature_importances_
 
             results = pd.DataFrame({
-                'Feature': data.drop('Class', axis=1).columns,
+                'Feature': data.drop('class', axis=1).columns,
                 'Feature_Importance': importances
             })
 
@@ -61,6 +70,7 @@ def single_file_job(args):
             results.to_csv(os.path.join(result_dir, exp_dir, method_name, f"{base_name}_Results.txt"), index=False, sep='\t')
         return f"File {txt_file} processed successfully."
     except Exception as e:
+        raise e  # Uncomment this line to raise the exception after logging the error
         return f"Error processing {txt_file}: {e}"
 
 
@@ -82,11 +92,15 @@ def main(data_dir, result_dir, methods, num_cpus, dry_run):
         for method_name, _ in methods.items():
             os.makedirs(os.path.join(result_dir, exp_dir, method_name), exist_ok=True)
         
-        txt_files = [f for f in os.listdir(exp_dir) if f.endswith('.txt')]
+        txt_files = [f for f in os.listdir(exp_dir) if (f.endswith('.txt') or f.endswith('.csv'))]
 
         args += [(exp_dir, txt_file, result_dir, methods) for txt_file in txt_files]
 
     start_time = time.time()
+
+    # results = []
+    # for arg in args:
+    #     results.append(single_file_job(arg))  # Test a single file job to ensure everything is working
 
     print(f"Parallel processing on {len(args)} tasks...")
     with Pool(processes=num_cpus) as pool:
