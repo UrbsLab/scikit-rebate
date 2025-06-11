@@ -1,9 +1,7 @@
 import os
 import time
 
-# ALGORITHMS = ["mutual_info", "relieff10", "relieff100", "surf", "surfstar", "multisurf", "multisurfstar", "swrfstar", "random"]
-
-ALGORITHMS = ["mutual_info", "surfstar", "swrfstar", "multisurf", "multisurfstar", "random"]
+ALGORITHMS = ["mutual_info", "relieff10", "relieff100", "surf", "surfstar", "multisurf", "multisurfstar", "swrfstar", "random"]
 
 LSF_TEMPLATE = """#!/bin/bash
 #BSUB -J {job_name}

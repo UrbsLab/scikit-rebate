@@ -1,11 +1,12 @@
 import os
 import sys
+import argparse
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-def process_results_dir(results_dir):
+def process_results_dir(results_dir, prefix=""):
     print(f"Processing: {results_dir}")
     
     all_rankings_df = pd.DataFrame()
@@ -58,17 +59,40 @@ def process_results_dir(results_dir):
 
     # Plot heatmap
     custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
-    rba_order = ['RandomShuffle', 'MutualInfo', 'SURFstar', 'MultiSURFstar', 'SWRFstar',
-                 'ABS_SURFstar', 'ABS_MultiSURFstar', 'ABS_SWRFstar']
+    # Define your preferred order of the RBAs as a list
+    rba_order = [
+        'RandomShuffle',
+        'MutualInfo',
+        'ReliefF10',
+        'ReliefF100',
+        'SURF',
+        'MultiSURF',
+        'MultiSURFstar',
+        'SWRFstar',
+        'ABS_ReliefF10',
+        'ABS_ReliefF100',
+        'ABS_SURF',
+        'ABS_MultiSURF',
+        'ABS_MultiSURFstar',
+        'ABS_SWRFstar',
+    ]
+
+    # Define a mapping from your RBA order to new descriptive names
     rba_descriptive_names = {
         'RandomShuffle': 'Random Shuffle',
-        'MutualInfo': 'Mutual Information',
-        'SURFstar': 'SURF*',
-        'SWRFstar': 'SWRF*',
+        'MutualInfo': 'Mutual Info',
+        'ReliefF10': 'ReliefF 10NN',
+        'ReliefF100': 'ReliefF 100NN',
+        'SURF': 'SURF',
+        'MultiSURF': 'MultiSURF',
         'MultiSURFstar': 'MultiSURF*',
-        'ABS_SURFstar': 'SURF* ABS',
+        'SWRFstar': 'SWRF*',
+        'ABS_ReliefF10': 'ReliefF 10NN ABS',
+        'ABS_ReliefF100': 'ReliefF 100NN ABS',
+        'ABS_SURF': 'SURF ABS',
+        'ABS_MultiSURF': 'MultiSURF ABS',
         'ABS_MultiSURFstar': 'MultiSURF* ABS',
-        'ABS_SWRFstar': 'SWRF* ABS',
+        'ABS_SWRFstar': 'SWRF* ABS'
     }
 
     percentages_df = percentages_df.iloc[1:]
@@ -78,6 +102,7 @@ def process_results_dir(results_dir):
     xtick_positions = np.linspace(0, percentages_df_ordered.shape[1] - 0.13, num=len(xtick_labels))
 
     plt.figure(figsize=(12, 7))
+    print(percentages_df_ordered)
     heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, cbar_kws={'label': 'Power (Frequency of Success)'})
     for i in range(percentages_df_ordered.shape[0] - 1):
         heatmap.axhline(i + 1, color='black', linewidth=1.5)
@@ -92,7 +117,7 @@ def process_results_dir(results_dir):
     cbar.outline.set_edgecolor("black")
 
     dataset_id = os.path.basename(os.path.dirname(results_dir))
-    heatmap.set_title('core2wayEpi_ABS_' + dataset_id, fontsize=16)
+    heatmap.set_title(prefix + dataset_id, fontsize=16)
     heatmap.set_xlabel('Predictive features in top % of ranked features', fontsize=14)
     heatmap.set_ylabel('Method', fontsize=14)
     heatmap.set_xticks(xtick_positions)
@@ -105,7 +130,7 @@ def process_results_dir(results_dir):
     plt.rcParams['pdf.fonttype'] = 42
     plt.tight_layout()
 
-    save_path = os.path.join(results_dir, 'core2wayEpi_ABS_' + dataset_id + '.pdf')
+    save_path = os.path.join(results_dir, prefix + dataset_id + '.pdf')
     plt.savefig(save_path, format='pdf', bbox_inches='tight')
     plt.close()
 
@@ -113,9 +138,9 @@ def process_results_dir(results_dir):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python process_results.py /path/to/Results/")
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("results_dir", help="Path to the Results folder.")
+    parser.add_argument("--prefix", default="", help="Prefix to add to output heatmap filenames.")
+    args = parser.parse_args()
 
-    results_dir_path = sys.argv[1]
-    process_results_dir(results_dir_path)
+    process_results_dir(args.results_dir, prefix=args.prefix)
