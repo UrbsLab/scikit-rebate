@@ -331,15 +331,12 @@ class ReliefF(BaseEstimator):
                     z = z[np.logical_not(np.isnan(z))]  # Exclude any missing values from consideration
                 zlen = len(np.unique(z))
                 if zlen <= limit:
-                    print('Feature {} is discrete with {} unique values.'.format(h, zlen))
                     attr[h] = ('discrete', 0, 0, 0, 0)
                     d += 1
                 else:
                     mx = np.max(z)
                     mn = np.min(z)
                     sd = np.std(z)
-                    print('Feature {} is continuous with {} unique values.'.format(h, zlen))
-                    # print('Feature {} is continuous with max {}, min {}, max-min diff {}, and std {}'.format(h, mx, mn, mx - mn, sd))
                     attr[h] = ('continuous', mx, mn, mx - mn, sd)
         else:
             for idx in range(len(w)):
