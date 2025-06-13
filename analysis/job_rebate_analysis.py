@@ -45,6 +45,7 @@ def process_and_save_results(file_path, fs, method_name):
     base_name = os.path.splitext(os.path.basename(file_path))[0]
     Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
     ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
+    print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
 
 def process_random_shuffle(file_path):
     # Define the directory to store results
@@ -81,11 +82,11 @@ def process_mutual_info(file_path):
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_relieff10(file_path):
-    fs = ReliefF(n_neighbors=10)
+    fs = ReliefF(n_features_to_select=2,n_neighbors=10)
     process_and_save_results(file_path, fs, "ReliefF10")
 
 def process_relieff100(file_path):
-    fs = ReliefF(n_neighbors=100)
+    fs = ReliefF(n_features_to_select=2,n_neighbors=100)
     process_and_save_results(file_path, fs, "ReliefF100")
 
 def process_surf(file_path):

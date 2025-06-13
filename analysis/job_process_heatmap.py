@@ -66,12 +66,14 @@ def process_results_dir(results_dir, prefix=""):
         'ReliefF10',
         'ReliefF100',
         'SURF',
+        'SURFstar',
         'MultiSURF',
         'MultiSURFstar',
         'SWRFstar',
         'ABS_ReliefF10',
         'ABS_ReliefF100',
         'ABS_SURF',
+        'ABS_SURFstar',
         'ABS_MultiSURF',
         'ABS_MultiSURFstar',
         'ABS_SWRFstar',
@@ -84,18 +86,21 @@ def process_results_dir(results_dir, prefix=""):
         'ReliefF10': 'ReliefF 10NN',
         'ReliefF100': 'ReliefF 100NN',
         'SURF': 'SURF',
+        'SURFstar': 'SURF*',
         'MultiSURF': 'MultiSURF',
         'MultiSURFstar': 'MultiSURF*',
         'SWRFstar': 'SWRF*',
         'ABS_ReliefF10': 'ReliefF 10NN ABS',
         'ABS_ReliefF100': 'ReliefF 100NN ABS',
         'ABS_SURF': 'SURF ABS',
+        'ABS_SURFstar': 'SURF* ABS',
         'ABS_MultiSURF': 'MultiSURF ABS',
         'ABS_MultiSURFstar': 'MultiSURF* ABS',
         'ABS_SWRFstar': 'SWRF* ABS'
     }
 
-    percentages_df = percentages_df.iloc[1:]
+    n_pred = all_rankings_df['Feature'].nunique()
+    percentages_df = percentages_df.iloc[n_pred-1:]
     percentages_df_transposed = percentages_df.T
     percentages_df_ordered = percentages_df_transposed.loc[[r for r in rba_order if r in percentages_df_transposed.index]]
     xtick_labels = ['Optimal', '10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%']
