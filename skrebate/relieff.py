@@ -44,7 +44,7 @@ class ReliefF(BaseEstimator):
              (binary and multiclass endpoint data. """
 
     def __init__(self, n_features_to_select=10, n_neighbors=100, 
-                 categorical_features=None, discrete_threshold=2, 
+                 categorical_features=None, discrete_threshold=10, multiclass_threshold=10,
                  verbose=False, n_jobs=1, weight_final_scores=False, 
                  rank_absolute=False, label_type=None):
         """Sets up ReliefF to perform feature selection. Note that an approximation of the original 'Relief'
@@ -67,10 +67,14 @@ class ReliefF(BaseEstimator):
         categorical_features: list (default: None)
             List of index columns indicating features to be treated as categorical.
             If set to None, the features will be automatically classified based on the discrete_threshold below.
-        discrete_threshold: int (default: 2)
+        discrete_threshold: int (default: 10)
             Value used to determine if a feature is discrete or continuous.
             If the number of unique levels in a feature is > discrete_threshold, then it is
             considered continuous, or discrete otherwise.
+        multiclass_threshold: int (default: 10)
+            Value used to determine if a target is multiclass or continuous.
+            If the number of unique targets in a feature is > multiclass_threshold, then it is
+            considered continuous, or multiclass otherwise.
         verbose: bool (default: False)
             If True, output timing of distance array and scoring
         n_jobs: int (default: 1)
@@ -90,6 +94,7 @@ class ReliefF(BaseEstimator):
         self.n_neighbors = n_neighbors
         self.categorical_features = categorical_features
         self.discrete_threshold = discrete_threshold
+        self.multiclass_threshold = multiclass_threshold
         self.verbose = verbose
         self.n_jobs = n_jobs
         self.weight_final_scores = weight_final_scores
@@ -155,7 +160,7 @@ class ReliefF(BaseEstimator):
         else:
             if len(self._label_list) == 2:
                 self._class_type = 'binary'
-            elif len(self._label_list) <= 10:
+            elif len(self._label_list) <= self.multiclass_threshold:
                 self._class_type = 'multiclass'
             else:
                 self._class_type = 'continuous'
@@ -326,12 +331,15 @@ class ReliefF(BaseEstimator):
                     z = z[np.logical_not(np.isnan(z))]  # Exclude any missing values from consideration
                 zlen = len(np.unique(z))
                 if zlen <= limit:
+                    print('Feature {} is discrete with {} unique values.'.format(h, zlen))
                     attr[h] = ('discrete', 0, 0, 0, 0)
                     d += 1
                 else:
                     mx = np.max(z)
                     mn = np.min(z)
                     sd = np.std(z)
+                    print('Feature {} is continuous with {} unique values.'.format(h, zlen))
+                    # print('Feature {} is continuous with max {}, min {}, max-min diff {}, and std {}'.format(h, mx, mn, mx - mn, sd))
                     attr[h] = ('continuous', mx, mn, mx - mn, sd)
         else:
             for idx in range(len(w)):
@@ -369,7 +377,7 @@ class ReliefF(BaseEstimator):
                 cmin = self.attr[i][2]
                 diff = self.attr[i][3]
                 x[:, idx] -= cmin
-                x[:, idx] = x[:, idx].astype(float) / diff
+                x[:, idx] = x[:, idx] / diff
                 # x[:, idx] /= diff
                 idx += 1
             return x

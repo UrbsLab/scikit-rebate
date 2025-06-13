@@ -74,6 +74,10 @@ demo/data
 BenchmarkData.zip
 analysis_pipeline/
 BenchmarkData/
+BenchmarkData2/
+BenchmarkData3/
+skrebate_old
+analysis/BasicXOR/
 analysis/jobs/
 analysis/logs/
 analysis/core2wayEpistasis
