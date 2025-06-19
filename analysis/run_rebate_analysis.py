@@ -1,7 +1,37 @@
 import os
 import time
 
-ALGORITHMS = ["mutual_info", "relieff10", "relieff100", "surf", "surfstar", "multisurf", "multisurfstar", "swrfstar", "random"]
+ALGORITHMS = [
+    "mutual_info",
+    "relieff10",
+    "relieff100",
+    "surf",
+    "surfstar",
+    "multisurf",
+    "multisurfstar",
+    "swrfstar",
+    "random",
+    "swrfstar2",
+    "swrf",
+    "tbd1star",
+    "tbd1",
+    "tbd2star",
+    "tbd2",
+]
+
+ALGORITHMS = [
+    "random",
+    "mutual_info",
+    "surfstar",
+    "multisurfstar",
+    "swrfstar",
+    "swrfstar2",
+    "swrf",
+    "tbd1star",
+    "tbd1",
+    "tbd2star",
+    "tbd2",
+]
 
 LSF_TEMPLATE = """#!/bin/bash
 #BSUB -J {job_name}

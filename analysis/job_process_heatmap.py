@@ -63,20 +63,17 @@ def process_results_dir(results_dir, prefix=""):
     rba_order = [
         'RandomShuffle',
         'MutualInfo',
-        'ReliefF10',
-        'ReliefF100',
         'SURF',
         'SURFstar',
         'MultiSURF',
         'MultiSURFstar',
         'SWRFstar',
-        'ABS_ReliefF10',
-        'ABS_ReliefF100',
-        'ABS_SURF',
-        'ABS_SURFstar',
-        'ABS_MultiSURF',
-        'ABS_MultiSURFstar',
-        'ABS_SWRFstar',
+        'SWRFstar2',
+        'SWRF',
+        'TBD1star',
+        'TBD1',
+        'TBD2star',
+        'TBD2',
     ]
 
     # Define a mapping from your RBA order to new descriptive names
@@ -90,13 +87,12 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSURF': 'MultiSURF',
         'MultiSURFstar': 'MultiSURF*',
         'SWRFstar': 'SWRF*',
-        'ABS_ReliefF10': 'ReliefF 10NN ABS',
-        'ABS_ReliefF100': 'ReliefF 100NN ABS',
-        'ABS_SURF': 'SURF ABS',
-        'ABS_SURFstar': 'SURF* ABS',
-        'ABS_MultiSURF': 'MultiSURF ABS',
-        'ABS_MultiSURFstar': 'MultiSURF* ABS',
-        'ABS_SWRFstar': 'SWRF* ABS'
+        'SWRFstar2': 'SWRF*2',
+        'SWRF': 'SWRF',
+        'TBD1star': 'TBD1*',
+        'TBD1': 'TBD1',
+        'TBD2star': 'TBD2*',
+        'TBD2': 'TBD2',
     }
 
     n_pred = all_rankings_df['Feature'].nunique()

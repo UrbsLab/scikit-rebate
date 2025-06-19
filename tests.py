@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import pytest
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF, SWRFstar
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF, SWRFstar, SWRFstar2, SWRF, TBD1star, TBD1, TBD2star, TBD2
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -18,17 +18,22 @@ datasets = {
 
 # Parametrize over selectors
 selectors = [
-    # # Too basic to successfully run
+    # Existing selectors (commented out for brevity)
     # (ReliefF, {'n_features_to_select': 5, 'n_neighbors': 1}), 
-    # Passing to favour SWRF Test
     # (ReliefF, {'n_features_to_select': 5, 'n_neighbors': 10}),
     # (SURF, {'n_features_to_select': 5}),
     # (SURFstar, {'n_features_to_select': 5}),
     # (MultiSURF, {'n_features_to_select': 5}),
     # (MultiSURFstar, {'n_features_to_select': 5}),
     # (TURF, {'relief_object': ReliefF(n_features_to_select=5, n_neighbors=10), 'pct': 0.5, 'num_scores_to_return': 5}),
-    # New SWRFstar Test
+    # New algorithms
     (SWRFstar, {'n_features_to_select': 5}),
+    (SWRFstar2, {'n_features_to_select': 5}),
+    (SWRF, {'n_features_to_select': 5}),
+    (TBD1star, {'n_features_to_select': 5}),
+    (TBD1, {'n_features_to_select': 5}),
+    (TBD2star, {'n_features_to_select': 5}),
+    (TBD2, {'n_features_to_select': 5}),
 ]
 
 @pytest.mark.parametrize("dataset_name,genetic_data", datasets.items())

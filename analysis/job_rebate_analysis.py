@@ -8,7 +8,7 @@ from sklearn.feature_selection import mutual_info_classif
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRFstar2, SWRF, TBD1star, TBD1, TBD2star, TBD2
 
 def ensure_dir(directory):
     if not os.path.exists(directory):
@@ -109,6 +109,30 @@ def process_swrfstar(file_path):
     fs = SWRFstar()
     process_and_save_results(file_path, fs, "SWRFstar")
 
+def process_swrfstar2(file_path):
+    fs = SWRFstar2()
+    process_and_save_results(file_path, fs, "SWRFstar2")
+
+def process_swrf(file_path):
+    fs = SWRF()
+    process_and_save_results(file_path, fs, "SWRF")
+
+def process_TBD1star(file_path):
+    fs = TBD1star()
+    process_and_save_results(file_path, fs, "TBD1star")
+
+def process_TBD1(file_path):
+    fs = TBD1()
+    process_and_save_results(file_path, fs, "TBD1")
+
+def process_TBD2star(file_path):
+    fs = TBD2star()
+    process_and_save_results(file_path, fs, "TBD2star")
+
+def process_TBD2(file_path):
+    fs = TBD2()
+    process_and_save_results(file_path, fs, "TBD2")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -117,6 +141,7 @@ def main():
     args = parser.parse_args()
 
     alg_map = {
+        'random': process_random_shuffle,
         'mutual_info': process_mutual_info,
         'relieff10': process_relieff10,
         'relieff100': process_relieff100,
@@ -125,7 +150,12 @@ def main():
         'multisurf': process_multisurf,
         'multisurfstar': process_multisurfstar,
         'swrfstar': process_swrfstar,
-        'random': process_random_shuffle,
+        'swrfstar2': process_swrfstar2,
+        'swrf': process_swrf,
+        'tbd1star': process_TBD1star,
+        'tbd1': process_TBD1,
+        'tbd2star': process_TBD2star,
+        'tbd2': process_TBD2,
     }
 
     if args.algorithm not in alg_map:

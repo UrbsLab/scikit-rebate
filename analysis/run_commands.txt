@@ -4,15 +4,15 @@ python run_process_heatmap.py --basedir ./core2wayEpistasis/ --prefix=core2wayEp
 zip -r core2wayEpistasis.zip core2wayEpistasis/ -i "*.pdf"
 
 # Complete Analysis with all datasets and algorithms
-python run_rebate_analysis.py --datadir=BenchmarkData/
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_peter_XOR --prefix=XOR_00_
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_phil_XOR_01 --prefix=XOR_01_
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_phil_XOR_02 --prefix=XOR_02_
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_phil_XOR_03 --prefix=XOR_03_
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_peter_mainEff_Datasets_Loc_1_Qnt_2_Pop_100000 --prefix=mainEff
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_peter_mainEff_additive_4_Datasets_2Het_Loc_1_Qnt_2_Pop_100000 --prefix=mainEffadditive4
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_peter_mainEff_additive_2_Datasets_2Het_Loc_1_Qnt_2_Pop_100000 --prefix=mainEffadditive2
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_peter_epi_order_Datasets_Loc_3_Qnt_2_Pop_100000 --prefix=epiorder
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_peter_core2wayEpistasis_Datasets_Loc_2_Qnt_2_Pop_100000 --prefix=core2wayEpistasis
-python run_process_heatmap.py --basedir=BenchmarkData/GAMETES_2.2_dev_peter_2wayEpiHeterogeneity_Datasets_2Het_Loc_2_Qnt_2_Pop_100000 --prefix=2wayEpiHeterogeneity
-zip -r BenchmarkDataResults.zip BenchmarkData/ -i "*.pdf" "*.csv"
+python run_rebate_analysis.py --datadir=BenchmarkData3/
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_XOR --prefix=XOR_00_
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_phil_XOR_01 --prefix=XOR_01_
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_phil_XOR_02 --prefix=XOR_02_
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_phil_XOR_03 --prefix=XOR_03_
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_mainEff_Datasets_Loc_1_Qnt_2_Pop_100000 --prefix=mainEff
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_mainEff_additive_4_Datasets_2Het_Loc_1_Qnt_2_Pop_100000 --prefix=mainEffadditive4
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_mainEff_additive_2_Datasets_2Het_Loc_1_Qnt_2_Pop_100000 --prefix=mainEffadditive2
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_epi_order_Datasets_Loc_3_Qnt_2_Pop_100000 --prefix=epiorder
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_core2wayEpistasis_Datasets_Loc_2_Qnt_2_Pop_100000 --prefix=core2wayEpistasis
+python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_2wayEpiHeterogeneity_Datasets_2Het_Loc_2_Qnt_2_Pop_100000 --prefix=2wayEpiHeterogeneity
+zip -r BenchmarkDataResults.zip BenchmarkData3/ -i "*.pdf" "*.csv"

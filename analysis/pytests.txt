@@ -1,0 +1,116 @@
+(slcs) (base) [bandheyh@esplhpccompbio-lv01 scikit-rebate]$ pytest tests.py -s
+======================================================================================== test session starts =========================================================================================
+platform linux -- Python 3.9.13, pytest-7.1.2, pluggy-1.0.0
+rootdir: /common/bandheyh/scikit-rebate
+plugins: anyio-3.5.0
+collected 35 items                                                                                                                                                                                   
+
+tests.py Selected features: ['M0P1', 'M0P0', 'N10', 'N0', 'N13']
+Feature Scores: [0.3578452825594407, 0.35567374502413435, -0.002804104821019368, -0.004438708149656241, -0.011143458261944222]
+[PASS] SWRFstar on binary: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N15', 'N17', 'N14']
+Feature Scores: [0.09261500883902471, 0.08487514569280225, 0.06166251320021122, 0.056479958483599726, 0.053428192562365785]
+[PASS] SWRFstar on cont_endpoint: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N3', 'N10']
+Feature Scores: [0.30848947198690324, 0.27609411042936594, 0.07812990371556286, 0.06692144798948606, 0.02318956342332214]
+[PASS] SWRFstar on mixed: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N8', 'N13']
+Feature Scores: [0.12762629671418213, 0.1264625424125123, -0.013090153560529677, -0.015404243219826003, -0.028202219383988418]
+[PASS] SWRFstar on missing: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N8', 'N5', 'N0']
+Feature Scores: [0.16261388751042294, 0.1578462781354615, -0.02001192798001342, -0.02100125479005029, -0.028721421311361787]
+[PASS] SWRFstar on multiclass: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N10', 'N0', 'N13']
+Feature Scores: [0.35784528255944015, 0.35567374502413324, -0.0028041048210193545, -0.004438708149656221, -0.011143458261944239]
+[PASS] SWRFstar2 on binary: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N15', 'N17', 'N14']
+Feature Scores: [0.09261500883902495, 0.08487514569280237, 0.06166251320021129, 0.056479958483599754, 0.05342819256236584]
+[PASS] SWRFstar2 on cont_endpoint: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N3', 'N10']
+Feature Scores: [0.30848947198690385, 0.27609411042936666, 0.07812990371556335, 0.06692144798948653, 0.023189563423322294]
+[PASS] SWRFstar2 on mixed: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N8', 'N13']
+Feature Scores: [0.1276262967141823, 0.12646254241251262, -0.013090153560529698, -0.015404243219825994, -0.028202219383988397]
+[PASS] SWRFstar2 on missing: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N8', 'N5', 'N0']
+Feature Scores: [0.16261388751042039, 0.15784627813545918, -0.02001192798001347, -0.02100125479005036, -0.028721421311361888]
+[PASS] SWRFstar2 on multiclass: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N10', 'N0', 'N13']
+Feature Scores: [0.24002325382101228, 0.23890639594785656, -0.003141318324117035, -0.004074288594255624, -0.012412187178291192]
+[PASS] SWRF on binary: Selected M0P0 and M0P1
+.Selected features: ['N6', 'M0P1', 'N8', 'M0P0', 'N17']
+Feature Scores: [-0.00755356679464623, -0.028675249017840635, -0.0320398176705734, -0.03553277542017118, -0.03646853487571494]
+[PASS] SWRF on cont_endpoint: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N3', 'N2']
+Feature Scores: [0.25201127167218196, 0.2507101507640692, 0.06672543311774658, 0.03744014428907729, 0.036475570677733896]
+[PASS] SWRF on mixed: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N8', 'N7']
+Feature Scores: [0.07919885789519204, 0.07821001933274518, -0.0011052040772497854, -0.022327614086942, -0.023269912748093844]
+[PASS] SWRF on missing: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N8', 'N5', 'N0']
+Feature Scores: [0.17631316728774132, 0.15871115292476864, -0.01715334513992456, -0.018981823541463095, -0.0270385015631154]
+[PASS] SWRF on multiclass: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N11', 'N5', 'N10']
+Feature Scores: [0.4271821055190858, 0.4261609530756139, -0.0024677850717238024, -0.0025164113785557988, -0.002577194262095794]
+[PASS] TBD1star on binary: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N15', 'N17', 'N14']
+Feature Scores: [0.16167309027659318, 0.13789923004204696, 0.08049319360055036, 0.07860190334237827, 0.06965774089651341]
+[PASS] TBD1star on cont_endpoint: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N3', 'N9']
+Feature Scores: [0.23423644311429348, 0.21081735897812987, 0.040396961372266504, 0.03100231919266964, -0.0015031427487354977]
+[PASS] TBD1star on mixed: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N8', 'N7']
+Feature Scores: [0.13482295019882598, 0.13402764627911382, -0.011456163605377769, -0.017420943003219086, -0.02669948873319447]
+[PASS] TBD1star on missing: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N8', 'N5', 'N2']
+Feature Scores: [0.19222544060302446, 0.18448770472615436, -0.019662579710892004, -0.020372372572429878, -0.027730093530751457]
+[PASS] TBD1star on multiclass: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N10', 'N0', 'N13']
+Feature Scores: [0.21886864603534456, 0.21815847696047636, -0.0030455327633771272, -0.004274671546802874, -0.012783043347627763]
+[PASS] TBD1 on binary: Selected M0P0 and M0P1
+.Selected features: ['N6', 'M0P1', 'N8', 'M0P0', 'N17']
+Feature Scores: [-0.007347318034680343, -0.027383869101496545, -0.03195714206616081, -0.034752059347598764, -0.036295458178899086]
+[PASS] TBD1 on cont_endpoint: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N1', 'N9', 'N3']
+Feature Scores: [0.26809030517989313, 0.2611156874090815, 0.05862866707017783, 0.054610181981009226, 0.047500554515557084]
+[PASS] TBD1 on mixed: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N10', 'N7', 'N4']
+Feature Scores: [0.1111111111111111, 0.0718954248366013, 0.0196078431372549, 0.006535947712418301, 0.0]
+[PASS] TBD1 on missing: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N8', 'N5', 'N0']
+Feature Scores: [0.1721794415644286, 0.155446814274086, -0.017615293495164608, -0.019295762683962756, -0.02741942548607539]
+[PASS] TBD1 on multiclass: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N11', 'N16', 'N12']
+Feature Scores: [0.40432073962998255, 0.40216271523191965, 0.018292244955082908, 0.01721970966996815, 0.015889613162839412]
+[PASS] TBD2star on binary: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N15', 'N17', 'N14']
+Feature Scores: [0.10369626236271783, 0.09334939394085974, 0.06445463892672443, 0.060441250044393394, 0.0569740756689025]
+[PASS] TBD2star on cont_endpoint: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N3', 'N1', 'N9']
+Feature Scores: [0.2987560067714106, 0.2881801600963357, 0.06621997640316479, 0.06102889801995487, 0.04517361818131005]
+[PASS] TBD2star on mixed: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N8', 'N10', 'N1']
+Feature Scores: [0.34190652968944973, 0.33331300596304386, -0.0015986208633466605, -0.005242001577612853, -0.008968560579165553]
+[PASS] TBD2star on missing: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N8', 'N5', 'N2']
+Feature Scores: [0.18740626953129738, 0.18092418077945205, -0.017001991471613517, -0.017108723006561084, -0.0256302191709661]
+[PASS] TBD2star on multiclass: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N0', 'N10', 'N13']
+Feature Scores: [0.1627691651065731, 0.16012211030475756, -0.003080062601235074, -0.0035148005381383674, -0.01241242069694056]
+[PASS] TBD2 on binary: Selected M0P0 and M0P1
+.Selected features: ['N6', 'M0P1', 'N8', 'M0P0', 'N17']
+Feature Scores: [-0.007027117997976681, -0.02533934571012624, -0.03169858139825961, -0.03331763128430633, -0.03565401879854394]
+[PASS] TBD2 on cont_endpoint: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N9', 'N3', 'N2']
+Feature Scores: [0.24987721705230642, 0.23111732527338189, 0.053248536816326526, 0.03831238872825907, 0.03803364122511957]
+[PASS] TBD2 on mixed: Selected M0P0 and M0P1
+.Selected features: ['M0P1', 'M0P0', 'N10', 'N7', 'N4']
+Feature Scores: [0.10425125630477158, 0.0659282577646131, 0.017480857328413736, 0.004964331822502197, -0.002513638594675644]
+[PASS] TBD2 on missing: Selected M0P0 and M0P1
+.Selected features: ['M0P0', 'M0P1', 'N8', 'N5', 'N0']
+Feature Scores: [0.13033625537323995, 0.11717087454513522, -0.016433000375879615, -0.018232419335652835, -0.02822088602894891]
+[PASS] TBD2 on multiclass: Selected M0P0 and M0P1
+.
+
+===================================================================== 35 passed in 4918.96s (1:21:58) ======================================================================
+(slcs) (base) [bandheyh@esplhpccompbio-lv01 scikit-rebate]$ 
