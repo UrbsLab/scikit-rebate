@@ -45,8 +45,14 @@ class BaseSWRF(ReliefF):
             else:
                 dist_i[j] = self._distance_array[j][inst_idx]
 
-        weights = self.weight_func(dist_i, mean_dist, std_dist, dead_band)
-        weights[inst_idx] = 0.0
+        if 'TBD2' in self.name:
+            mean_inst = np.mean(dist_i)
+            std_inst = np.std(dist_i)
+            dead_band_inst = std_inst / 2.0
+            weights = self.weight_func(dist_i, mean_inst, std_inst, dead_band_inst)
+        else:
+            weights = self.weight_func(dist_i, mean_dist, std_dist, dead_band)
+            weights[inst_idx] = 0.0
 
         # Apply ignore_far logic
         if self.ignore_far:
@@ -137,6 +143,8 @@ def tbd2_weight(distances, mean, std, dead_band):
             weights[i] = (mean - d) / (mean - (mean - 2 * dead_band))
         else:
             weights[i] = -(d - mean) / ((mean + 2 * dead_band) - mean)
+    # weights is the z-score of the the dist
+    weights = np.clip(weights, -1, 1)
     return weights
 
 
