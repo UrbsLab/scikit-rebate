@@ -45,6 +45,10 @@ def process_and_save_results(file_path, fs, method_name):
     base_name = os.path.splitext(os.path.basename(file_path))[0]
     Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
     ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
+
+    if method_name in ["SWRFstar2", "SWRF", "TBD1", "TBD1star", "TBD2", "TBD2star"]:
+        fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
+
     print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
 
 def process_random_shuffle(file_path):

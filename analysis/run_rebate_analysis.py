@@ -20,11 +20,12 @@ ALGORITHMS = [
 ]
 
 ALGORITHMS = [
-    "random",
-    "mutual_info",
-    "surfstar",
-    "multisurfstar",
-    "swrfstar",
+    # "random",
+    # "mutual_info",
+    # "surf"
+    # "surfstar",
+    # "multisurfstar",
+    # "swrfstar",
     "swrfstar2",
     "swrf",
     "tbd1star",
