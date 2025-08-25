@@ -76,9 +76,11 @@ analysis_pipeline/
 BenchmarkData/
 BenchmarkData2/
 BenchmarkData3/
+BenchmarkData4/
 skrebate_old
 analysis/BasicXOR/
 analysis/BasicXOR2/
+analysis/BasicXOR2_2/
 analysis/BasicXOR3/
 analysis/jobs/
 analysis/logs/

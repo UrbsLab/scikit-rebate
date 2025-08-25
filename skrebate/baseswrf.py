@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 
 
 def sigmoid_weight(distances, mean_dist, std_dist):
-    diff = (distances - mean_dist) * (4.0 / std_dist)
+    std_eff = std_dist if std_dist != 0 else 1.0
+    diff = (distances - mean_dist) * (4.0 / std_eff)
     diff = np.clip(diff, -50, 50)
     return 2.0 / (1.0 + np.exp(diff)) - 1.0
-
 
 def ramp_function(data_type, attr, fname, xinstfeature, xNNifeature):
     diff = 0
@@ -26,33 +26,71 @@ def ramp_function(data_type, attr, fname, xinstfeature, xNNifeature):
         diff = rawfd / mmdiff
     return diff
 
-def swrf_weight(distances, mean, std, dead_band):
+# def sigmoid_weight(distances, mean_dist, std_dist):
+#     diff = (distances - mean_dist) * (4.0 / std_dist)
+#     diff = np.clip(diff, -50, 50)
+#     return 2.0 / (1.0 + np.exp(diff)) - 1.0
+#
+#
+# def tbd1_weight(distances, mean, std, dead_band):
+#     weights = np.zeros_like(distances)
+#     for i, d in enumerate(distances):
+#         if abs(d - mean) < dead_band:
+#             weights[i] = 0
+#         else:
+#             weights[i] = 1.0 if d < mean else -1.0
+#     return weights
+
+
+# def tbd2_weight(distances, mean, std, dead_band):
+#     weights = np.zeros_like(distances)
+#     for i, d in enumerate(distances):
+#         if abs(d - mean) < dead_band:
+#             weights[i] = 0
+#         elif d < mean:
+#             weights[i] = (mean - d) / (mean - (mean - 2 * dead_band))
+#         else:
+#             weights[i] = -(d - mean) / ((mean + 2 * dead_band) - mean)
+#     # weights is the z-score of the the dist
+#     weights = np.clip(weights, -1, 1)
+#     return weights
+
+def deadband_bounds(mean, std, dead_band):
+    if dead_band is None or dead_band <= 0:
+        half = (std / 2.0) if std > 0 else 0.0
+    else:
+        half = float(dead_band)
+    lower = mean - half
+    upper = mean + half
+    return lower, upper
+
+def swrf_weight(distances, mean, std, dead_band=None):
     return sigmoid_weight(distances, mean, std)
 
-
-def tbd1_weight(distances, mean, std, dead_band):
-    weights = np.zeros_like(distances)
-    for i, d in enumerate(distances):
-        if abs(d - mean) < dead_band:
-            weights[i] = 0
-        else:
-            weights[i] = 1.0 if d < mean else -1.0
+def tbd1_weight(distances, mean, std, dead_band=None):
+    distances = np.asarray(distances, dtype=float)
+    lower, upper = deadband_bounds(mean, std, dead_band)
+    w_sig = sigmoid_weight(distances, mean, std)
+    weights = np.where(distances < lower,  1.0,
+               np.where(distances > upper, -1.0, w_sig))
     return weights
 
-
-def tbd2_weight(distances, mean, std, dead_band):
-    weights = np.zeros_like(distances)
-    for i, d in enumerate(distances):
-        if abs(d - mean) < dead_band:
-            weights[i] = 0
-        elif d < mean:
-            weights[i] = (mean - d) / (mean - (mean - 2 * dead_band))
-        else:
-            weights[i] = -(d - mean) / ((mean + 2 * dead_band) - mean)
-    # weights is the z-score of the the dist
-    weights = np.clip(weights, -1, 1)
+def tbd2_weight(distances, mean, std, dead_band=None):
+    distances = np.asarray(distances, dtype=float)
+    lower, upper = deadband_bounds(mean, std, dead_band)
+    
+    weights = np.zeros_like(distances, dtype=float)
+    
+    # scale factor for smoothness
+    scale = 8.0 / (std if std > 0 else 1.0)
+    
+    near_mask = distances < lower
+    weights[near_mask] = 1.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower)))
+    
+    far_mask = distances > upper
+    weights[far_mask] = -1.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper)))
+    
     return weights
-
 
 class BaseSWRF(ReliefF):
     def __init__(self, name, weight_func, ignore_far=False, **kwargs):
@@ -76,7 +114,7 @@ class BaseSWRF(ReliefF):
             else:
                 dist_i[j] = self._distance_array[j][inst_idx]
 
-        if 'TBD2' in self.name:
+        if 'TBD' in self.name:
             mean_inst = np.mean(dist_i)
             std_inst = np.std(dist_i)
             dead_band_inst = std_inst / 2.0
@@ -173,8 +211,9 @@ class BaseSWRF(ReliefF):
         plt.scatter(distances, weights, alpha=0.3, s=10, label='Observed')
 
         if show_expected:
-            if self.name == 'TBD2':
+            if 'TBD' in self.name: 
                 # Star variant → average per-instance mean/std
+                x_vals = np.linspace(min(distances), max(distances), 500)
                 means, stds, deadband = zip(*self.instance_dist_stats)
                 mean_dist = np.mean(means)
                 std_dist = np.mean(stds)
@@ -182,8 +221,8 @@ class BaseSWRF(ReliefF):
                 # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
             else:
                 x_vals = np.linspace(min(distances), max(distances), 500)
-                mean_dist = np.mean(x_vals)
-                std_dist = np.std(x_vals)
+                mean_dist = np.mean(distances)
+                std_dist = np.std(distances)
                 dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
 
             if 'SWRF' in self.name:
@@ -218,7 +257,7 @@ class BaseSWRF(ReliefF):
 
 class SWRFstar2(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('SWRF', swrf_weight, ignore_far=False, **kwargs)
+        super().__init__('SWRF*', swrf_weight, ignore_far=False, **kwargs)
 
 
 class SWRF(BaseSWRF):
