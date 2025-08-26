@@ -71,8 +71,9 @@ def tbd1_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
     lower, upper = deadband_bounds(mean, std, dead_band)
     w_sig = sigmoid_weight(distances, mean, std)
-    weights = np.where(distances < lower,  1.0,
-               np.where(distances > upper, -1.0, w_sig))
+    # weights = np.where(distances < lower,  1.0,
+    #            np.where(distances > upper, -1.0, w_sig))
+    weights = w_sig
     return weights
 
 def tbd2_weight(distances, mean, std, dead_band=None):
@@ -121,6 +122,7 @@ class BaseSWRF(ReliefF):
             weights = self.weight_func(dist_i, mean_inst, std_inst, dead_band_inst)
             self.instance_dist_stats.append((mean_inst, std_inst, dead_band_inst))
         else:
+            mean_inst = mean_dist
             weights = self.weight_func(dist_i, mean_dist, std_dist, dead_band)
             weights[inst_idx] = 0.0
             self.instance_dist_stats.append((mean_dist, std_dist, dead_band))
@@ -128,7 +130,7 @@ class BaseSWRF(ReliefF):
         # Apply ignore_far logic
         if self.ignore_far:
             for i, d in enumerate(dist_i):
-                if d > mean_dist:
+                if d > mean_inst:
                     weights[i] = 0.0
 
         # Log (distance, weight) pairs
