@@ -238,8 +238,8 @@ class BaseSWRF(ReliefF):
 
             # Apply ignore_far logic
             if self.ignore_far:
-                for i, d in enumerate(y_vals):
-                    if d < mean_dist:
+                for i, d in enumerate(x_vals):
+                    if d > mean_dist:
                         y_vals[i] = 0.0
 
             if y_vals is not None:
