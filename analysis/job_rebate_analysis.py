@@ -12,7 +12,7 @@ from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar
 
 def ensure_dir(directory):
     if not os.path.exists(directory):
-        os.makedirs(directory)
+        os.makedirs(directory, exist_ok=True)
 
 def process_and_save_results(file_path, fs, method_name):
     df = pd.read_csv(file_path, sep='\t')
