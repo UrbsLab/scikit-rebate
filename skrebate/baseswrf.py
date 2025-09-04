@@ -119,7 +119,8 @@ class BaseSWRF(ReliefF):
 
         if 'TBD' in self.name:
             # NEW: scaling distances so that max is 1; maximum distance present between target instance & any other instance
-            max_dist = np.max(dist_i)
+            # max_dist = np.max(dist_i)
+            max_dist = np.max(self._distance_array)
             dist_i = dist_i / max_dist
 
             mean_inst = np.mean(dist_i)
