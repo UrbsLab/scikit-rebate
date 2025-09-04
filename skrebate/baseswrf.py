@@ -118,12 +118,23 @@ class BaseSWRF(ReliefF):
                 dist_i[j] = self._distance_array[j][inst_idx]
 
         if 'TBD' in self.name:
+            # NEW: scaling distances so that max is 1; maximum distance present between target instance & any other instance
+            max_dist = np.max(dist_i)
+            dist_i = dist_i / max_dist
+
             mean_inst = np.mean(dist_i)
             std_inst = np.std(dist_i)
             dead_band_inst = std_inst / 2.0
             weights = self.weight_func(dist_i, mean_inst, std_inst, dead_band_inst)
             self.instance_dist_stats.append((mean_inst, std_inst, dead_band_inst))
         else:
+            # NEW: scaling distances so that max is 1; maximum distance present between any 2 instances in the dataset
+            max_dist = np.max(self._distance_array)
+            dist_i = dist_i / max_dist
+            mean_dist = mean_dist / max_dist
+            std_dist = std_dist / max_dist
+            dead_band = dead_band / max_dist
+
             mean_inst = mean_dist
             weights = self.weight_func(dist_i, mean_dist, std_dist, dead_band)
             weights[inst_idx] = 0.0

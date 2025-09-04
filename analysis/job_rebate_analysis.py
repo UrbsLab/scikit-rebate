@@ -10,6 +10,7 @@ package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
 from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRFstar2, SWRF, TBD1star, TBD1, TBD2star, TBD2
 
+# NEW: added exist_ok=True
 def ensure_dir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
