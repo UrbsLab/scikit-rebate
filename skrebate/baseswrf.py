@@ -86,10 +86,12 @@ def tbd2_weight(distances, mean, std, dead_band=None):
     scale = 8.0 / (std if std > 0 else 1.0)
     
     near_mask = distances < lower
-    weights[near_mask] = 1.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower)))
+    # weights[near_mask] = 1.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower)))
+    weights[near_mask] = 2.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower))) - 1.0
     
     far_mask = distances > upper
-    weights[far_mask] = -1.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper)))
+    # weights[far_mask] = -1.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper)))
+    weights[far_mask] = -2.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper))) + 1.0
     
     return weights
 
