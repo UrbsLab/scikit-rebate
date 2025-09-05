@@ -83,7 +83,7 @@ def tbd2_weight(distances, mean, std, dead_band=None):
     weights = np.zeros_like(distances, dtype=float)
     
     # scale factor for smoothness
-    scale = 8.0 / (std if std > 0 else 1.0)
+    scale = 4.0 / (std if std > 0 else 1.0)
     
     near_mask = distances < lower
     # weights[near_mask] = 1.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower)))
@@ -120,8 +120,8 @@ class BaseSWRF(ReliefF):
         if 'TBD' in self.name:
             # NEW: scaling distances so that max is 1; maximum distance present between target instance & any other instance
             # max_dist = np.max(dist_i)
-            max_dist = np.max(self._distance_array)
-            dist_i = dist_i / max_dist
+            # max_dist = np.max(self._distance_array)
+            # dist_i = dist_i / max_dist
 
             mean_inst = np.mean(dist_i)
             std_inst = np.std(dist_i)
@@ -130,11 +130,11 @@ class BaseSWRF(ReliefF):
             self.instance_dist_stats.append((mean_inst, std_inst, dead_band_inst))
         else:
             # NEW: scaling distances so that max is 1; maximum distance present between any 2 instances in the dataset
-            max_dist = np.max(self._distance_array)
-            dist_i = dist_i / max_dist
-            mean_dist = mean_dist / max_dist
-            std_dist = std_dist / max_dist
-            dead_band = dead_band / max_dist
+            # max_dist = np.max(self._distance_array)
+            # dist_i = dist_i / max_dist
+            # mean_dist = mean_dist / max_dist
+            # std_dist = std_dist / max_dist
+            # dead_band = dead_band / max_dist
 
             mean_inst = mean_dist
             weights = self.weight_func(dist_i, mean_dist, std_dist, dead_band)
@@ -264,6 +264,9 @@ class BaseSWRF(ReliefF):
         plt.ylabel('Scoring Weight')
         plt.grid(True)
         plt.ylim(-1.1, 1.1)
+        # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
+        plt.xlim(0, 1.0)
+        plt.xticks(np.linspace(0, 1.0, num=6))
         plt.legend()
         if save_fig:
             plt.savefig(save_fig)
