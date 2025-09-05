@@ -265,8 +265,8 @@ class BaseSWRF(ReliefF):
         plt.grid(True)
         plt.ylim(-1.1, 1.1)
         # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
-        # plt.xlim(0, 1.0)
-        # plt.xticks(np.linspace(0, 1.0, num=6))
+        plt.xlim(0, 1.0)
+        plt.xticks(np.linspace(0, 1.0, num=6))
         plt.legend()
         if save_fig:
             plt.savefig(save_fig)
