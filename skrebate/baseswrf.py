@@ -103,6 +103,8 @@ class BaseSWRF(ReliefF):
         self.name = name
         self.distance_weight_log = []  # For logging (distance, weight) pairs
         self.instance_dist_stats = []  # For * variants to approximate expected curve
+        # NEW: creating new instance variable to keep track of (distance, weight) pairs, but "distance" is instead STD away from target instance
+        self.std_weight_log = []
 
     def _score_instance(self, inst_idx, dist_params, nan_mask):
         mean_dist, std_dist, dead_band = dist_params
@@ -128,6 +130,9 @@ class BaseSWRF(ReliefF):
             dead_band_inst = std_inst / 2.0
             weights = self.weight_func(dist_i, mean_inst, std_inst, dead_band_inst)
             self.instance_dist_stats.append((mean_inst, std_inst, dead_band_inst))
+
+            # NEW: copy of dist_i where distances are translated to STD
+            dist_i_std =  dist_i / std_inst
         else:
             # NEW: scaling distances so that max is 1; maximum distance present between any 2 instances in the dataset
             # max_dist = np.max(self._distance_array)
@@ -141,6 +146,9 @@ class BaseSWRF(ReliefF):
             weights[inst_idx] = 0.0
             self.instance_dist_stats.append((mean_dist, std_dist, dead_band))
 
+            # NEW: copy of dist_i where distances are translated to STD
+            dist_i_std =  dist_i / std_dist
+
         # Apply ignore_far logic
         if self.ignore_far:
             for i, d in enumerate(dist_i):
@@ -150,6 +158,13 @@ class BaseSWRF(ReliefF):
         # Log (distance, weight) pairs
         self.distance_weight_log.extend([
             (dist_i[j], weights[j])
+            for j in range(self._datalen)
+            if j != inst_idx
+        ])
+
+        # NEW: Log (distance, weight) pairs for STD
+        self.std_weight_log.extend([
+            (dist_i_std[j], weights[j])
             for j in range(self._datalen)
             if j != inst_idx
         ])
@@ -204,6 +219,8 @@ class BaseSWRF(ReliefF):
 
         self.distance_weight_log = []  # Reset log before run
         self.instance_dist_stats = []
+        # NEW: also reset this:
+        self.std_weight_log = []
 
         results = Parallel(n_jobs=self.n_jobs)(
             delayed(self._score_instance)(i, (mean_dist, std_dist, dead_band), nan_mask)
@@ -223,8 +240,11 @@ class BaseSWRF(ReliefF):
             return
 
         distances, weights = zip(*self.distance_weight_log)
+        # NEW: use self.std_weight_log for plotting
+        distances_std, weights_std = zip(*self.std_weight_log)
         plt.figure(figsize=(10, 6))
-        plt.scatter(distances, weights, alpha=0.3, s=10, label='Observed')
+        # plt.scatter(distances, weights, alpha=0.3, s=10, label='Observed')
+        plt.scatter(distances_std, weights_std, alpha=0.3, s=10, label='Observed')
 
         if show_expected:
             if 'TBD' in self.name: 
@@ -235,11 +255,17 @@ class BaseSWRF(ReliefF):
                 std_dist = np.mean(stds)
                 dead_band = np.mean(deadband)
                 # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
+
+                # NEW: for plotting in terms of STD
+                x_vals_std = x_vals / std_dist
             else:
                 x_vals = np.linspace(min(distances), max(distances), 500)
                 mean_dist = np.mean(distances)
                 std_dist = np.std(distances)
                 dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
+
+                # NEW: for plotting in terms of STD
+                x_vals_std = x_vals / std_dist
 
             if 'SWRF' in self.name:
                 y_vals = swrf_weight(x_vals, mean_dist, std_dist, dead_band)
@@ -257,16 +283,24 @@ class BaseSWRF(ReliefF):
                         y_vals[i] = 0.0
 
             if y_vals is not None:
-                plt.plot(x_vals, y_vals, label='Expected', linewidth=2, color='black')
+                # plt.plot(x_vals, y_vals, label='Expected', linewidth=2, color='black')
+                # NEW: use x_vals STD instead
+                plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
 
         plt.title(f'Distance-to-Weight Mapping: {self.name}')
-        plt.xlabel('Distance from Target Instance')
+        # plt.xlabel('Distance from Target Instance')
+        plt.xlabel('Standard Deviations (Distance) from Target Instance')
         plt.ylabel('Scoring Weight')
         plt.grid(True)
         plt.ylim(-1.1, 1.1)
         # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
-        plt.xlim(0, 1.0)
-        plt.xticks(np.linspace(0, 1.0, num=6))
+        # plt.xlim(0, 1.0)
+        plt.xlim(-3.0, 3.0)
+        # plt.xticks(np.linspace(0, 1.0, num=6))
+        plt.xticks([-3, -2, -1, 0, 1, 2, 3])
+        # NEW: dotted lines for deadband zone boundaries
+        plt.axvline(x=-0.5, color='red', linestyle='dotted')
+        plt.axvline(x=0.5,  color='red', linestyle='dotted')
         plt.legend()
         if save_fig:
             plt.savefig(save_fig)
