@@ -295,10 +295,10 @@ class BaseSWRF(ReliefF):
         plt.ylim(-1.1, 1.1)
         # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
         # plt.xlim(0, 1.0)
-        plt.xlim(-3.0, 3.0)
+        # plt.xlim(-3.0, 3.0)
         # plt.xticks(np.linspace(0, 1.0, num=6))
-        plt.xticks([-3, -2, -1, 0, 1, 2, 3])
-        # NEW: dotted lines for deadband zone boundaries
+        # plt.xticks([-3, -2, -1, 0, 1, 2, 3])
+        # NEW: dotted lines for deadband zone boundaries (0.5 SD on either side of mean)
         plt.axvline(x=-0.5, color='red', linestyle='dotted')
         plt.axvline(x=0.5,  color='red', linestyle='dotted')
         plt.legend()
