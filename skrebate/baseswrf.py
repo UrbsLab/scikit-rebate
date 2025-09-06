@@ -132,7 +132,7 @@ class BaseSWRF(ReliefF):
             self.instance_dist_stats.append((mean_inst, std_inst, dead_band_inst))
 
             # NEW: copy of dist_i where distances are translated to STD
-            dist_i_std =  dist_i / std_inst
+            dist_i_std =  (dist_i - mean_inst) / std_inst
         else:
             # NEW: scaling distances so that max is 1; maximum distance present between any 2 instances in the dataset
             # max_dist = np.max(self._distance_array)
@@ -147,7 +147,7 @@ class BaseSWRF(ReliefF):
             self.instance_dist_stats.append((mean_dist, std_dist, dead_band))
 
             # NEW: copy of dist_i where distances are translated to STD
-            dist_i_std =  dist_i / std_dist
+            dist_i_std =  (dist_i - mean_dist) / std_dist
 
         # Apply ignore_far logic
         if self.ignore_far:
@@ -257,7 +257,7 @@ class BaseSWRF(ReliefF):
                 # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
 
                 # NEW: for plotting in terms of STD
-                x_vals_std = x_vals / std_dist
+                x_vals_std = (x_vals - mean_dist) / std_dist
             else:
                 x_vals = np.linspace(min(distances), max(distances), 500)
                 mean_dist = np.mean(distances)
@@ -265,7 +265,7 @@ class BaseSWRF(ReliefF):
                 dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
 
                 # NEW: for plotting in terms of STD
-                x_vals_std = x_vals / std_dist
+                x_vals_std = (x_vals - mean_dist) / std_dist
 
             if 'SWRF' in self.name:
                 y_vals = swrf_weight(x_vals, mean_dist, std_dist, dead_band)
@@ -288,16 +288,22 @@ class BaseSWRF(ReliefF):
                 plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
 
         plt.title(f'Distance-to-Weight Mapping: {self.name}')
-        # plt.xlabel('Distance from Target Instance')
-        plt.xlabel('Standard Deviations (Distance) from Target Instance')
+        plt.xlabel('Distance from Target Instance')
+        # plt.xlabel('Standard Deviations (Distance) from Target Instance')
         plt.ylabel('Scoring Weight')
         plt.grid(True)
+        # NEW: grid lines different from x-tick labels:
+        plt.gca().set_xticks(np.arange(-3, 4, 1), minor=False)
         plt.ylim(-1.1, 1.1)
         # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
         # plt.xlim(0, 1.0)
-        # plt.xlim(-3.0, 3.0)
+        plt.xlim(-3.0, 3.0)
         # plt.xticks(np.linspace(0, 1.0, num=6))
         # plt.xticks([-3, -2, -1, 0, 1, 2, 3])
+        plt.xticks(
+            [-0.5, 0, 0.5],
+            ['(μ - σ/2)', 'μ', '(μ + σ/2)']
+        )
         # NEW: dotted lines for deadband zone boundaries (0.5 SD on either side of mean)
         plt.axvline(x=-0.5, color='red', linestyle='dotted')
         plt.axvline(x=0.5,  color='red', linestyle='dotted')
