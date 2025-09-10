@@ -9,7 +9,7 @@ ALGORITHMS = [
     "surfstar",
     "multisurf",
     "multisurfstar",
-    "swrfstar",
+    # "swrfstar",
     "random",
     "swrfstar2",
     "swrf",
@@ -19,20 +19,20 @@ ALGORITHMS = [
     "tbd2",
 ]
 
-ALGORITHMS = [
-    # "random",
-    # "mutual_info",
-    # "surf"
-    # "surfstar",
-    # "multisurfstar",
-    # "swrfstar",
-    "swrfstar2",
-    "swrf",
-    "tbd1star",
-    "tbd1",
-    "tbd2star",
-    "tbd2",
-]
+# ALGORITHMS = [
+#     # "random",
+#     # "mutual_info",
+#     # "surf"
+#     # "surfstar",
+#     # "multisurfstar",
+#     # "swrfstar",
+#     "swrfstar2",
+#     "swrf",
+#     "tbd1star",
+#     "tbd1",
+#     "tbd2star",
+#     "tbd2",
+# ]
 
 LSF_TEMPLATE = """#!/bin/bash
 #BSUB -J {job_name}
