@@ -47,7 +47,7 @@ def process_and_save_results(file_path, fs, method_name):
     Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
     ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
 
-    if method_name in ["SWRFstar2", "SWRF", "TBD1", "TBD1star", "TBD2", "TBD2star"]:
+    if method_name in ["SWRFstar2", "SWRF", "TBD1", "TBD1star", "TBD2", "TBD2star", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar"]:
         fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
 
     print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
