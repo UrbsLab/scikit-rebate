@@ -171,7 +171,7 @@ class SURF(ReliefF):
                 # NEW: use x_vals STD instead
                 plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
 
-        plt.title(f'Distance-to-Weight Mapping: {self.name}')
+        plt.title(f'Distance-to-Weight Mapping: SURF')
         plt.xlabel('Distance from Target Instance')
         # plt.xlabel('Standard Deviations (Distance) from Target Instance')
         plt.ylabel('Scoring Weight')
