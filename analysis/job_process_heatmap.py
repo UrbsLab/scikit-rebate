@@ -90,7 +90,7 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSURFstar': 'MultiSURF*',
         # 'SWRFstar': 'SWRF*',
         'SWRF': 'SWRF',
-        'SWRFstar2': 'SWRF*2',
+        'SWRFstar2': 'SWRF*',
         'TBD1': 'TBD1',
         'TBD1star': 'TBD1*',
         'TBD2': 'TBD2',
