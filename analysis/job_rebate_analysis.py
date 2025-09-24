@@ -3,8 +3,10 @@ import sys
 import argparse
 import pandas as pd
 import numpy as np
+from numpy.random import default_rng
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import mutual_info_classif
+import hashlib
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
@@ -17,13 +19,14 @@ def ensure_dir(directory):
 
 def process_and_save_results(file_path, fs, method_name):
     df = pd.read_csv(file_path, sep='\t')
-    features, labels = df.drop('Class', axis=1).values, df['Class'].values
-    X_train, _, y_train, _ = train_test_split(features, labels)
+    # features, labels = df.drop('Class', axis=1).values, df['Class'].values
+    X, y = df.drop('Class', axis=1).values, df['Class'].values
+    # X_train, _, y_train, _ = train_test_split(features, labels)
 
     try:
-        fs.fit(X_train, y_train)
+        fs.fit(X, y)
     except AttributeError:
-        scores = fs(X_train, y_train)
+        scores = fs(X, y)
         fs = type('MI', (), {'feature_importances_': scores})()
 
     temp_list = []
@@ -70,10 +73,19 @@ def process_random_shuffle(file_path):
     else:
         columns_to_shuffle = df.columns.tolist()
 
-    shuffled_columns = np.random.permutation(columns_to_shuffle)
+    # shuffled_columns = np.random.permutation(columns_to_shuffle)
+    # NEW: reproducible shuffling based on file name
+    base_name = os.path.splitext(os.path.basename(file_path))[0]
+    # creating a deterministic seed based on the file name
+    seed = int(hashlib.sha256(base_name.encode()).hexdigest(), 16) % (2**32)
+    # creating a local RNG seeded from the file name
+    rng = default_rng(seed)
+    # shuffle columns deterministically for this file
+    shuffled_columns = rng.permutation(columns_to_shuffle)
+
     shuffled_df = pd.DataFrame(shuffled_columns, columns=['Feature'])
 
-    base_name = os.path.splitext(os.path.basename(file_path))[0]
+    # base_name = os.path.splitext(os.path.basename(file_path))[0]
     output_path = os.path.join(results_dir, f"{base_name}_RandShuffle.txt")
     shuffled_df.to_csv(output_path, index=False, sep='\t')
 
