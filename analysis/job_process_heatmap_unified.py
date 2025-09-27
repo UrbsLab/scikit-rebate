@@ -117,7 +117,8 @@ def main():
             else:
                 ax_top.axis('off')
             if df1 is not None:
-                sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=xtick_labels, yticklabels=False)
+                # sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=xtick_labels, yticklabels=False)
+                sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
             else:
                 ax_bot.axis('off')
 
@@ -138,11 +139,48 @@ def main():
     # any_df = next(iter(data_dict.values()))
     # sns.heatmap(any_df, cmap=custom_cmap, cbar_ax=cbar_ax, cbar_kws={'label': 'Power (Frequency of Success)'}, annot=False)
 
-    # fig.suptitle("Unified Heatmaps", fontsize=16)
-    fig.supxlabel("Number of Training Instances (n)", fontsize=14)
-    fig.supylabel("Heritability of Model", fontsize=14)
+    # # fig.suptitle("Unified Heatmaps", fontsize=16)
+    # fig.supxlabel("Number of Training Instances (n)", fontsize=14)
+    # fig.supylabel("Heritability of Model", fontsize=14)
 
-    plt.tight_layout(rect=[0, 0, 0.95, 0.95])
+    # plt.tight_layout(rect=[0, 0, 0.95, 0.95])
+
+    # Set x-axis labels for Number of Training Instances
+    for j, n in enumerate(n_values):
+        # Place label centered below the corresponding column (under the last row for that column)
+        mid_axs = axes[-1, j] if len(h_values)*2 > 1 else axes[1, j]
+        mid_axs.set_xlabel(str(n), fontsize=12)
+        mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
+
+    # Set y-axis labels for Heritability of Model (once per heritability row)
+    for i, h in enumerate(h_values):
+        # First column only
+        ax_top = axes[i*2, 0]
+        ax_bot = axes[i*2 + 1, 0]
+        
+        # Position the label in the middle of top and bottom heatmaps
+        mid_y = 0  # normalized vertical coordinate (0 = bottom of ax, 1 = top of ax)
+        
+        # Use the top subplot to place the label vertically centered
+        ax_top.set_ylabel(str(h), rotation=0, fontsize=12)
+        ax_top.yaxis.set_label_coords(-0.2, mid_y)
+
+    # Draw vertical lines between n-values (columns)
+    for j in range(1, len(n_values)):
+        for row in range(len(h_values)*2):
+            axes[row, j].axvline(0, color='black', linewidth=1.5, clip_on=False)
+
+    # Draw horizontal lines between h-values (rows)
+    for i in range(1, len(h_values)):
+        for col in range(len(n_values)):
+            axes[i*2, col].axhline(0, color='black', linewidth=1.5, clip_on=False)
+
+    # Adjust global labels with extra padding
+    fig.supxlabel("Number of Training Instances (n)", fontsize=14, x=0.5, y=0.02)
+    fig.supylabel("Heritability of Model", fontsize=14, x=0.02, y=0.5)
+
+    # Tight layout with extra spacing
+    plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
 
     outdir = os.path.basename(os.path.normpath(args.basedir))
     parentdir = os.path.dirname(os.path.normpath(args.basedir))
