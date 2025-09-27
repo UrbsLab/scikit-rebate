@@ -169,31 +169,31 @@ def main():
         ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
         ax_top.yaxis.set_label_coords(-0.2, mid_y)
 
-    # Total rows and columns
-    total_rows = len(h_values)*2
-    total_cols = len(n_values)
+    # # Total rows and columns
+    # total_rows = len(h_values)*2
+    # total_cols = len(n_values)
 
-    # Draw vertical lines between columns (n-values)
-    for j in range(1, total_cols):
-        # Get right edge of previous column and left edge of next column
-        left_bbox = axes[0, j-1].get_position()
-        right_bbox = axes[0, j].get_position()
-        x = (left_bbox.x1 + right_bbox.x0) / 2  # middle between subplots
-        line = mlines.Line2D([x, x], [0, 1], transform=fig.transFigure, color='black', linewidth=1.5)
-        fig.add_artist(line)
+    # # Draw vertical lines between columns (n-values)
+    # for j in range(1, total_cols):
+    #     # Get right edge of previous column and left edge of next column
+    #     left_bbox = axes[0, j-1].get_position()
+    #     right_bbox = axes[0, j].get_position()
+    #     x = (left_bbox.x1 + right_bbox.x0) / 2  # middle between subplots
+    #     line = mlines.Line2D([x, x], [0, 1], transform=fig.transFigure, color='black', linewidth=1.5)
+    #     fig.add_artist(line)
 
-    # Draw horizontal lines between heritabilities (h-values)
-    for i in range(1, len(h_values)):
-        # Bottom of the bottom subplot in previous heritability
-        prev_bottom_bbox = axes[(i-1)*2 + 1, 0].get_position()
-        # Top of the top subplot in current heritability
-        curr_top_bbox = axes[i*2, 0].get_position()
+    # # Draw horizontal lines between heritabilities (h-values)
+    # for i in range(1, len(h_values)):
+    #     # Bottom of the bottom subplot in previous heritability
+    #     prev_bottom_bbox = axes[(i-1)*2 + 1, 0].get_position()
+    #     # Top of the top subplot in current heritability
+    #     curr_top_bbox = axes[i*2, 0].get_position()
         
-        # Midpoint between these two edges
-        y = (prev_bottom_bbox.y0 + curr_top_bbox.y1) / 2
+    #     # Midpoint between these two edges
+    #     y = (prev_bottom_bbox.y0 + curr_top_bbox.y1) / 2
         
-        line = mlines.Line2D([0, 1], [y, y], transform=fig.transFigure, color='black', linewidth=1.5)
-        fig.add_artist(line)
+    #     line = mlines.Line2D([0, 1], [y, y], transform=fig.transFigure, color='black', linewidth=1.5)
+    #     fig.add_artist(line)
 
     # Adjust global labels with extra padding
     fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
