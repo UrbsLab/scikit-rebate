@@ -6,6 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import re
+import matplotlib.lines as mlines
 
 # Common helper to create the percentages_df (copied from your old job_process_heatmap)
 def compute_percentages(results_dir):
@@ -103,7 +104,9 @@ def main():
         axes = np.array([[axes]])  # ensure 2D
 
     xtick_labels = ['Optimal','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%']
-    for i, h in enumerate(h_values):
+    # for i, h in enumerate(h_values):
+    # flipped so that y-axis is shown in ascending order from bottom to top
+    for i, h in enumerate(sorted(h_values, reverse=True)):
         for j, n in enumerate(n_values):
             # top EDM-2
             ax_top = axes[i*2, j] if len(h_values)*2 > 1 else axes[0, j]
@@ -127,10 +130,10 @@ def main():
             #     ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=12)
             # Put "E" and "H" labels on the right side of the heatmaps in the last column
             if j == len(n_values) - 1:
-                ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=12)
+                ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=16)
                 ax_top.yaxis.set_label_position("right")
                 
-                ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=12)
+                ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=16)
                 ax_bot.yaxis.set_label_position("right")
 
     # # Add one colorbar on the far right
@@ -149,11 +152,12 @@ def main():
     for j, n in enumerate(n_values):
         # Place label centered below the corresponding column (under the last row for that column)
         mid_axs = axes[-1, j] if len(h_values)*2 > 1 else axes[1, j]
-        mid_axs.set_xlabel(str(n), fontsize=12)
+        mid_axs.set_xlabel(str(n), fontsize=20)
         mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
 
     # Set y-axis labels for Heritability of Model (once per heritability row)
-    for i, h in enumerate(h_values):
+    # for i, h in enumerate(h_values):
+    for i, h in enumerate(sorted(h_values, reverse=True)):
         # First column only
         ax_top = axes[i*2, 0]
         ax_bot = axes[i*2 + 1, 0]
@@ -162,22 +166,30 @@ def main():
         mid_y = 0  # normalized vertical coordinate (0 = bottom of ax, 1 = top of ax)
         
         # Use the top subplot to place the label vertically centered
-        ax_top.set_ylabel(str(h), rotation=0, fontsize=12)
+        ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
         ax_top.yaxis.set_label_coords(-0.2, mid_y)
 
-    # Draw vertical lines between n-values (columns)
-    for j in range(1, len(n_values)):
-        for row in range(len(h_values)*2):
-            axes[row, j].axvline(0, color='black', linewidth=1.5, clip_on=False)
+    # Total rows and columns
+    total_rows = len(h_values)*2
+    total_cols = len(n_values)
 
-    # Draw horizontal lines between h-values (rows)
+    # Vertical lines between columns (n-values)
+    for j in range(1, total_cols):
+        # normalized x position between subplots
+        x = j / total_cols
+        line = mlines.Line2D([x, x], [0, 1], transform=fig.transFigure, color='black', linewidth=1.5)
+        fig.add_artist(line)
+
+    # Horizontal lines between heritabilities (h-values)
     for i in range(1, len(h_values)):
-        for col in range(len(n_values)):
-            axes[i*2, col].axhline(0, color='black', linewidth=1.5, clip_on=False)
+        # position between the top of one pair and bottom of the next pair
+        y = 1 - (i*2) / total_rows
+        line = mlines.Line2D([0, 1], [y, y], transform=fig.transFigure, color='black', linewidth=1.5)
+        fig.add_artist(line)
 
     # Adjust global labels with extra padding
-    fig.supxlabel("Number of Training Instances (n)", fontsize=14, x=0.5, y=0.02)
-    fig.supylabel("Heritability of Model", fontsize=14, x=0.02, y=0.5)
+    fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
+    fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
     # Tight layout with extra spacing
     plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
