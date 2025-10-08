@@ -215,27 +215,27 @@ def main():
         
         # Top tick (first row)
         fig.add_artist(mlines.Line2D([bbox_right, bbox_right], 
-                                    [axes[0, j].get_position().y1, axes[0, j].get_position().y1 + 0.01],
-                                    transform=fig.transFigure, color='black', linewidth=1))
+                                    [axes[0, j].get_position().y1, axes[0, j].get_position().y1 + 0.02],
+                                    transform=fig.transFigure, color='black', linewidth=4))
         # Bottom tick (last row)
         fig.add_artist(mlines.Line2D([bbox_right_bottom, bbox_right_bottom], 
-                                    [axes[-1, j].get_position().y0 - 0.01, axes[-1, j].get_position().y0],
-                                    transform=fig.transFigure, color='black', linewidth=1))
+                                    [axes[-1, j].get_position().y0 - 0.02, axes[-1, j].get_position().y0],
+                                    transform=fig.transFigure, color='black', linewidth=4))
 
     # --- Y-axis tick marks (horizontal) ---
-    for i in range(0, total_rows - 1, 2):  # every 2 rows
+    for i in range(1, total_rows - 2, 2):  # every 2 rows
         # Bottom edge of row i (top of next heritability)
         bbox_bottom_left = axes[i, 0].get_position().y0
         bbox_bottom_right = axes[i, -1].get_position().y0
         
         # Left tick (first column)
-        fig.add_artist(mlines.Line2D([axes[i, 0].get_position().x0 - 0.01, axes[i, 0].get_position().x0], 
+        fig.add_artist(mlines.Line2D([axes[i, 0].get_position().x0 - 0.02, axes[i, 0].get_position().x0], 
                                     [bbox_bottom_left, bbox_bottom_left], 
-                                    transform=fig.transFigure, color='black', linewidth=1))
+                                    transform=fig.transFigure, color='black', linewidth=4))
         # Right tick (last column)
-        fig.add_artist(mlines.Line2D([axes[i, -1].get_position().x1, axes[i, -1].get_position().x1 + 0.01], 
+        fig.add_artist(mlines.Line2D([axes[i, -1].get_position().x1, axes[i, -1].get_position().x1 + 0.02], 
                                     [bbox_bottom_right, bbox_bottom_right], 
-                                    transform=fig.transFigure, color='black', linewidth=1))
+                                    transform=fig.transFigure, color='black', linewidth=4))
 
     outdir = os.path.basename(os.path.normpath(args.basedir))
     parentdir = os.path.dirname(os.path.normpath(args.basedir))
