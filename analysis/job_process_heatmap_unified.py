@@ -195,6 +195,13 @@ def main():
     #     line = mlines.Line2D([0, 1], [y, y], transform=fig.transFigure, color='black', linewidth=1.5)
     #     fig.add_artist(line)
 
+    # Adjust global labels with extra padding
+    fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
+    fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
+
+    # Tight layout with extra spacing
+    plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
+
     # CODE TO DRAW TICK MARK SEPARATORS:
     # Number of rows and columns in the grid
     total_rows = len(h_values) * 2
@@ -229,13 +236,6 @@ def main():
         fig.add_artist(mlines.Line2D([axes[i, -1].get_position().x1, axes[i, -1].get_position().x1 + 0.01], 
                                     [bbox_bottom_right, bbox_bottom_right], 
                                     transform=fig.transFigure, color='black', linewidth=1))
-
-    # Adjust global labels with extra padding
-    fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
-    fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
-
-    # Tight layout with extra spacing
-    plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
 
     outdir = os.path.basename(os.path.normpath(args.basedir))
     parentdir = os.path.dirname(os.path.normpath(args.basedir))
