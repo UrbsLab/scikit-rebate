@@ -8,7 +8,7 @@ import numpy as np
 import re
 import matplotlib.lines as mlines
 
-# Common helper to create the percentages_df (copied from your old job_process_heatmap)
+# Helper to create the percentages_df (copied from old job_process_heatmap)
 def compute_percentages(results_dir):
     all_rankings_df = pd.DataFrame()
     total_features_per_rba = {}
@@ -194,6 +194,41 @@ def main():
         
     #     line = mlines.Line2D([0, 1], [y, y], transform=fig.transFigure, color='black', linewidth=1.5)
     #     fig.add_artist(line)
+
+    # CODE TO DRAW TICK MARK SEPARATORS:
+    # Number of rows and columns in the grid
+    total_rows = len(h_values) * 2
+    total_cols = len(n_values)
+
+    # --- X-axis tick marks (vertical) ---
+    for j in range(total_cols - 1):  # exclude last column
+        # Right edge of column j
+        bbox_right = axes[0, j].get_position().x1  # top row
+        bbox_right_bottom = axes[-1, j].get_position().x1  # bottom row
+        
+        # Top tick (first row)
+        fig.add_artist(mlines.Line2D([bbox_right, bbox_right], 
+                                    [axes[0, j].get_position().y1, axes[0, j].get_position().y1 + 0.01],
+                                    transform=fig.transFigure, color='black', linewidth=1))
+        # Bottom tick (last row)
+        fig.add_artist(mlines.Line2D([bbox_right_bottom, bbox_right_bottom], 
+                                    [axes[-1, j].get_position().y0 - 0.01, axes[-1, j].get_position().y0],
+                                    transform=fig.transFigure, color='black', linewidth=1))
+
+    # --- Y-axis tick marks (horizontal) ---
+    for i in range(0, total_rows - 1, 2):  # every 2 rows
+        # Bottom edge of row i (top of next heritability)
+        bbox_bottom_left = axes[i, 0].get_position().y0
+        bbox_bottom_right = axes[i, -1].get_position().y0
+        
+        # Left tick (first column)
+        fig.add_artist(mlines.Line2D([axes[i, 0].get_position().x0 - 0.01, axes[i, 0].get_position().x0], 
+                                    [bbox_bottom_left, bbox_bottom_left], 
+                                    transform=fig.transFigure, color='black', linewidth=1))
+        # Right tick (last column)
+        fig.add_artist(mlines.Line2D([axes[i, -1].get_position().x1, axes[i, -1].get_position().x1 + 0.01], 
+                                    [bbox_bottom_right, bbox_bottom_right], 
+                                    transform=fig.transFigure, color='black', linewidth=1))
 
     # Adjust global labels with extra padding
     fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
