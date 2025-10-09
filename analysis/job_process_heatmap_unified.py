@@ -291,9 +291,11 @@ def main():
         left_bbox = axes[0, j].get_position()
         right_bbox = axes[0, j+1].get_position()
         x_mid = (left_bbox.x1 + right_bbox.x0) / 2
+        y_bottom = axes[-1,0].get_position().y0
+        y_top = axes[0,0].get_position().y1
 
         # Vertical line (spanning entire figure)
-        line = mlines.Line2D([x_mid, x_mid], [0, 1],
+        line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
                             transform=fig.transFigure, color='black', linewidth=1.5)
         fig.add_artist(line)
 
@@ -303,9 +305,11 @@ def main():
         prev_bottom = axes[(i-1)*2 + 1, 0].get_position().y0  # bottom of bottom subplot of previous block
         next_top = axes[i*2, 0].get_position().y1             # top of top subplot of next block
         y_mid = (prev_bottom + next_top) / 2
+        x_left = axes[0,0].get_position().x0
+        x_right = axes[0,-1].get_position().x1
 
         # Horizontal line (spanning entire figure)
-        line = mlines.Line2D([0, 1], [y_mid, y_mid],
+        line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
                             transform=fig.transFigure, color='black', linewidth=1.5)
         fig.add_artist(line)
 
