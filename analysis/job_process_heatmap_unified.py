@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 import matplotlib.lines as mlines
+import matplotlib.gridspec as gridspec
 
 # Helper to create the percentages_df (copied from old job_process_heatmap)
 def compute_percentages(results_dir):
@@ -98,7 +99,52 @@ def main():
     n_values = sorted({k[0] for k in data_dict.keys()})
     h_values = sorted({k[1] for k in data_dict.keys()})
 
-    fig, axes = plt.subplots(len(h_values)*2, len(n_values), figsize=(4*len(n_values), 3*len(h_values)*2))
+    # fig, axes = plt.subplots(len(h_values)*2, len(n_values), figsize=(4*len(n_values), 3*len(h_values)*2))
+    # --- NEW ATTEMPT TO INCREASE SPACING
+    total_rows = len(h_values) * 2
+    total_cols = len(n_values)
+
+    # Create custom height and width ratios
+    # → every 2 rows, insert an extra gap by slightly enlarging the space below
+    height_ratios = []
+    for i in range(total_rows):
+        height_ratios.append(1)
+        if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
+            height_ratios.append(0.2)  # this adds vertical gap spacing
+
+    # For columns, add an extra gap after every column
+    width_ratios = []
+    for j in range(total_cols):
+        width_ratios.append(1)
+        if j != total_cols - 1:  # after each column except last
+            width_ratios.append(0.15)  # horizontal gap spacing
+
+    # Define figure and gridspec with custom spacing
+    fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
+    gs = gridspec.GridSpec(
+        nrows=len(height_ratios),
+        ncols=len(width_ratios),
+        figure=fig,
+        height_ratios=height_ratios,
+        width_ratios=width_ratios,
+        hspace=0.25,  # fine-tune base spacing
+        wspace=0.25
+    )
+
+    # Build axes array only in the actual plot cells (skip gap cells)
+    axes = np.empty((total_rows, total_cols), dtype=object)
+    row_ptr, col_ptr = 0, 0
+    for i in range(len(height_ratios)):
+        if i % 3 == 2:  # skip gap row
+            continue
+        col_ptr = 0
+        for j in range(len(width_ratios)):
+            if j % 2 == 1:  # skip gap column
+                continue
+            axes[row_ptr, col_ptr] = fig.add_subplot(gs[i, j])
+            col_ptr += 1
+        row_ptr += 1
+    # --- END NEW ATTEMPT
 
     if len(h_values)*2 == 1 and len(n_values) == 1:
         axes = np.array([[axes]])  # ensure 2D
