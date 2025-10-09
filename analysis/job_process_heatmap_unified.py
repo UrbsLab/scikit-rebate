@@ -105,19 +105,19 @@ def main():
     total_cols = len(n_values)
 
     # Create custom height and width ratios
-    # → every 2 rows, insert an extra gap by slightly enlarging the space below
+    # --> every 2 rows, insert an extra gap by slightly enlarging the space below
     height_ratios = []
     for i in range(total_rows):
         height_ratios.append(1)
         if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
-            height_ratios.append(0.2)  # this adds vertical gap spacing
+            height_ratios.append(0.15)  # this adds vertical gap spacing
 
     # For columns, add an extra gap after every column
     width_ratios = []
     for j in range(total_cols):
         width_ratios.append(1)
         if j != total_cols - 1:  # after each column except last
-            width_ratios.append(0.15)  # horizontal gap spacing
+            width_ratios.append(0.10)  # horizontal gap spacing
 
     # Define figure and gridspec with custom spacing
     fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
@@ -248,40 +248,66 @@ def main():
     # Tight layout with extra spacing
     plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
 
-    # CODE TO DRAW TICK MARK SEPARATORS:
-    # Number of rows and columns in the grid
-    total_rows = len(h_values) * 2
-    total_cols = len(n_values)
+    # # CODE TO DRAW TICK MARK SEPARATORS:
+    # # Number of rows and columns in the grid
+    # total_rows = len(h_values) * 2
+    # total_cols = len(n_values)
 
-    # --- X-axis tick marks (vertical) ---
-    for j in range(total_cols - 1):  # exclude last column
-        # Right edge of column j
-        bbox_right = axes[0, j].get_position().x1  # top row
-        bbox_right_bottom = axes[-1, j].get_position().x1  # bottom row
+    # # --- X-axis tick marks (vertical) ---
+    # for j in range(total_cols - 1):  # exclude last column
+    #     # Right edge of column j
+    #     bbox_right = axes[0, j].get_position().x1  # top row
+    #     bbox_right_bottom = axes[-1, j].get_position().x1  # bottom row
         
-        # Top tick (first row)
-        fig.add_artist(mlines.Line2D([bbox_right, bbox_right], 
-                                    [axes[0, j].get_position().y1, axes[0, j].get_position().y1 + 0.02],
-                                    transform=fig.transFigure, color='black', linewidth=4))
-        # Bottom tick (last row)
-        fig.add_artist(mlines.Line2D([bbox_right_bottom, bbox_right_bottom], 
-                                    [axes[-1, j].get_position().y0 - 0.02, axes[-1, j].get_position().y0],
-                                    transform=fig.transFigure, color='black', linewidth=4))
+    #     # Top tick (first row)
+    #     fig.add_artist(mlines.Line2D([bbox_right, bbox_right], 
+    #                                 [axes[0, j].get_position().y1, axes[0, j].get_position().y1 + 0.02],
+    #                                 transform=fig.transFigure, color='black', linewidth=4))
+    #     # Bottom tick (last row)
+    #     fig.add_artist(mlines.Line2D([bbox_right_bottom, bbox_right_bottom], 
+    #                                 [axes[-1, j].get_position().y0 - 0.02, axes[-1, j].get_position().y0],
+    #                                 transform=fig.transFigure, color='black', linewidth=4))
 
-    # --- Y-axis tick marks (horizontal) ---
-    for i in range(1, total_rows - 2, 2):  # every 2 rows
-        # Bottom edge of row i (top of next heritability)
-        bbox_bottom_left = axes[i, 0].get_position().y0
-        bbox_bottom_right = axes[i, -1].get_position().y0
+    # # --- Y-axis tick marks (horizontal) ---
+    # for i in range(1, total_rows - 2, 2):  # every 2 rows
+    #     # Bottom edge of row i (top of next heritability)
+    #     bbox_bottom_left = axes[i, 0].get_position().y0
+    #     bbox_bottom_right = axes[i, -1].get_position().y0
         
-        # Left tick (first column)
-        fig.add_artist(mlines.Line2D([axes[i, 0].get_position().x0 - 0.02, axes[i, 0].get_position().x0], 
-                                    [bbox_bottom_left, bbox_bottom_left], 
-                                    transform=fig.transFigure, color='black', linewidth=4))
-        # Right tick (last column)
-        fig.add_artist(mlines.Line2D([axes[i, -1].get_position().x1, axes[i, -1].get_position().x1 + 0.02], 
-                                    [bbox_bottom_right, bbox_bottom_right], 
-                                    transform=fig.transFigure, color='black', linewidth=4))
+    #     # Left tick (first column)
+    #     fig.add_artist(mlines.Line2D([axes[i, 0].get_position().x0 - 0.02, axes[i, 0].get_position().x0], 
+    #                                 [bbox_bottom_left, bbox_bottom_left], 
+    #                                 transform=fig.transFigure, color='black', linewidth=4))
+    #     # Right tick (last column)
+    #     fig.add_artist(mlines.Line2D([axes[i, -1].get_position().x1, axes[i, -1].get_position().x1 + 0.02], 
+    #                                 [bbox_bottom_right, bbox_bottom_right], 
+    #                                 transform=fig.transFigure, color='black', linewidth=4))
+
+    # ** LINES BETWEEN INSTANCE/HERITABILITY COMBINATIONS:
+    # --- DRAW DIVIDER LINES THROUGH GAP COLUMNS AND ROWS ---
+    # Use figure coordinates (0–1 range)
+    for j in range(total_cols - 1):
+        # Compute midpoint between the right edge of column j and left edge of next column
+        left_bbox = axes[0, j].get_position()
+        right_bbox = axes[0, j+1].get_position()
+        x_mid = (left_bbox.x1 + right_bbox.x0) / 2
+
+        # Vertical line (spanning entire figure)
+        line = mlines.Line2D([x_mid, x_mid], [0, 1],
+                            transform=fig.transFigure, color='black', linewidth=1.5)
+        fig.add_artist(line)
+
+    # Horizontal dividers after every heritability block (every 2 rows)
+    for i in range(1, len(h_values)):
+        # Get bounding boxes for last heatmap in block i-1 and first in block i
+        prev_bottom = axes[(i-1)*2 + 1, 0].get_position().y0  # bottom of bottom subplot of previous block
+        next_top = axes[i*2, 0].get_position().y1             # top of top subplot of next block
+        y_mid = (prev_bottom + next_top) / 2
+
+        # Horizontal line (spanning entire figure)
+        line = mlines.Line2D([0, 1], [y_mid, y_mid],
+                            transform=fig.transFigure, color='black', linewidth=1.5)
+        fig.add_artist(line)
 
     outdir = os.path.basename(os.path.normpath(args.basedir))
     parentdir = os.path.dirname(os.path.normpath(args.basedir))
