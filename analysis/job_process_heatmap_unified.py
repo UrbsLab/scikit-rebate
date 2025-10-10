@@ -176,6 +176,7 @@ def main():
             #     ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=12)
             # Put "E" and "H" labels on the right side of the heatmaps in the last column
             if j == len(n_values) - 1:
+                # maybe add if clauses in the event that a dataset does not have EDM-1 or EDM-2
                 ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
                 ax_top.yaxis.set_label_position("right")
                 
@@ -243,10 +244,16 @@ def main():
 
     # Adjust global labels with extra padding
     fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
+    # fig.canvas.draw()
+    # renderer = fig.canvas.get_renderer()
+    # bbox_axes = axes[0,0].get_position()
+    # label_x = bbox_axes.x0 - 0.05  # offset by ~5% of figure width
+    # fig.supylabel("Heritability of Model", fontsize=22, x=label_x, y=0.5)
     fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
     # Tight layout with extra spacing
-    plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
+    # plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
+    plt.tight_layout(rect=[0.05, 0.05, 0.92, 0.95])
 
     # # CODE TO DRAW TICK MARK SEPARATORS:
     # # Number of rows and columns in the grid
