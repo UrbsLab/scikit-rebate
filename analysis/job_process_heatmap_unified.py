@@ -177,11 +177,22 @@ def main():
             # Put "E" and "H" labels on the right side of the heatmaps in the last column
             if j == len(n_values) - 1:
                 # maybe add if clauses in the event that a dataset does not have EDM-1 or EDM-2
-                ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
-                ax_top.yaxis.set_label_position("right")
+                # ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
+                # ax_top.yaxis.set_label_position("right")
                 
-                ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
-                ax_bot.yaxis.set_label_position("right")
+                # ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
+                # ax_bot.yaxis.set_label_position("right")
+                ax_top.set_ylabel("E", rotation=0, fontsize=18)
+                ax_bot.set_ylabel("H", rotation=0, fontsize=18)
+
+                # compute x positions just outside axes but inside figure
+                bbox_top = ax_top.get_position()
+                bbox_bot = ax_bot.get_position()
+                label_x_top = min(bbox_top.x1 + 0.01, 0.99)  # ensure within figure
+                label_x_bot = min(bbox_bot.x1 + 0.01, 0.99)
+
+                ax_top.yaxis.set_label_coords(label_x_top, 0.5)
+                ax_bot.yaxis.set_label_coords(label_x_bot, 0.5)
 
     # # Add one colorbar on the far right
     # cbar_ax = fig.add_axes([1.02, 0.15, 0.02, 0.7])
@@ -252,8 +263,8 @@ def main():
     fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
     # Tight layout with extra spacing
-    # plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
-    plt.tight_layout(rect=[0.05, 0.05, 0.85, 0.95])
+    plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
+    # plt.tight_layout(rect=[0.05, 0.05, 0.85, 0.95])
 
     # # CODE TO DRAW TICK MARK SEPARATORS:
     # # Number of rows and columns in the grid
