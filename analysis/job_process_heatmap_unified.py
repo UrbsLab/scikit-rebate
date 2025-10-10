@@ -253,7 +253,7 @@ def main():
 
     # Tight layout with extra spacing
     # plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
-    plt.tight_layout(rect=[0.05, 0.05, 0.92, 0.95])
+    plt.tight_layout(rect=[0.05, 0.05, 0.85, 0.95])
 
     # # CODE TO DRAW TICK MARK SEPARATORS:
     # # Number of rows and columns in the grid
