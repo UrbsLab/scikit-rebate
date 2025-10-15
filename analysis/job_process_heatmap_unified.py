@@ -212,9 +212,13 @@ def main():
         # Position the label in the middle of top and bottom heatmaps
         mid_y = 0  # normalized vertical coordinate (0 = bottom of ax, 1 = top of ax)
         
-        # Use the top subplot to place the label vertically centered
-        ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
-        ax_top.yaxis.set_label_coords(-0.2, mid_y)
+        # if there is only one column, can't use set_ylabel twice on the same axis (will overwrite the first one, "E"); so use .text instead
+        if len(n_values == 1):
+            ax_top.text(-0.2, mid_y, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax_top.transAxes)
+        else:
+            # Use the top subplot to place the label vertically centered
+            ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
+            ax_top.yaxis.set_label_coords(-0.2, mid_y)
 
     # # Total rows and columns
     # total_rows = len(h_values)*2
