@@ -214,7 +214,7 @@ def main():
         
         # if there is only one column, can't use set_ylabel twice on the same axis (will overwrite the first one, "E"); so use .text instead
         if len(n_values) == 1:
-            ax_top.text(-0.2, mid_y - 0.01, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax_top.transAxes)
+            ax_top.text(-0.2, mid_y - 0.1, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax_top.transAxes)
         else:
             # Use the top subplot to place the label vertically centered
             ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
