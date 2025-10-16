@@ -311,6 +311,10 @@ class BaseSWRF(ReliefF):
                 dead_band = np.mean(deadband)
                 # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
 
+                # for tbd2linear and tbd2exponential:
+                smallest_distance = np.min(self._distance_array)
+                largest_distance = np.max(self._distance_array)
+
                 # NEW: for plotting in terms of STD
                 x_vals_std = (x_vals - mean_dist) / std_dist
             else:
@@ -328,9 +332,9 @@ class BaseSWRF(ReliefF):
                 y_vals = tbd1_weight(x_vals, mean_dist, std_dist, dead_band)
             elif 'TBD_2' in self.name:
                 if 'linear' in self.name:
-                    y_vals = tbd2_linear_weight(x_vals, mean_dist, std_dist, dead_band)
+                    y_vals = tbd2_linear_weight(x_vals, mean_dist, std_dist, smallest_distance, largest_distance, dead_band)
                 elif 'exponential' in self.name:
-                    y_vals = tbd2_exponential_weight(x_vals, mean_dist, std_dist, dead_band)
+                    y_vals = tbd2_exponential_weight(x_vals, mean_dist, std_dist, smallest_distance, largest_distance, dead_band)
                 else:
                     y_vals = tbd2_weight(x_vals, mean_dist, std_dist, dead_band)
             else:
