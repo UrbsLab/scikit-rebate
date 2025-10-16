@@ -40,3 +40,7 @@ from .baseswrf import TBD1star
 from .baseswrf import TBD1
 from .baseswrf import TBD2star
 from .baseswrf import TBD2
+from .baseswrf import TBD2linearstar
+from .baseswrf import TBD2linear
+from .baseswrf import TBD2exponentialstar
+from .baseswrf import TBD2exponential
