@@ -10,7 +10,7 @@ import hashlib
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRFstar2, SWRF, TBD1star, TBD1, TBD2star, TBD2
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRFstar2, SWRF, TBD1star, TBD1, TBD2star, TBD2, TBD2linearstar, TBD2linear, TBD2exponentialstar, TBD2exponential
 
 # NEW: added exist_ok=True
 def ensure_dir(directory):
@@ -50,7 +50,7 @@ def process_and_save_results(file_path, fs, method_name):
     Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
     ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
 
-    if method_name in ["SWRFstar2", "SWRF", "TBD1", "TBD1star", "TBD2", "TBD2star", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar"]:
+    if method_name in ["SWRFstar2", "SWRF", "TBD1", "TBD1star", "TBD2", "TBD2star", "TBD2linear", "TBD2linearstar", "TBD2exponential", "TBD2exponentialstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar"]:
         fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
 
     print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
@@ -150,6 +150,22 @@ def process_TBD2(file_path):
     fs = TBD2()
     process_and_save_results(file_path, fs, "TBD2")
 
+def process_TBD2linearstar(file_path):
+    fs = TBD2linearstar()
+    process_and_save_results(file_path, fs, "TBD2linearstar")
+
+def process_TBD2linear(file_path):
+    fs = TBD2linear()
+    process_and_save_results(file_path, fs, "TBD2linear")
+
+def process_TBD2exponentialstar(file_path):
+    fs = TBD2exponentialstar()
+    process_and_save_results(file_path, fs, "TBD2exponentialstar")
+
+def process_TBD2exponential(file_path):
+    fs = TBD2exponential()
+    process_and_save_results(file_path, fs, "TBD2exponential")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -173,6 +189,10 @@ def main():
         'tbd1': process_TBD1,
         'tbd2star': process_TBD2star,
         'tbd2': process_TBD2,
+        'tbd2linearstar': process_TBD2linearstar,
+        'tbd2linear': process_TBD2linear,
+        'tbd2exponentialstar': process_TBD2exponentialstar,
+        'tbd2exponential': process_TBD2exponential,
     }
 
     if args.algorithm not in alg_map:

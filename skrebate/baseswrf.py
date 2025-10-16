@@ -95,6 +95,56 @@ def tbd2_weight(distances, mean, std, dead_band=None):
     
     return weights
 
+def tbd2_linear_weight(distances, mean, std, smallest_distance, largest_distance, dead_band=None):
+    distances = np.asarray(distances, dtype=float)
+    lower, upper = deadband_bounds(mean, std, dead_band)
+    
+    weights = np.zeros_like(distances, dtype=float)
+    
+    near_mask = distances < lower
+    # to ensure weights are between 0 and 1:
+    # near_distances = distances[near_mask] - lower
+    # min because we want the most negative number (furthest away from lower zone)
+    # max_near = min(near_distances)
+    max_near = smallest_distance - lower
+    weights[near_mask] = (distances[near_mask] - lower) / max_near
+    
+    far_mask = distances > upper
+    # to ensure weights are between 0 and -1:
+    # far_distances = distances[far_mask] - upper
+    # max_far = max(far_distances)
+    max_far = largest_distance - upper
+    # multiplied by -1 to make it negative
+    weights[far_mask] = ((distances[far_mask] - upper) / max_far) * -1
+    
+    return weights
+
+def tbd2_exponential_weight(distances, mean, std, smallest_distance, largest_distance, dead_band=None):
+    distances = np.asarray(distances, dtype=float)
+    lower, upper = deadband_bounds(mean, std, dead_band)
+    
+    weights = np.zeros_like(distances, dtype=float)
+    
+    near_mask = distances < lower
+    # weights[near_mask] = 1.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower)))
+    # weights[near_mask] = 2.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower))) - 1.0
+    # weights[near_mask] = (2.0 / (1.0 + np.exp(-scale*(distances[near_mask] - lower))) - 1.0) * -1
+    # distances have already been normalized to between 0 and 1
+    # near_distances_sq = (distances[near_mask] - lower)**2
+    # max_near_sq = max(near_distances_sq)
+    max_near_sq = (smallest_distance - lower)**2
+    weights[near_mask] = (distances[near_mask] - lower)**2 / max_near_sq
+    
+    far_mask = distances > upper
+    # weights[far_mask] = -1.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper)))
+    # weights[far_mask] = -2.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper))) + 1.0
+    # far_distances_sq = (distances[far_mask] - upper)**2
+    # max_far_sq = max(far_distances_sq)
+    max_far_sq = (largest_distance - upper)**2
+    weights[far_mask] = ((distances[far_mask] - upper)**2 / max_far_sq) * -1
+    
+    return weights
+
 class BaseSWRF(ReliefF):
     def __init__(self, name, weight_func, ignore_far=False, **kwargs):
         super().__init__(**kwargs)
@@ -128,7 +178,12 @@ class BaseSWRF(ReliefF):
             mean_inst = np.mean(dist_i)
             std_inst = np.std(dist_i)
             dead_band_inst = std_inst / 2.0
-            weights = self.weight_func(dist_i, mean_inst, std_inst, dead_band_inst)
+            if 'linear' in self.name or 'exponential' in self.name:
+                smallest_distance = np.min(self._distance_array)
+                largest_distance = np.max(self._distance_array)
+                weights = self.weight_func(dist_i, mean_inst, std_inst, smallest_distance, largest_distance, dead_band_inst)
+            else:
+                weights = self.weight_func(dist_i, mean_inst, std_inst, dead_band_inst)
             self.instance_dist_stats.append((mean_inst, std_inst, dead_band_inst))
 
             # NEW: copy of dist_i where distances are translated to STD
@@ -272,7 +327,12 @@ class BaseSWRF(ReliefF):
             elif 'TBD_1' in self.name:
                 y_vals = tbd1_weight(x_vals, mean_dist, std_dist, dead_band)
             elif 'TBD_2' in self.name:
-                y_vals = tbd2_weight(x_vals, mean_dist, std_dist, dead_band)
+                if 'linear' in self.name:
+                    y_vals = tbd2_linear_weight(x_vals, mean_dist, std_dist, dead_band)
+                elif 'exponential' in self.name:
+                    y_vals = tbd2_exponential_weight(x_vals, mean_dist, std_dist, dead_band)
+                else:
+                    y_vals = tbd2_weight(x_vals, mean_dist, std_dist, dead_band)
             else:
                 y_vals = None
 
@@ -342,3 +402,19 @@ class TBD2(BaseSWRF):
 class TBD2star(BaseSWRF):
     def __init__(self, **kwargs):
         super().__init__('TBD_2*', tbd2_weight, ignore_far=False, **kwargs)
+
+class TBD2linear(BaseSWRF):
+    def __init__(self, **kwargs):
+        super().__init__('TBD_2_linear', tbd2_linear_weight, ignore_far=True, **kwargs)
+
+class TBD2linearstar(BaseSWRF):
+    def __init__(self, **kwargs):
+        super().__init__('TBD_2_linear*', tbd2_linear_weight, ignore_far=False, **kwargs)
+
+class TBD2exponential(BaseSWRF):
+    def __init__(self, **kwargs):
+        super().__init__('TBD_2_exponential', tbd2_exponential_weight, ignore_far=True, **kwargs)
+
+class TBD2exponentialstar(BaseSWRF):
+    def __init__(self, **kwargs):
+        super().__init__('TBD_2_exponential*', tbd2_exponential_weight, ignore_far=False, **kwargs)
