@@ -295,6 +295,9 @@ class BaseSWRF(ReliefF):
             return
 
         distances, weights = zip(*self.distance_weight_log)
+        # for tbd2linear and tbd2exponential:
+        smallest_distance = min(d for d, w in self.distance_weight_log)
+        largest_distance = max(d for d, w in self.distance_weight_log)
         # NEW: use self.std_weight_log for plotting
         distances_std, weights_std = zip(*self.std_weight_log)
         plt.figure(figsize=(10, 6))
@@ -310,10 +313,6 @@ class BaseSWRF(ReliefF):
                 std_dist = np.mean(stds)
                 dead_band = np.mean(deadband)
                 # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
-
-                # for tbd2linear and tbd2exponential:
-                smallest_distance = np.min(self._distance_array)
-                largest_distance = np.max(self._distance_array)
 
                 # NEW: for plotting in terms of STD
                 x_vals_std = (x_vals - mean_dist) / std_dist
