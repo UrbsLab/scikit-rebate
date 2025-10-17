@@ -105,12 +105,12 @@ def tbd2_linear_weight(distances, mean, std, dead_band=None):
     # linear weighting based on how many SD's an instance is from the lower bound; becomes 1 at 1.5 SD (b/c that is 2 SD away from mean)
     weights[near_mask] = (((distances[near_mask] - lower) / std) / (1.5 * std)) * -1
     # make sure the weights don't exceed 1:
-    weights[near_mask] = np.minimum(weights[near_mask], 1)
+    weights[near_mask] = np.minimum(weights[near_mask], 1.0)
     
     far_mask = distances > upper
     # weights between 0 and -1
     weights[far_mask] = (((distances[far_mask] - upper) / std) / (1.5 * std)) * -1
-    weights[far_mask] = np.maximum(weights[far_mask], -1)
+    weights[far_mask] = np.maximum(weights[far_mask], -1.0)
     
     return weights
 
@@ -126,14 +126,14 @@ def tbd2_exponential_weight(distances, mean, std, dead_band=None):
     # weights[near_mask] = (2.0 / (1.0 + np.exp(-scale*(distances[near_mask] - lower))) - 1.0) * -1
     weights[near_mask] = ((distances[near_mask] - lower) / std)**2 / (1.5 * std)**2
     # make sure the weights don't exceed 1:
-    weights[near_mask] = np.minimum(weights[near_mask], 1)
+    weights[near_mask] = np.minimum(weights[near_mask], 1.0)
     
     far_mask = distances > upper
     # weights[far_mask] = -1.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper)))
     # weights[far_mask] = -2.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper))) + 1.0
     weights[far_mask] = (((distances[far_mask] - upper) / std)**2 / (1.5 * std)**2) * -1
     # make sure the weights don't go lower than -1:
-    weights[far_mask] = np.maximum(weights[far_mask], -1)
+    weights[far_mask] = np.maximum(weights[far_mask], -1.0)
     
     return weights
 
