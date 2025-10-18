@@ -70,16 +70,23 @@ def main():
         'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','TBD1','TBD1star','TBD2','TBD2star'
     ]
 
-    # Grab all Results folders
+    # Grab all Results folders (for 100 feature datasets)
+    # * can later potentially add the dataset feature lengths you want for the heatmap as a parameter (ex. 100 for a_100 datasets)
     results_dirs = []
     for root, dirs, _ in os.walk(args.basedir):
         for d in dirs:
-            if d == 'Results':
+            if d == 'Results' and 'a_100' in root:
                 results_dirs.append(os.path.join(root, d))
+
+    is_xor = ('XOR' in args.basedir)
+    is_mainEff_or_core2wayEpistasis = ('mainEff_Datasets' in args.basedir or 'core2wayEpistasis' in args.basedir)
 
     # Build a mapping of (n_instances, heritability, EDMtype) -> percentages_df
     pattern_n = re.compile(r"s_(\d+)")
-    pattern_h = re.compile(r"her_(\d+\.\d+)__maf")
+    if is_xor:
+        pattern_h = re.compile(r"xor_(\d+)")
+    else:
+        pattern_h = re.compile(r"her_(\d+\.\d+)__maf")
     pattern_edm = re.compile(r"EDM-(\d+)")
 
     data_dict = {}
@@ -89,7 +96,10 @@ def main():
         edm_match = pattern_edm.search(rd)
         if n_match and h_match and edm_match:
             n = int(n_match.group(1))
-            h = float(h_match.group(1))
+            if is_xor:
+                h = int(h_match.group(1))
+            else:
+                h = float(h_match.group(1))
             edm = edm_match.group(1)  # '1' or '2'
             perc_df = compute_percentages(rd)
             perc_df_T = perc_df.T
@@ -101,16 +111,25 @@ def main():
 
     # fig, axes = plt.subplots(len(h_values)*2, len(n_values), figsize=(4*len(n_values), 3*len(h_values)*2))
     # --- NEW ATTEMPT TO INCREASE SPACING
-    total_rows = len(h_values) * 2
+    # only mainEff and core2wayEpistasis have both EDM-1 and EDM-2
+    if is_mainEff_or_core2wayEpistasis:
+        total_rows = len(h_values) * 2
+    else:
+        total_rows = len(h_values)
     total_cols = len(n_values)
 
     # Create custom height and width ratios
-    # --> every 2 rows, insert an extra gap by slightly enlarging the space below
+    # --> every 2 rows, insert an extra gap by slightly enlarging the space below (for mainEff and core2wayEpistasis)
+    # for all other dataset configurations, add the gap after every row
     height_ratios = []
     for i in range(total_rows):
         height_ratios.append(1)
-        if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
-            height_ratios.append(0.15)  # this adds vertical gap spacing
+        if is_mainEff_or_core2wayEpistasis:
+            if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
+                height_ratios.append(0.15)  # this adds vertical gap spacing
+        else:
+            if i != total_rows - 1:
+                height_ratios.append(0.15)
 
     # For columns, add an extra gap after every column
     width_ratios = []
@@ -120,7 +139,10 @@ def main():
             width_ratios.append(0.10)  # horizontal gap spacing
 
     # Define figure and gridspec with custom spacing
-    fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
+    if is_mainEff_or_core2wayEpistasis:
+        fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
+    else:
+        fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
     gs = gridspec.GridSpec(
         nrows=len(height_ratios),
         ncols=len(width_ratios),
@@ -135,8 +157,12 @@ def main():
     axes = np.empty((total_rows, total_cols), dtype=object)
     row_ptr, col_ptr = 0, 0
     for i in range(len(height_ratios)):
-        if i % 3 == 2:  # skip gap row
-            continue
+        if is_mainEff_or_core2wayEpistasis:
+            if i % 3 == 2:  # skip gap row
+                continue
+        else:
+            if i % 2 == 1:  # skip gap row
+                continue
         col_ptr = 0
         for j in range(len(width_ratios)):
             if j % 2 == 1:  # skip gap column
@@ -154,34 +180,60 @@ def main():
     # flipped so that y-axis is shown in ascending order from bottom to top
     for i, h in enumerate(sorted(h_values, reverse=True)):
         for j, n in enumerate(n_values):
-            # top EDM-2
-            ax_top = axes[i*2, j] if len(h_values)*2 > 1 else axes[0, j]
-            ax_bot = axes[i*2+1, j] if len(h_values)*2 > 1 else axes[1, j]
+            if is_mainEff_or_core2wayEpistasis:
+                # top EDM-2
+                ax_top = axes[i*2, j] if len(h_values)*2 > 1 else axes[0, j]
+                ax_bot = axes[i*2+1, j] if len(h_values)*2 > 1 else axes[1, j]
 
-            df2 = data_dict.get((n,h,'2'))
-            df1 = data_dict.get((n,h,'1'))
-            if df2 is not None:
-                sns.heatmap(df2, ax=ax_top, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
-                # ax_top.set_title(f"n={n}, h={h}", fontsize=10)
-            else:
-                ax_top.axis('off')
-            if df1 is not None:
-                # sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=xtick_labels, yticklabels=False)
-                sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
-            else:
-                ax_bot.axis('off')
+                df2 = data_dict.get((n,h,'2'))
+                df1 = data_dict.get((n,h,'1'))
+                if df2 is not None:
+                    sns.heatmap(df2, ax=ax_top, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
+                    # ax_top.set_title(f"n={n}, h={h}", fontsize=10)
+                else:
+                    ax_top.axis('off')
+                if df1 is not None:
+                    # sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=xtick_labels, yticklabels=False)
+                    sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
+                else:
+                    ax_bot.axis('off')
 
-            # if j==0:
-            #     ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=12)
-            #     ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=12)
-            # Put "E" and "H" labels on the right side of the heatmaps in the last column
-            if j == len(n_values) - 1:
-                # maybe add if clauses in the event that a dataset does not have EDM-1 or EDM-2
-                ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
-                ax_top.yaxis.set_label_position("right")
+                # if j==0:
+                #     ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=12)
+                #     ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=12)
+                # Put "E" and "H" labels on the right side of the heatmaps in the last column
+                if j == len(n_values) - 1:
+                    # maybe add if clauses in the event that a dataset does not have EDM-1 or EDM-2
+                    ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
+                    ax_top.yaxis.set_label_position("right")
+                    
+                    ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
+                    ax_bot.yaxis.set_label_position("right")
+            else:
+                ax = axes[i, j]
+
+                # Find the value in the dict corresponding to this n and h (could be either EDM-1 or EDM-2 depending on dataset, but only one of them)
+                df = next(
+                    data_dict[key] 
+                    for key in data_dict 
+                    if key[0] == n and key[1] == h
+                )
+
+                if df is not None:
+                    sns.heatmap(df, ax=ax, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
+                else:
+                    ax.axis('off')
                 
-                ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
-                ax_bot.yaxis.set_label_position("right")
+                if j == len(n_values) - 1:
+                    edm_value = next(key[2] for key in data_dict if key[0] == n and key[1] == h)
+                    if edm_value == '1':
+                        ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
+                    elif edm_value == '2':
+                        ax.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
+
+                    ax.yaxis.set_label_position("right")
+                    
+
 
     # # Add one colorbar on the far right
     # cbar_ax = fig.add_axes([1.02, 0.15, 0.02, 0.7])
@@ -205,20 +257,32 @@ def main():
     # Set y-axis labels for Heritability of Model (once per heritability row)
     # for i, h in enumerate(h_values):
     for i, h in enumerate(sorted(h_values, reverse=True)):
-        # First column only
-        ax_top = axes[i*2, 0]
-        ax_bot = axes[i*2 + 1, 0]
-        
-        # Position the label in the middle of top and bottom heatmaps
-        mid_y = 0  # normalized vertical coordinate (0 = bottom of ax, 1 = top of ax)
-        
-        # if there is only one column, can't use set_ylabel twice on the same axis (will overwrite the first one, "E"); so use .text instead
-        if len(n_values) == 1:
-            ax_top.text(-0.2, mid_y - 0.1, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax_top.transAxes)
+        if is_mainEff_or_core2wayEpistasis:
+            # First column only
+            ax_top = axes[i*2, 0]
+            ax_bot = axes[i*2 + 1, 0]
+            
+            # Position the label in the middle of top and bottom heatmaps
+            mid_y = 0  # normalized vertical coordinate (0 = bottom of ax, 1 = top of ax)
+            
+            # if there is only one column, can't use set_ylabel twice on the same axis (will overwrite the first one, "E"); so use .text instead
+            if len(n_values) == 1:
+                ax_top.text(-0.2, mid_y - 0.1, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax_top.transAxes)
+            else:
+                # Use the top subplot to place the label vertically centered
+                ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
+                ax_top.yaxis.set_label_coords(-0.2, mid_y)
         else:
-            # Use the top subplot to place the label vertically centered
-            ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
-            ax_top.yaxis.set_label_coords(-0.2, mid_y)
+            # First column only
+            ax = axes[i, 0]
+
+            mid_y = 0.5
+
+            if len(n_values) == 1:
+                ax.text(-0.2, mid_y, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax_top.transAxes)
+            else:
+                ax.set_ylabel(str(h), rotation=0, fontsize=20)
+                ax.yaxis.set_label_coords(-0.2, mid_y)
 
     # # Total rows and columns
     # total_rows = len(h_values)*2
@@ -253,7 +317,10 @@ def main():
     # bbox_axes = axes[0,0].get_position()
     # label_x = bbox_axes.x0 - 0.05  # offset by ~5% of figure width
     # fig.supylabel("Heritability of Model", fontsize=22, x=label_x, y=0.5)
-    fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
+    if is_xor:
+        fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
+    else:
+        fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
     # Tight layout with extra spacing
     plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
@@ -310,19 +377,33 @@ def main():
                             transform=fig.transFigure, color='black', linewidth=1.5)
         fig.add_artist(line)
 
-    # Horizontal dividers after every heritability block (every 2 rows)
-    for i in range(1, len(h_values)):
-        # Get bounding boxes for last heatmap in block i-1 and first in block i
-        prev_bottom = axes[(i-1)*2 + 1, 0].get_position().y0  # bottom of bottom subplot of previous block
-        next_top = axes[i*2, 0].get_position().y1             # top of top subplot of next block
-        y_mid = (prev_bottom + next_top) / 2
-        x_left = axes[0,0].get_position().x0
-        x_right = axes[0,-1].get_position().x1
+    if is_mainEff_or_core2wayEpistasis:
+        # Horizontal dividers after every heritability block (every 2 rows)
+        for i in range(1, len(h_values)):
+            # Get bounding boxes for last heatmap in block i-1 and first in block i
+            prev_bottom = axes[(i-1)*2 + 1, 0].get_position().y0  # bottom of bottom subplot of previous block
+            next_top = axes[i*2, 0].get_position().y1             # top of top subplot of next block
+            y_mid = (prev_bottom + next_top) / 2
+            x_left = axes[0,0].get_position().x0
+            x_right = axes[0,-1].get_position().x1
 
-        # Horizontal line (spanning entire figure)
-        line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-                            transform=fig.transFigure, color='black', linewidth=1.5)
-        fig.add_artist(line)
+            # Horizontal line (spanning entire figure)
+            line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+                                transform=fig.transFigure, color='black', linewidth=1.5)
+            fig.add_artist(line)
+    else:
+        for i in range(0, len(h_values)):
+            prev_bottom = axes[i, 0].get_position().y0  # bottom of bottom subplot of previous block
+            next_top = axes[i+1, 0].get_position().y1             # top of top subplot of next block
+            y_mid = (prev_bottom + next_top) / 2
+            x_left = axes[0,0].get_position().x0
+            x_right = axes[0,-1].get_position().x1
+
+            # Horizontal line (spanning entire figure)
+            line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+                                transform=fig.transFigure, color='black', linewidth=1.5)
+            fig.add_artist(line)
+        
 
     outdir = os.path.basename(os.path.normpath(args.basedir))
     parentdir = os.path.dirname(os.path.normpath(args.basedir))
