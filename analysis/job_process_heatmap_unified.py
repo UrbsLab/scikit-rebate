@@ -279,7 +279,7 @@ def main():
             mid_y = 0.5
 
             if len(n_values) == 1:
-                ax.text(-0.2, mid_y, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax_top.transAxes)
+                ax.text(-0.2, mid_y, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax.transAxes)
             else:
                 ax.set_ylabel(str(h), rotation=0, fontsize=20)
                 ax.yaxis.set_label_coords(-0.2, mid_y)
