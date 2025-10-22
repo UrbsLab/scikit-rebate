@@ -392,7 +392,7 @@ def main():
                                 transform=fig.transFigure, color='black', linewidth=1.5)
             fig.add_artist(line)
     else:
-        for i in range(0, len(h_values)):
+        for i in range(0, len(h_values) - 1):
             prev_bottom = axes[i, 0].get_position().y0  # bottom of bottom subplot of previous block
             next_top = axes[i+1, 0].get_position().y1             # top of top subplot of next block
             y_mid = (prev_bottom + next_top) / 2
