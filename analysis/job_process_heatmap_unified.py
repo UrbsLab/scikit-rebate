@@ -10,40 +10,38 @@ import matplotlib.lines as mlines
 import matplotlib.gridspec as gridspec
 
 # Helper to create the percentages_df (copied from old job_process_heatmap)
-def compute_percentages(results_dir, rba_list):
+def compute_percentages(results_dir):
     all_rankings_df = pd.DataFrame()
     total_features_per_rba = {}
 
     for rba in os.listdir(results_dir):
-        # NEW: checking limiting to only the RBAs included in viz; everything below this if statement and in the for loop is indented
-        if rba in rba_list:
-            rba_path = os.path.join(results_dir, rba)
-            if os.path.isdir(rba_path):
-                method_feature_counts = []
-                for file in os.listdir(rba_path):
-                    if file.endswith('.txt'):
-                        file_path = os.path.join(rba_path, file)
-                        parts = file.split('_')
-                        dataset_id = '_'.join(parts[-2].split('_')[:2])
+        rba_path = os.path.join(results_dir, rba)
+        if os.path.isdir(rba_path):
+            method_feature_counts = []
+            for file in os.listdir(rba_path):
+                if file.endswith('.txt'):
+                    file_path = os.path.join(rba_path, file)
+                    parts = file.split('_')
+                    dataset_id = '_'.join(parts[-2].split('_')[:2])
 
-                        if rba == "RandomShuffle":
-                            df = pd.read_csv(file_path, sep='\t', usecols=['Feature'])
-                            df['Rank'] = df.index + 1
-                        else:
-                            column_to_use = 'ABS_Feature_Importance' if "ABS" in rba else 'Feature_Importance'
-                            df = pd.read_csv(file_path, sep='\t', usecols=['Feature', column_to_use])
-                            df.sort_values(by=column_to_use, ascending=False, inplace=True)
-                            df.reset_index(drop=True, inplace=True)
-                            df['Rank'] = df.index + 1
+                    if rba == "RandomShuffle":
+                        df = pd.read_csv(file_path, sep='\t', usecols=['Feature'])
+                        df['Rank'] = df.index + 1
+                    else:
+                        column_to_use = 'ABS_Feature_Importance' if "ABS" in rba else 'Feature_Importance'
+                        df = pd.read_csv(file_path, sep='\t', usecols=['Feature', column_to_use])
+                        df.sort_values(by=column_to_use, ascending=False, inplace=True)
+                        df.reset_index(drop=True, inplace=True)
+                        df['Rank'] = df.index + 1
 
-                        predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Rank']]
-                        predictive_df['RBA'] = rba
-                        predictive_df['Dataset'] = dataset_id
+                    predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Rank']]
+                    predictive_df['RBA'] = rba
+                    predictive_df['Dataset'] = dataset_id
 
-                        all_rankings_df = pd.concat([all_rankings_df, predictive_df], ignore_index=True)
-                        method_feature_counts.append(df['Feature'].nunique())
+                    all_rankings_df = pd.concat([all_rankings_df, predictive_df], ignore_index=True)
+                    method_feature_counts.append(df['Feature'].nunique())
 
-                total_features_per_rba[rba] = max(method_feature_counts) if method_feature_counts else 0
+            total_features_per_rba[rba] = max(method_feature_counts) if method_feature_counts else 0
 
     N = next(iter(total_features_per_rba.values()))
     lowest_ranks = all_rankings_df.groupby(['RBA', 'Dataset'])['Rank'].max().reset_index()
@@ -72,7 +70,7 @@ def main():
     #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','TBD1','TBD1star','TBD2','TBD2star'
     # ]
     rba_order = [
-        'TBD2', 'TBD2star', 'TBD2linear', 'TBD2linearstar', 'TBD2exponential', 'TBD2exponentialstar'
+        'RandomShuffle', 'MutualInfo', 'TBD2', 'TBD2star', 'TBD2linear', 'TBD2linearstar', 'TBD2exponential', 'TBD2exponentialstar'
     ]
     # rba_order = [
     #     'TBD2', 'TBD2star'
@@ -109,7 +107,7 @@ def main():
             else:
                 h = float(h_match.group(1))
             edm = edm_match.group(1)  # '1' or '2'
-            perc_df = compute_percentages(rd, rba_order)
+            perc_df = compute_percentages(rd)
             perc_df_T = perc_df.T
             perc_df_ordered = perc_df_T.loc[[r for r in rba_order if r in perc_df_T.index]]
             data_dict[(n, h, edm)] = perc_df_ordered
