@@ -65,13 +65,13 @@ def main():
     # custom colormap & ordering
     custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
 
-    # rba_order = [
-    #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',
-    #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','TBD1','TBD1star','TBD2','TBD2star'
-    # ]
     rba_order = [
-        'TBD2', 'TBD2star', 'TBD2linear', 'TBD2linearstar', 'TBD2exponential', 'TBD2exponentialstar'
+        'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',
+        'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','TBD1','TBD1star','TBD2','TBD2star'
     ]
+    # rba_order = [
+    #     'TBD2', 'TBD2star', 'TBD2linear', 'TBD2linearstar', 'TBD2exponential', 'TBD2exponentialstar'
+    # ]
 
     # Grab all Results folders (for 100 feature datasets)
     # * can later potentially add the dataset feature lengths you want for the heatmap as a parameter (ex. 100 for a_100 datasets)
