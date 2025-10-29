@@ -44,3 +44,7 @@ from .baseswrf import TBD2linearstar
 from .baseswrf import TBD2linear
 from .baseswrf import TBD2exponentialstar
 from .baseswrf import TBD2exponential
+from .baseswrf import TBD2linear3SDstar
+from .baseswrf import TBD2linear3SD
+from .baseswrf import TBD2exponential3SDstar
+from .baseswrf import TBD2exponential3SD

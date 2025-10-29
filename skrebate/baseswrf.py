@@ -137,6 +137,48 @@ def tbd2_exponential_weight(distances, mean, std, dead_band=None):
     
     return weights
 
+def tbd2_linear_3sd_weight(distances, mean, std, dead_band=None):
+    distances = np.asarray(distances, dtype=float)
+    lower, upper = deadband_bounds(mean, std, dead_band)
+    
+    weights = np.zeros_like(distances, dtype=float)
+    
+    near_mask = distances < lower
+    # linear weighting based on how many SD's an instance is from the lower bound; becomes 1 at 1.5 SD (b/c that is 2 SD away from mean)
+    weights[near_mask] = (((distances[near_mask] - lower) / std) / (2.5)) * -1
+    # make sure the weights don't exceed 1:
+    weights[near_mask] = np.minimum(weights[near_mask], 1.0)
+    
+    far_mask = distances > upper
+    # weights between 0 and -1
+    weights[far_mask] = (((distances[far_mask] - upper) / std) / (2.5)) * -1
+    weights[far_mask] = np.maximum(weights[far_mask], -1.0)
+    
+    return weights
+
+def tbd2_exponential_3sd_weight(distances, mean, std, dead_band=None):
+    distances = np.asarray(distances, dtype=float)
+    lower, upper = deadband_bounds(mean, std, dead_band)
+    
+    weights = np.zeros_like(distances, dtype=float)
+    
+    near_mask = distances < lower
+    # weights[near_mask] = 1.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower)))
+    # weights[near_mask] = 2.0 / (1.0 + np.exp(scale*(distances[near_mask] - lower))) - 1.0
+    # weights[near_mask] = (2.0 / (1.0 + np.exp(-scale*(distances[near_mask] - lower))) - 1.0) * -1
+    weights[near_mask] = ((distances[near_mask] - lower) / std)**2 / (2.5)**2
+    # make sure the weights don't exceed 1:
+    weights[near_mask] = np.minimum(weights[near_mask], 1.0)
+    
+    far_mask = distances > upper
+    # weights[far_mask] = -1.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper)))
+    # weights[far_mask] = -2.0 / (1.0 + np.exp(-scale*(distances[far_mask] - upper))) + 1.0
+    weights[far_mask] = (((distances[far_mask] - upper) / std)**2 / (2.5)**2) * -1
+    # make sure the weights don't go lower than -1:
+    weights[far_mask] = np.maximum(weights[far_mask], -1.0)
+    
+    return weights
+
 class BaseSWRF(ReliefF):
     def __init__(self, name, weight_func, ignore_far=False, **kwargs):
         super().__init__(**kwargs)
@@ -315,9 +357,15 @@ class BaseSWRF(ReliefF):
                 y_vals = tbd1_weight(x_vals, mean_dist, std_dist, dead_band)
             elif 'TBD_2' in self.name:
                 if 'linear' in self.name:
-                    y_vals = tbd2_linear_weight(x_vals, mean_dist, std_dist, dead_band)
+                    if '3SD' in self.name:
+                        y_vals = tbd2_linear_3sd_weight(x_vals, mean_dist, std_dist, dead_band)
+                    else:
+                        y_vals = tbd2_linear_weight(x_vals, mean_dist, std_dist, dead_band)
                 elif 'exponential' in self.name:
-                    y_vals = tbd2_exponential_weight(x_vals, mean_dist, std_dist, dead_band)
+                    if '3SD' in self.name:
+                        y_vals = tbd2_exponential_3sd_weight(x_vals, mean_dist, std_dist, dead_band)
+                    else:
+                        y_vals = tbd2_exponential_weight(x_vals, mean_dist, std_dist, dead_band)
                 else:
                     y_vals = tbd2_weight(x_vals, mean_dist, std_dist, dead_band)
             else:
@@ -405,3 +453,20 @@ class TBD2exponential(BaseSWRF):
 class TBD2exponentialstar(BaseSWRF):
     def __init__(self, **kwargs):
         super().__init__('TBD_2_exponential*', tbd2_exponential_weight, ignore_far=False, **kwargs)
+
+# 3 SD versions of TBD2 variants:
+class TBD2linear3SD(BaseSWRF):
+    def __init__(self, **kwargs):
+        super().__init__('TBD_2_linear_3SD', tbd2_linear_3sd_weight, ignore_far=True, **kwargs)
+
+class TBD2linear3SDstar(BaseSWRF):
+    def __init__(self, **kwargs):
+        super().__init__('TBD_2_linear_3SD*', tbd2_linear_3sd_weight, ignore_far=False, **kwargs)
+
+class TBD2exponential3SD(BaseSWRF):
+    def __init__(self, **kwargs):
+        super().__init__('TBD_2_exponential_3SD', tbd2_exponential_3sd_weight, ignore_far=True, **kwargs)
+
+class TBD2exponential3SDstar(BaseSWRF):
+    def __init__(self, **kwargs):
+        super().__init__('TBD_2_exponential_3SD*', tbd2_exponential_3sd_weight, ignore_far=False, **kwargs)

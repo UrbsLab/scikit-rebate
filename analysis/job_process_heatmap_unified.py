@@ -70,7 +70,7 @@ def main():
     #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','TBD1','TBD1star','TBD2','TBD2star'
     # ]
     rba_order = [
-        'RandomShuffle', 'MutualInfo', 'TBD2', 'TBD2star', 'TBD2linear', 'TBD2linearstar', 'TBD2exponential', 'TBD2exponentialstar'
+        'RandomShuffle', 'MutualInfo', 'TBD2', 'TBD2star', 'TBD2linear', 'TBD2linear3SD', 'TBD2linearstar', 'TBD2linear3SDstar', 'TBD2exponential', 'TBD2exponential3SD', 'TBD2exponentialstar', 'TBD2exponential3SDstar'
     ]
     # rba_order = [
     #     'TBD2', 'TBD2star'
@@ -414,7 +414,8 @@ def main():
     outdir = os.path.basename(os.path.normpath(args.basedir))
     parentdir = os.path.dirname(os.path.normpath(args.basedir))
     # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps.pdf")
-    save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_tbd2test.pdf")
+    # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_tbd2test.pdf")
+    save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_tbd2test_with3sd.pdf")
     # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_validcheck.pdf")
     plt.savefig(save_path, format='pdf', bbox_inches='tight')
     plt.close()
