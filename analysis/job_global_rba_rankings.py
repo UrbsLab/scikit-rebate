@@ -72,7 +72,7 @@ def main():
         "maineff_2": "GAMETES_2.2_dev_peter_mainEff_additive_2_Datasets_2Het_Loc_1_Qnt_2_Pop_100000",
         "maineff_4": "GAMETES_2.2_dev_peter_mainEff_additive_4_Datasets_2Het_Loc_1_Qnt_2_Pop_100000",
         "2wayepi": "GAMETES_2.2_dev_peter_2wayEpiHeterogeneity_Datasets_2Het_Loc_2_Qnt_2_Pop_100000",
-        "epi_order": "GAMETES_2.2_dev_peter_epi_order_Datasets_Loc_3_Qnt_2_Pop_100000"
+        "epi_order": "GAMETES_2.2_dev_peter_epi_order_Datasets_Loc_3_Qnt_2_Pop_100000",
     }
 
     user_include = args.include
