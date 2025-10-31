@@ -81,7 +81,8 @@ def main():
         # map the user-specified short names to actual subdirectory names
         include_subdirs = []
         for short_name in user_include:
-            full_name = SHORT_TO_FULL_SUBDIR.get(short_name)
+            # full_name = SHORT_TO_FULL_SUBDIR.get(short_name)
+            full_name = SHORT_TO_FULL_SUBDIR.get(short_name.lower())
             if full_name:
                 include_subdirs.append(full_name)
             else:
