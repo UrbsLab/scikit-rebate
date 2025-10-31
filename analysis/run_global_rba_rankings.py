@@ -52,7 +52,7 @@ def main():
     parser = argparse.ArgumentParser(description="Submit global RBA rankings job(s).")
     parser.add_argument('--rootdir', required=True, help='Root directory containing dataset subdirectories.')
     parser.add_argument('--hpctype', choices=['lsf', 'slurm'], default='slurm', help='Scheduler type.')
-    parser.add_argument('--script', default='global_rba_rankings.py', help='Python script to run.')
+    parser.add_argument('--script', default='job_global_rba_rankings.py', help='Python script to run.')
     parser.add_argument('--jobdir', default='jobs', help='Directory to store job scripts.')
     parser.add_argument('--logdir', default='logs', help='Directory to store logs.')
     parser.add_argument('--include', nargs='+', default=None, help='Optional list of subdirectories to include (short names).')
