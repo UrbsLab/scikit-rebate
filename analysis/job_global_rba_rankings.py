@@ -1,4 +1,4 @@
-# global_rba_rankings.py
+# job_global_rba_rankings.py
 import os
 import argparse
 import pandas as pd
