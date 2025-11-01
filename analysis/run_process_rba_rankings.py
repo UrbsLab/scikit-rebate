@@ -56,39 +56,39 @@ def main():
     os.makedirs(args.jobdir, exist_ok=True)
     os.makedirs(args.logdir, exist_ok=True)
 
-    # job_name = f"rba_rankings_global_{int(time.time())}"
-    # generate_job_script(args.hpctype, args.script, args.rootdir, job_name, args.jobdir, args.logdir)
-    # print(f"Submitted single global job for: {args.rootdir}")
-
     root_basename = os.path.basename(os.path.normpath(args.rootdir))
 
-    # --- CASE 1: User submitted top-level directory (AbsVal_Benchmark_Data)
-    if root_basename.lower() == "absval_benchmark_data":
-        print(f"[INFO] Detected top-level directory: {root_basename}")
-        subdirs = [
-            os.path.join(args.rootdir, d)
-            for d in os.listdir(args.rootdir)
-            if os.path.isdir(os.path.join(args.rootdir, d))
-        ]
-        if not subdirs:
-            print(f"[WARN] No subdirectories found under {args.rootdir}")
-            return
+    job_name = f"rba_rankings_{root_basename}_{int(time.time())}"
+    generate_job_script(args.hpctype, args.script, args.rootdir, job_name, args.jobdir, args.logdir)
+    print(f"Submitted single job for: {args.rootdir}")
 
-        print(f"[INFO] Found {len(subdirs)} dataset directories. Submitting one job per dataset...")
+    # # --- CASE 1: User submitted top-level directory (AbsVal_Benchmark_Data)
+    # if root_basename.lower() == "absval_benchmark_data":
+    #     print(f"[INFO] Detected top-level directory: {root_basename}")
+    #     subdirs = [
+    #         os.path.join(args.rootdir, d)
+    #         for d in os.listdir(args.rootdir)
+    #         if os.path.isdir(os.path.join(args.rootdir, d))
+    #     ]
+    #     if not subdirs:
+    #         print(f"[WARN] No subdirectories found under {args.rootdir}")
+    #         return
 
-        for subdir in subdirs:
-            sub_basename = os.path.basename(subdir.rstrip('/'))
-            job_name = f"rba_rankings_{sub_basename}_{int(time.time())}"
-            generate_job_script(args.hpctype, args.script, subdir, job_name, args.jobdir, args.logdir)
+    #     print(f"[INFO] Found {len(subdirs)} dataset directories. Submitting one job per dataset...")
 
-        print(f"[INFO] Submitted {len(subdirs)} jobs for all dataset directories under {args.rootdir}.")
+    #     for subdir in subdirs:
+    #         sub_basename = os.path.basename(subdir.rstrip('/'))
+    #         job_name = f"rba_rankings_{sub_basename}_{int(time.time())}"
+    #         generate_job_script(args.hpctype, args.script, subdir, job_name, args.jobdir, args.logdir)
 
-    # --- CASE 2: User submitted a specific dataset folder (e.g., mainEff)
-    else:
-        print(f"[INFO] Detected dataset-level directory: {root_basename}")
-        job_name = f"rba_rankings_{root_basename}_{int(time.time())}"
-        generate_job_script(args.hpctype, args.script, args.rootdir, job_name, args.jobdir, args.logdir)
-        print(f"[INFO] Submitted single job for: {args.rootdir}")
+    #     print(f"[INFO] Submitted {len(subdirs)} jobs for all dataset directories under {args.rootdir}.")
+
+    # # --- CASE 2: User submitted a specific dataset folder (e.g., mainEff)
+    # else:
+    #     print(f"[INFO] Detected dataset-level directory: {root_basename}")
+    #     job_name = f"rba_rankings_{root_basename}_{int(time.time())}"
+    #     generate_job_script(args.hpctype, args.script, args.rootdir, job_name, args.jobdir, args.logdir)
+    #     print(f"[INFO] Submitted single job for: {args.rootdir}")
 
 
 if __name__ == "__main__":
