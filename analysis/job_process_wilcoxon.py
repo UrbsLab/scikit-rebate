@@ -1,0 +1,82 @@
+# job_process_wilcoxon.py
+import os
+import argparse
+import pandas as pd
+import numpy as np
+from itertools import combinations
+from scipy.stats import ranksums
+from statsmodels.stats.multitest import multipletests
+
+def permutation_test(x, y, U_obs, n_permutations=10000, seed=42):
+    np.random.seed(seed)
+    combined = np.concatenate([x, y])
+    count = 0
+    n_x = len(x)
+    for _ in range(n_permutations):
+        np.random.shuffle(combined)
+        new_x = combined[:n_x]
+        new_y = combined[n_x:]
+        U_perm = ranksums(new_x, new_y).statistic
+        if abs(U_perm) >= abs(U_obs):
+            count += 1
+    return count / n_permutations
+
+def process_dir(dir_path, column='rank', exclude_patterns=None):
+    exclude_patterns = exclude_patterns or []
+    df = pd.read_csv(os.path.join(dir_path, 'rankings_list.csv'), comment='#')
+
+    # Normalize column names
+    col_to_use = 'Rank' if column == 'rank' else 'Feature_Importance'
+
+    # Group by RBA
+    rba_groups = {rba: g[col_to_use].values for rba, g in df.groupby('RBA') 
+                  if not any(p.lower() in rba.lower() for p in exclude_patterns)}
+
+    results = []
+
+    for rba1, rba2 in combinations(rba_groups.keys(), 2):
+        x = rba_groups[rba1]
+        y = rba_groups[rba2]
+        wilcoxon_res = ranksums(x, y)  # Wilcoxon rank-sum with tie correction by default in SciPy
+        row = {
+            'RBA1': rba1,
+            'RBA2': rba2,
+            'wilcoxon_statistic': wilcoxon_res.statistic,
+            'wilcoxon_pvalue': wilcoxon_res.pvalue
+        }
+
+        # Permutation test only for rank
+        if column == 'rank':
+            perm_p = permutation_test(x, y, wilcoxon_res.statistic)
+            row['permutation_pvalue'] = perm_p
+
+        results.append(row)
+
+    results_df = pd.DataFrame(results)
+
+    # Sorting
+    if column == 'rank':
+        # Bonferroni
+        results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='bonferroni')[1]
+        results_df['permutation_p_adj'] = multipletests(results_df['permutation_pvalue'], method='bonferroni')[1]
+        # results_df.sort_values(by=['wilcoxon_pvalue', 'permutation_pvalue'], ascending=True, inplace=True)
+        results_df.sort_values(by=['wilcoxon_p_adj', 'permutation_p_adj'], ascending=True, inplace=True)
+        output_file = os.path.join(dir_path, 'wilcoxon_ranks.csv')
+    else:
+        # Bonferroni
+        results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='bonferroni')[1]
+        # results_df.sort_values(by=['wilcoxon_pvalue'], ascending=True, inplace=True)
+        results_df.sort_values(by=['wilcoxon_p_adj'], ascending=True, inplace=True)
+        output_file = os.path.join(dir_path, 'wilcoxon_feature_importances.csv')
+
+    results_df.to_csv(output_file, index=False)
+    print(f"Results saved to {output_file}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("dir_path", help="Directory containing rankings_list.csv")
+    parser.add_argument("--column", choices=['rank', 'feature_importance'], default='rank', help="Column to test")
+    parser.add_argument("--exclude", nargs='*', default=[], help="RBA name patterns to exclude (case insensitive)")
+    args = parser.parse_args()
+
+    process_dir(args.dir_path, column=args.column, exclude_patterns=args.exclude)
