@@ -56,15 +56,15 @@ def process_dir(dir_path, column='rank', exclude_patterns=None):
 
     # Sorting
     if column == 'rank':
-        # Bonferroni
-        results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='bonferroni')[1]
-        results_df['permutation_p_adj'] = multipletests(results_df['permutation_pvalue'], method='bonferroni')[1]
+        # Benjamini-Hochberg
+        results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='fdr_bh')[1]
+        results_df['permutation_p_adj'] = multipletests(results_df['permutation_pvalue'], method='fdr_bh')[1]
         # results_df.sort_values(by=['wilcoxon_pvalue', 'permutation_pvalue'], ascending=True, inplace=True)
         results_df.sort_values(by=['wilcoxon_p_adj', 'permutation_p_adj'], ascending=True, inplace=True)
         output_file = os.path.join(dir_path, 'wilcoxon_ranks.csv')
     else:
-        # Bonferroni
-        results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='bonferroni')[1]
+        # Benjamini-Hochberg
+        results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='fdr_bh')[1]
         # results_df.sort_values(by=['wilcoxon_pvalue'], ascending=True, inplace=True)
         results_df.sort_values(by=['wilcoxon_p_adj'], ascending=True, inplace=True)
         output_file = os.path.join(dir_path, 'wilcoxon_feature_importances.csv')
