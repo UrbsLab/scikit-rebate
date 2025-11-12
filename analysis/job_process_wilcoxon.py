@@ -16,6 +16,7 @@ def permutation_test(x, y, U_obs, n_permutations=10000, seed=42):
         np.random.shuffle(combined)
         new_x = combined[:n_x]
         new_y = combined[n_x:]
+        # Z-score using U
         U_perm = ranksums(new_x, new_y).statistic
         if abs(U_perm) >= abs(U_obs):
             count += 1
@@ -26,7 +27,7 @@ def process_dir(dir_path, column='rank', exclude_patterns=None):
     df = pd.read_csv(os.path.join(dir_path, 'rankings_list.csv'), comment='#')
 
     # Normalize column names
-    col_to_use = 'Rank' if column == 'rank' else 'Feature_Importance'
+    col_to_use = 'Rank' if column == 'rank' else 'Normalized_Feature_Importance'
 
     # Group by RBA
     rba_groups = {rba: g[col_to_use].values for rba, g in df.groupby('RBA') 
@@ -67,7 +68,8 @@ def process_dir(dir_path, column='rank', exclude_patterns=None):
         results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='fdr_bh')[1]
         # results_df.sort_values(by=['wilcoxon_pvalue'], ascending=True, inplace=True)
         results_df.sort_values(by=['wilcoxon_p_adj'], ascending=True, inplace=True)
-        output_file = os.path.join(dir_path, 'wilcoxon_feature_importances.csv')
+        # output_file = os.path.join(dir_path, 'wilcoxon_feature_importances.csv')
+        output_file = os.path.join(dir_path, 'wilcoxon_normalized_feature_importances.csv')
 
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")

@@ -35,9 +35,12 @@ def collect_rba_rankings(root_dir):
                     df.sort_values(by='Feature_Importance', ascending=False, inplace=True)
                     df.reset_index(drop=True, inplace=True)
                     df['Rank'] = df.index + 1
+                    # Normalize feature importance between 0 and 1
+                    df['Normalized_Feature_Importance'] = (df['Feature_Importance'] - df['Feature_Importance'].min()) / \
+                                                            (df['Feature_Importance'].max() - df['Feature_Importance'].min())
 
                     # Only keep true predictive features
-                    predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Feature_Importance', 'Rank']]
+                    predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank']]
                     predictive_df['RBA'] = rba
 
                     # for subgroup ranking (ex. mainEff, her=0.2, EDM-1); i.e. group of 30 replicate dataset files
@@ -90,7 +93,7 @@ def compute_summary_stats(rankings_df, save_dir):
     # --- Write detailed rankings CSV with title ---
     with open(rankings_list_path, 'w') as f:
         f.write(f"# {title}\n")
-        rankings_df[['Feature', 'Feature_Importance', 'Rank', 'RBA']].to_csv(f, index=False)
+        rankings_df[['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank', 'RBA']].to_csv(f, index=False)
     print(f"Saved detailed rankings list: {rankings_list_path}")
 
 
