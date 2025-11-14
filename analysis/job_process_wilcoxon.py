@@ -4,7 +4,7 @@ import argparse
 import pandas as pd
 import numpy as np
 from itertools import combinations
-from scipy.stats import ranksums
+from scipy.stats import ranksums, mannwhitneyu
 from statsmodels.stats.multitest import multipletests
 
 def permutation_test(x, y, U_obs, n_permutations=10000, seed=42):
@@ -12,13 +12,17 @@ def permutation_test(x, y, U_obs, n_permutations=10000, seed=42):
     combined = np.concatenate([x, y])
     count = 0
     n_x = len(x)
+    expected_U = len(x) * len(y) / 2
     for _ in range(n_permutations):
         np.random.shuffle(combined)
         new_x = combined[:n_x]
         new_y = combined[n_x:]
         # Z-score using U
-        U_perm = ranksums(new_x, new_y).statistic
-        if abs(U_perm) >= abs(U_obs):
+        # U_perm = ranksums(new_x, new_y).statistic
+        U_perm = mannwhitneyu(new_x, new_y, alternative="two-sided", method="asymptotic").statistic
+
+        # if abs(U_perm) >= abs(U_obs):
+        if abs(U_perm - expected_U) >= abs(U_obs - expected_U):
             count += 1
     return count / n_permutations
 
@@ -38,7 +42,8 @@ def process_dir(dir_path, column='rank', exclude_patterns=None):
     for rba1, rba2 in combinations(rba_groups.keys(), 2):
         x = rba_groups[rba1]
         y = rba_groups[rba2]
-        wilcoxon_res = ranksums(x, y)  # Wilcoxon rank-sum with tie correction by default in SciPy
+        # wilcoxon_res = ranksums(x, y)
+        wilcoxon_res = mannwhitneyu(x, y, alternative="two-sided", method="asymptotic")
         row = {
             'RBA1': rba1,
             'RBA2': rba2,
