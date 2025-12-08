@@ -52,7 +52,7 @@ def process_and_save_results(file_path, fs, method_name):
 
     if method_name in ["SWRFstar2", "SWRF", "TBD1", "TBD1star", "TBD2", "TBD2star", "TBD2linear", "TBD2linearstar", "TBD2exponential", "TBD2exponentialstar", "TBD2linear3SD", "TBD2linear3SDstar", "TBD2exponential3SD", "TBD2exponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief"]:
         # fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
-        fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), save_fig=os.path.join(method_dir, f"{base_name}_stdweightlog.txt"), show_expected=True)
+        fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), save_file=os.path.join(method_dir, f"{base_name}_stdweightlog.txt"), show_expected=True)
 
     print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
 
