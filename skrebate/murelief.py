@@ -54,6 +54,7 @@ class MuRelief(ReliefF):
                     locator.reverse()
                 dist_vect.append(self._distance_array[locator[0]][locator[1]])
                 d = self._distance_array[locator[0]][locator[1]]
+                print("Distance between", inst, "and", j, ":", d)
                 # # NEW: calculating mean for each class/outcome group
                 # if self._class_type in ('binary', 'multiclass'):
                 #     label = self._y[j]
@@ -91,6 +92,7 @@ class MuRelief(ReliefF):
             else:
                 # later to be replaced by the mean of dist_vect so that the target instance is never selected as its own neighbor
                 dist_vect.append(sys.maxsize)
+                print("Distance added to dist_vect for inst:", sys.maxsize)
 
         dist_vect = np.array(dist_vect)
         inst_mean_dist = np.average(dist_vect)
@@ -100,6 +102,7 @@ class MuRelief(ReliefF):
 
         # replacing the value for the target instance to the mean so that it is never selected as its own neighbor in μ-Relief
         dist_vect[inst] = inst_mean_dist
+        print("Dist_vect after setting dist_vect[inst] = inst_mean_dist:", dist_vect)
 
         # NEW: unique mean, std, and deadband values for this target instance, used to construct the expected curve in distance-weight plot
         self.instance_dist_stats.append((inst_mean_dist, true_std, inst_std))
@@ -121,6 +124,7 @@ class MuRelief(ReliefF):
         #     abs_diff_vect[idx_arr] = np.abs(dist_vect[idx_arr] - mean_dist)
 
         abs_diff_vect = np.abs(dist_vect - inst_mean_dist)
+        print("Absolute difference vector:", abs_diff_vect)
         # # sorting in descending order
         # abs_diff_vect = np.sort(abs_diff_vect)[::-1]
 
@@ -163,6 +167,7 @@ class MuRelief(ReliefF):
                 
                 # for distance-weight plot purposes
                 d = dist_vect[n_index]
+                print("Distance from", inst, "for", n_index, ":", d)
                 self.distance_weight_log.append((d, 1.0))
                 # self.distance_weight_log[n_index] = (d, 1.0)
                 std_d = (d - inst_mean_dist) / true_std
