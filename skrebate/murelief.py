@@ -54,39 +54,39 @@ class MuRelief(ReliefF):
                     locator.reverse()
                 dist_vect.append(self._distance_array[locator[0]][locator[1]])
                 d = self._distance_array[locator[0]][locator[1]]
-                # NEW: calculating mean for each class/outcome group
-                if self._class_type in ('binary', 'multiclass'):
-                    label = self._y[j]
+                # # NEW: calculating mean for each class/outcome group
+                # if self._class_type in ('binary', 'multiclass'):
+                #     label = self._y[j]
 
-                    # If key doesn't exist: create ([], [])
-                    if label not in means_calc:
-                        means_calc[label] = ([], [])
+                #     # If key doesn't exist: create ([], [])
+                #     if label not in means_calc:
+                #         means_calc[label] = ([], [])
 
-                    # Unpack lists
-                    dist_list, idx_list = means_calc[label]
+                #     # Unpack lists
+                #     dist_list, idx_list = means_calc[label]
 
-                    # Append data
-                    dist_list.append(d)
-                    idx_list.append(j)
+                #     # Append data
+                #     dist_list.append(d)
+                #     idx_list.append(j)
                 
-                elif self._class_type == 'continuous':
-                    # Determine group 1 or 0
-                    if abs(self._y[inst] - self._y[j]) < self._labels_std:
-                        group = 1
-                    else:
-                        group = 0
+                # elif self._class_type == 'continuous':
+                #     # Determine group 1 or 0
+                #     if abs(self._y[inst] - self._y[j]) < self._labels_std:
+                #         group = 1
+                #     else:
+                #         group = 0
 
-                    # If key doesn't exist: create ([], [])
-                    if group not in means_calc:
-                        means_calc[group] = ([], [])
+                #     # If key doesn't exist: create ([], [])
+                #     if group not in means_calc:
+                #         means_calc[group] = ([], [])
 
-                    # Unpack lists
-                    dist_list, idx_list = means_calc[group]
+                #     # Unpack lists
+                #     dist_list, idx_list = means_calc[group]
 
-                    # Append data
-                    dist_list.append(d)
-                    idx_list.append(j)
-                # END NEW
+                #     # Append data
+                #     dist_list.append(d)
+                #     idx_list.append(j)
+                # # END NEW
 
             else:
                 # later to be replaced by the mean of dist_vect so that the target instance is never selected as its own neighbor
@@ -108,19 +108,19 @@ class MuRelief(ReliefF):
         self.distance_weight_log = [(d, 0.0) for d in dist_vect]
         self.std_weight_log = [((d - inst_mean_dist) / true_std, 0.0) for d in dist_vect]
 
-        # NEW: calculating mean distance for each outcome group
-        for label, (dist_list, idx_list) in means_calc.items():
-            mean_dist = float(np.mean(dist_list)) if dist_list else 0.0
-            means_calc[label] = (dist_list, idx_list, mean_dist)
+        # # NEW: calculating mean distance for each outcome group
+        # for label, (dist_list, idx_list) in means_calc.items():
+        #     mean_dist = float(np.mean(dist_list)) if dist_list else 0.0
+        #     means_calc[label] = (dist_list, idx_list, mean_dist)
 
-        # creating a new 'absolute difference between the observed distance and the mean distance' vector
-        # * mean is unique per outcome group
-        abs_diff_vect = np.zeros(self._datalen)
-        for _, (dist_list, idx_list, mean_dist) in means_calc.items():
-            idx_arr = np.array(idx_list)
-            abs_diff_vect[idx_arr] = np.abs(dist_vect[idx_arr] - mean_dist)
+        # # creating a new 'absolute difference between the observed distance and the mean distance' vector
+        # # * mean is unique per outcome group
+        # abs_diff_vect = np.zeros(self._datalen)
+        # for _, (dist_list, idx_list, mean_dist) in means_calc.items():
+        #     idx_arr = np.array(idx_list)
+        #     abs_diff_vect[idx_arr] = np.abs(dist_vect[idx_arr] - mean_dist)
 
-        # abs_diff_vect = np.abs(dist_vect - inst_mean_dist)
+        abs_diff_vect = np.abs(dist_vect - inst_mean_dist)
         # # sorting in descending order
         # abs_diff_vect = np.sort(abs_diff_vect)[::-1]
 
@@ -313,7 +313,7 @@ class MuRelief(ReliefF):
         plt.ylabel('Scoring Weight')
         plt.grid(True)
         # NEW: grid lines different from x-tick labels:
-        plt.gca().set_xticks(np.arange(-3, 4, 1), minor=False)
+        # plt.gca().set_xticks(np.arange(-3, 4, 1), minor=False)
         plt.ylim(-1.1, 1.1)
         # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
         # plt.xlim(0, 1.0)
