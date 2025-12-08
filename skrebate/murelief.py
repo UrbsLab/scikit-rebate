@@ -261,7 +261,7 @@ class MuRelief(ReliefF):
 
         return np.array(scores)
     
-    def plot_distance_weight_map(self, save_fig=None, show_expected=True):
+    def plot_distance_weight_map(self, save_fig=None, save_file=None, show_expected=True):
         """Visualize actual (distance, weight) pairs collected during Relief run."""
         if not self.distance_weight_log:
             print("No data logged yet. Run the algorithm first.")
@@ -306,6 +306,12 @@ class MuRelief(ReliefF):
                 # plt.plot(x_vals, y_vals, label='Expected', linewidth=2, color='black')
                 # NEW: use x_vals STD instead
                 plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
+        
+        sorted_log = sorted(self.std_weight_log, key=lambda x: x[0], reverse=True)
+        # Write to text file
+        with open(save_file, "w") as f:
+            for tup in sorted_log:
+                f.write(f"{tup}\n")
 
         plt.title(f'Distance-to-Weight Mapping: μ-Relief')
         plt.xlabel('Distance from Target Instance')
