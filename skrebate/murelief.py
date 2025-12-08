@@ -105,8 +105,8 @@ class MuRelief(ReliefF):
         self.instance_dist_stats.append((inst_mean_dist, true_std, inst_std))
 
         # initializing all weights to 0 before the k neighbors (and only those neighbors) get weights of 1
-        self.distance_weight_log = [(d, 0.0) for d in dist_vect]
-        self.std_weight_log = [((d - inst_mean_dist) / true_std, 0.0) for d in dist_vect]
+        # self.distance_weight_log = [(d, 0.0) for d in dist_vect]
+        # self.std_weight_log = [((d - inst_mean_dist) / true_std, 0.0) for d in dist_vect]
 
         # # NEW: calculating mean distance for each outcome group
         # for label, (dist_list, idx_list) in means_calc.items():
@@ -163,11 +163,11 @@ class MuRelief(ReliefF):
                 
                 # for distance-weight plot purposes
                 d = dist_vect[n_index]
-                # self.distance_weight_log.append((d, 1.0))
-                self.distance_weight_log[n_index] = (d, 1.0)
+                self.distance_weight_log.append((d, 1.0))
+                # self.distance_weight_log[n_index] = (d, 1.0)
                 std_d = (d - inst_mean_dist) / true_std
-                # self.std_weight_log.append((std_d, 1.0))
-                self.std_weight_log[n_index] = (std_d, 1.0)
+                self.std_weight_log.append((std_d, 1.0))
+                # self.std_weight_log[n_index] = (std_d, 1.0)
 
                 if match_count >= self.n_neighbors and miss_count >= self.n_neighbors:
                     break
@@ -192,11 +192,11 @@ class MuRelief(ReliefF):
                 
                 # for distance-weight plot purposes
                 d = dist_vect[n_index]
-                # self.distance_weight_log.append((d, 1.0))
-                self.distance_weight_log[n_index] = (d, 1.0)
+                self.distance_weight_log.append((d, 1.0))
+                # self.distance_weight_log[n_index] = (d, 1.0)
                 std_d = (d - inst_mean_dist) / true_std
-                # self.std_weight_log.append((std_d, 1.0))
-                self.std_weight_log[n_index] = (std_d, 1.0)
+                self.std_weight_log.append((std_d, 1.0))
+                # self.std_weight_log[n_index] = (std_d, 1.0)
 
                 if match_count >= self.n_neighbors and all(v >= self.n_neighbors for v in miss_count.values()):
                     break
@@ -218,23 +218,23 @@ class MuRelief(ReliefF):
                 
                 # for distance-weight plot purposes
                 d = dist_vect[n_index]
-                # self.distance_weight_log.append((d, 1.0))
-                self.distance_weight_log[n_index] = (d, 1.0)
+                self.distance_weight_log.append((d, 1.0))
+                # self.distance_weight_log[n_index] = (d, 1.0)
                 std_d = (d - inst_mean_dist) / true_std
-                # self.std_weight_log.append((std_d, 1.0))
-                self.std_weight_log[n_index] = (std_d, 1.0)
+                self.std_weight_log.append((std_d, 1.0))
+                # self.std_weight_log[n_index] = (std_d, 1.0)
 
                 if match_count >= self.n_neighbors and miss_count >= self.n_neighbors:
                     break
         
-        # # for distance-weight plot purposes
-        # distances_set = {dist for dist, _ in self.distance_weight_log}
-        # for d in dist_vect:
-        #     if d not in distances_set:
-        #         self.distance_weight_log.append((d, 0.0))
-        #         std_d = (d - inst_mean_dist) / true_std
-        #         self.std_weight_log.append((std_d, 0.0))
-        #         distances_set.add(d)
+        # for distance-weight plot purposes
+        distances_set = {dist for dist, _ in self.distance_weight_log}
+        for d in dist_vect:
+            if d not in distances_set:
+                self.distance_weight_log.append((d, 0.0))
+                std_d = (d - inst_mean_dist) / true_std
+                self.std_weight_log.append((std_d, 0.0))
+                distances_set.add(d)
         
         return np.array(n_list)
 
