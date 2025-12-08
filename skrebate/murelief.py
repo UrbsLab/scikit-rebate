@@ -228,13 +228,13 @@ class MuRelief(ReliefF):
                     break
         
         # for distance-weight plot purposes
-        distances_set = {dist for dist, _ in self.distance_weight_log}
-        for d in dist_vect:
-            if d not in distances_set:
-                self.distance_weight_log.append((d, 0.0))
-                std_d = (d - inst_mean_dist) / true_std
-                self.std_weight_log.append((std_d, 0.0))
-                distances_set.add(d)
+        # distances_set = {dist for dist, _ in self.distance_weight_log}
+        # for d in dist_vect:
+        #     if d not in distances_set:
+        #         self.distance_weight_log.append((d, 0.0))
+        #         std_d = (d - inst_mean_dist) / true_std
+        #         self.std_weight_log.append((std_d, 0.0))
+        #         distances_set.add(d)
         
         return np.array(n_list)
 
