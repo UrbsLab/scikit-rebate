@@ -54,7 +54,7 @@ class MuRelief(ReliefF):
                     locator.reverse()
                 dist_vect.append(self._distance_array[locator[0]][locator[1]])
                 d = self._distance_array[locator[0]][locator[1]]
-                print("Distance between", inst, "and", j, ":", d)
+                # print("Distance between", inst, "and", j, ":", d)
                 # # NEW: calculating mean for each class/outcome group
                 # if self._class_type in ('binary', 'multiclass'):
                 #     label = self._y[j]
@@ -103,7 +103,7 @@ class MuRelief(ReliefF):
         # replacing the value for the target instance to the mean so that it is never selected as its own neighbor in μ-Relief
         # dist_vect[inst] = inst_mean_dist
         dist_vect = np.insert(dist_vect, inst, inst_mean_dist)
-        print("Dist_vect after setting dist_vect[inst] = inst_mean_dist:", dist_vect)
+        # print("Dist_vect after setting dist_vect[inst] = inst_mean_dist:", dist_vect)
 
         # NEW: unique mean, std, and deadband values for this target instance, used to construct the expected curve in distance-weight plot
         self.instance_dist_stats.append((inst_mean_dist, true_std, inst_std))
@@ -125,7 +125,7 @@ class MuRelief(ReliefF):
         #     abs_diff_vect[idx_arr] = np.abs(dist_vect[idx_arr] - mean_dist)
 
         abs_diff_vect = np.abs(dist_vect - inst_mean_dist)
-        print("Absolute difference vector:", abs_diff_vect)
+        # print("Absolute difference vector:", abs_diff_vect)
         # # sorting in descending order
         # abs_diff_vect = np.sort(abs_diff_vect)[::-1]
 
@@ -168,7 +168,7 @@ class MuRelief(ReliefF):
                 
                 # for distance-weight plot purposes
                 d = dist_vect[n_index]
-                print("Distance from", inst, "for", n_index, ":", d)
+                # print("Distance from", inst, "for", n_index, ":", d)
                 self.distance_weight_log.append((d, 1.0))
                 # self.distance_weight_log[n_index] = (d, 1.0)
                 std_d = (d - inst_mean_dist) / true_std
@@ -267,7 +267,7 @@ class MuRelief(ReliefF):
 
         return np.array(scores)
     
-    def plot_distance_weight_map(self, save_fig=None, save_file=None, show_expected=True):
+    def plot_distance_weight_map(self, save_fig=None, show_expected=True):
         """Visualize actual (distance, weight) pairs collected during Relief run."""
         if not self.distance_weight_log:
             print("No data logged yet. Run the algorithm first.")
@@ -313,11 +313,11 @@ class MuRelief(ReliefF):
                 # NEW: use x_vals STD instead
                 plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
         
-        sorted_log = sorted(self.std_weight_log, key=lambda x: x[0], reverse=True)
-        # Write to text file
-        with open(save_file, "w") as f:
-            for tup in sorted_log:
-                f.write(f"{tup}\n")
+        # sorted_log = sorted(self.std_weight_log, key=lambda x: x[0], reverse=True)
+        # # Write to text file
+        # with open(save_file, "w") as f:
+        #     for tup in sorted_log:
+        #         f.write(f"{tup}\n")
 
         plt.title(f'Distance-to-Weight Mapping: μ-Relief')
         plt.xlabel('Distance from Target Instance')
