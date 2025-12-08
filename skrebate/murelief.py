@@ -89,10 +89,10 @@ class MuRelief(ReliefF):
                 #     idx_list.append(j)
                 # # END NEW
 
-            else:
-                # later to be replaced by the mean of dist_vect so that the target instance is never selected as its own neighbor
-                dist_vect.append(sys.maxsize)
-                print("Distance added to dist_vect for inst:", sys.maxsize)
+            # else:
+            #     # later to be replaced by the mean of dist_vect so that the target instance is never selected as its own neighbor
+            #     dist_vect.append(sys.maxsize)
+            #     print("Distance added to dist_vect for inst:", sys.maxsize)
 
         dist_vect = np.array(dist_vect)
         inst_mean_dist = np.average(dist_vect)
@@ -101,7 +101,8 @@ class MuRelief(ReliefF):
         true_std = np.std(dist_vect)
 
         # replacing the value for the target instance to the mean so that it is never selected as its own neighbor in μ-Relief
-        dist_vect[inst] = inst_mean_dist
+        # dist_vect[inst] = inst_mean_dist
+        dist_vect = np.insert(dist_vect, inst, inst_mean_dist)
         print("Dist_vect after setting dist_vect[inst] = inst_mean_dist:", dist_vect)
 
         # NEW: unique mean, std, and deadband values for this target instance, used to construct the expected curve in distance-weight plot
@@ -233,13 +234,13 @@ class MuRelief(ReliefF):
                     break
         
         # for distance-weight plot purposes
-        # distances_set = {dist for dist, _ in self.distance_weight_log}
-        # for d in dist_vect:
-        #     if d not in distances_set:
-        #         self.distance_weight_log.append((d, 0.0))
-        #         std_d = (d - inst_mean_dist) / true_std
-        #         self.std_weight_log.append((std_d, 0.0))
-        #         distances_set.add(d)
+        n_set = set(n_list)
+        for i in range(len(dist_vect)):
+            if i not in n_set:  # skip neighbors
+                d = dist_vect[i]
+                self.distance_weight_log.append((d, 0.0))
+                std_d = (d - inst_mean_dist) / true_std
+                self.std_weight_log.append((std_d, 0.0))
         
         return np.array(n_list)
 
