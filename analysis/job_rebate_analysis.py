@@ -10,7 +10,7 @@ import hashlib
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRFstar2, SWRF, TBD1star, TBD1, TBD2star, TBD2, TBD2linearstar, TBD2linear, TBD2exponentialstar, TBD2exponential, TBD2linear3SDstar, TBD2linear3SD, TBD2exponential3SDstar, TBD2exponential3SD
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRFstar2, SWRF, TBD1star, TBD1, TBD2star, TBD2, TBD2linearstar, TBD2linear, TBD2exponentialstar, TBD2exponential, TBD2linear3SDstar, TBD2linear3SD, TBD2exponential3SDstar, TBD2exponential3SD, MuRelief
 
 # NEW: added exist_ok=True
 def ensure_dir(directory):
@@ -50,7 +50,7 @@ def process_and_save_results(file_path, fs, method_name):
     Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
     ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
 
-    if method_name in ["SWRFstar2", "SWRF", "TBD1", "TBD1star", "TBD2", "TBD2star", "TBD2linear", "TBD2linearstar", "TBD2exponential", "TBD2exponentialstar", "TBD2linear3SD", "TBD2linear3SDstar", "TBD2exponential3SD", "TBD2exponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar"]:
+    if method_name in ["SWRFstar2", "SWRF", "TBD1", "TBD1star", "TBD2", "TBD2star", "TBD2linear", "TBD2linearstar", "TBD2exponential", "TBD2exponentialstar", "TBD2linear3SD", "TBD2linear3SDstar", "TBD2exponential3SD", "TBD2exponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief"]:
         fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
 
     print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
@@ -183,6 +183,10 @@ def process_TBD2exponential3SD(file_path):
     fs = TBD2exponential3SD()
     process_and_save_results(file_path, fs, "TBD2exponential3SD")
 
+def process_murelief(file_path):
+    fs = MuRelief()
+    process_and_save_results(file_path, fs, "MuRelief")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -214,6 +218,7 @@ def main():
         'tbd2linear3sd': process_TBD2linear3SD,
         'tbd2exponential3sdstar': process_TBD2exponential3SDstar,
         'tbd2exponential3sd': process_TBD2exponential3SD,
+        'murelief': process_murelief,
     }
 
     if args.algorithm not in alg_map:
