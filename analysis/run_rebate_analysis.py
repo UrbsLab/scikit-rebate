@@ -13,10 +13,12 @@ ALGORITHMS = [
     "random",
     "swrfstar2",
     "swrf",
-    "tbd1star",
-    "tbd1",
-    "tbd2star",
-    "tbd2",
+    "multiswrfstar",
+    "multiswrf",
+    "multiswrfdbstar",
+    "multiswrfdb",
+    "murelief10",
+    "murelief100"
 ]
 
 # ALGORITHMS = [

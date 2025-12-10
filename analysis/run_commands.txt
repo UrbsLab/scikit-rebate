@@ -4,7 +4,7 @@ python run_process_heatmap.py --basedir ./core2wayEpistasis/ --prefix=core2wayEp
 zip -r core2wayEpistasis.zip core2wayEpistasis/ -i "*.pdf"
 
 # Complete Analysis with all datasets and algorithms
-python run_rebate_analysis.py --datadir=BenchmarkData4/ --algorithms tbd1 tbd1star tbd2 tbd2star swrf swrfstar2
+python run_rebate_analysis.py --datadir=BenchmarkData4/ --algorithms multiswrf multiswrfstar multiswrfdb multiswrfdbstar swrf swrfstar2
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_XOR --prefix=XOR_00_
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_phil_XOR_01 --prefix=XOR_01_
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_phil_XOR_02 --prefix=XOR_02_
@@ -17,9 +17,9 @@ python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_cor
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_2wayEpiHeterogeneity_Datasets_2Het_Loc_2_Qnt_2_Pop_100000 --prefix=2wayEpiHeterogeneity
 zip -r BenchmarkDataResults.zip BenchmarkData3/ -i "*.pdf" "*.csv"
 
-python run_rebate_analysis.py --datadir=BenchmarkData3/GAMETES_2.2_dev_peter_mainEff_additive_4_Datasets_2Het_Loc_1_Qnt_2_Pop_100000 --algorithms tbd2 tbd2star
-python run_rebate_analysis.py --datadir=BenchmarkData3/GAMETES_2.2_dev_peter_epi_order_Datasets_Loc_3_Qnt_2_Pop_100000 --algorithms tbd2 tbd2star
-python run_rebate_analysis.py --datadir=BenchmarkData3/GAMETES_2.2_dev_peter_2wayEpiHeterogeneity_Datasets_2Het_Loc_2_Qnt_2_Pop_100000 --algorithms tbd2 tbd2star
+python run_rebate_analysis.py --datadir=BenchmarkData3/GAMETES_2.2_dev_peter_mainEff_additive_4_Datasets_2Het_Loc_1_Qnt_2_Pop_100000 --algorithms multiswrfdb multiswrfdbstar
+python run_rebate_analysis.py --datadir=BenchmarkData3/GAMETES_2.2_dev_peter_epi_order_Datasets_Loc_3_Qnt_2_Pop_100000 --algorithms multiswrfdb multiswrfdbstar
+python run_rebate_analysis.py --datadir=BenchmarkData3/GAMETES_2.2_dev_peter_2wayEpiHeterogeneity_Datasets_2Het_Loc_2_Qnt_2_Pop_100000 --algorithms multiswrfdb multiswrfdbstar
 
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_mainEff_additive_4_Datasets_2Het_Loc_1_Qnt_2_Pop_100000 --prefix=mainEffadditive4
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_epi_order_Datasets_Loc_3_Qnt_2_Pop_100000 --prefix=epiorder
@@ -27,4 +27,4 @@ python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_2wa
 
 # Scrathpad
 python run_rebate_analysis.py --datadir=BasicXOR3
-python run_rebate_analysis.py --datadir=BasicXOR2_2/ --algorithms tbd1 tbd1star tbd2 tbd2star swrf swrfstar2
+python run_rebate_analysis.py --datadir=BasicXOR2_2/ --algorithms multiswrf multiswrfstar multiswrfdb multiswrfdbstar swrf swrfstar2

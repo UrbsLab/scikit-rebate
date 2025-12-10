@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import pytest
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF, SWRFstar, SWRFstar2, SWRF, TBD1star, TBD1, TBD2star, TBD2
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF, SWRFstar, SWRFstar2, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -30,10 +30,10 @@ selectors = [
     (SWRFstar, {'n_features_to_select': 5}),
     (SWRFstar2, {'n_features_to_select': 5}),
     (SWRF, {'n_features_to_select': 5}),
-    (TBD1star, {'n_features_to_select': 5}),
-    (TBD1, {'n_features_to_select': 5}),
-    (TBD2star, {'n_features_to_select': 5}),
-    (TBD2, {'n_features_to_select': 5}),
+    (MultiSWRFstar, {'n_features_to_select': 5}),
+    (MultiSWRF, {'n_features_to_select': 5}),
+    (MultiSWRFDBstar, {'n_features_to_select': 5}),
+    (MultiSWRFDB, {'n_features_to_select': 5}),
 ]
 
 @pytest.mark.parametrize("dataset_name,genetic_data", datasets.items())

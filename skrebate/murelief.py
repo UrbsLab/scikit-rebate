@@ -129,24 +129,6 @@ class MuRelief(ReliefF):
         # # sorting in descending order
         # abs_diff_vect = np.sort(abs_diff_vect)[::-1]
 
-        # neighbors = []
-        # for j in range(self._datalen):
-        #     if inst != j:
-        #         locator = [inst, j]
-        #         if inst < j:
-        #             locator.reverse()
-        #         # NEW: how many standard deviations d is from the current mean distance
-        #         d = self._distance_array[locator[0]][locator[1]]
-        #         std_d = (d - inst_mean_dist) / true_std
-        #         if d < near_threshold:
-        #             neighbors.append(j)
-        #             # NEW: for plotting
-        #             self.distance_weight_log.append((d, 1.0))
-        #             self.std_weight_log.append((std_d, 1.0))
-        #         else:
-        #             self.distance_weight_log.append((d, 0.0))
-        #             self.std_weight_log.append((std_d, 0.0))
-
         # return np.array(neighbors)
         # Identify neighbors-------------------------------------------------------
         """ Neighbors for Binary Endpoints: """

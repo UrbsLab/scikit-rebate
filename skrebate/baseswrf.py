@@ -67,7 +67,7 @@ def deadband_bounds(mean, std, dead_band):
 def swrf_weight(distances, mean, std, dead_band=None):
     return sigmoid_weight(distances, mean, std)
 
-def tbd1_weight(distances, mean, std, dead_band=None):
+def multiswrf_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
     lower, upper = deadband_bounds(mean, std, dead_band)
     w_sig = sigmoid_weight(distances, mean, std)
@@ -76,7 +76,7 @@ def tbd1_weight(distances, mean, std, dead_band=None):
     weights = w_sig
     return weights
 
-def tbd2_weight(distances, mean, std, dead_band=None):
+def multiswrfdb_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
     lower, upper = deadband_bounds(mean, std, dead_band)
     
@@ -95,7 +95,7 @@ def tbd2_weight(distances, mean, std, dead_band=None):
     
     return weights
 
-def tbd2_linear_weight(distances, mean, std, dead_band=None):
+def multiswrfdb_linear_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
     lower, upper = deadband_bounds(mean, std, dead_band)
     
@@ -114,7 +114,7 @@ def tbd2_linear_weight(distances, mean, std, dead_band=None):
     
     return weights
 
-def tbd2_exponential_weight(distances, mean, std, dead_band=None):
+def multiswrfdb_exponential_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
     lower, upper = deadband_bounds(mean, std, dead_band)
     
@@ -137,7 +137,7 @@ def tbd2_exponential_weight(distances, mean, std, dead_band=None):
     
     return weights
 
-def tbd2_linear_3sd_weight(distances, mean, std, dead_band=None):
+def multiswrfdb_linear_3sd_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
     lower, upper = deadband_bounds(mean, std, dead_band)
     
@@ -156,7 +156,7 @@ def tbd2_linear_3sd_weight(distances, mean, std, dead_band=None):
     
     return weights
 
-def tbd2_exponential_3sd_weight(distances, mean, std, dead_band=None):
+def multiswrfdb_exponential_3sd_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
     lower, upper = deadband_bounds(mean, std, dead_band)
     
@@ -203,7 +203,7 @@ class BaseSWRF(ReliefF):
             else:
                 dist_i[j] = self._distance_array[j][inst_idx]
 
-        if 'TBD' in self.name:
+        if 'MultiSWRF' in self.name:
             # NEW: scaling distances so that max is 1; maximum distance present between target instance & any other instance
             # max_dist = np.max(dist_i)
             # max_dist = np.max(self._distance_array)
@@ -299,7 +299,7 @@ class BaseSWRF(ReliefF):
         dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
         mean_dist = dists_flat.mean()
         std_dist = dists_flat.std()
-        dead_band = std_dist / 2 if 'TBD' in self.name else 0
+        dead_band = std_dist / 2 if 'MultiSWRF' in self.name else 0
 
         self.distance_weight_log = []  # Reset log before run
         self.instance_dist_stats = []
@@ -331,7 +331,7 @@ class BaseSWRF(ReliefF):
         plt.scatter(distances_std, weights_std, alpha=0.3, s=10, label='Observed')
 
         if show_expected:
-            if 'TBD' in self.name: 
+            if 'MultiSWRF' in self.name: 
                 # Star variant → average per-instance mean/std
                 x_vals = np.linspace(min(distances), max(distances), 500)
                 means, stds, deadband = zip(*self.instance_dist_stats)
@@ -346,28 +346,28 @@ class BaseSWRF(ReliefF):
                 x_vals = np.linspace(min(distances), max(distances), 500)
                 mean_dist = np.mean(distances)
                 std_dist = np.std(distances)
-                dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
+                dead_band = std_dist / 4.0 if 'MultiSWRF' in self.name else 0
 
                 # NEW: for plotting in terms of STD
                 x_vals_std = (x_vals - mean_dist) / std_dist
 
-            if 'SWRF' in self.name:
+            if self.name in ('SWRF', 'SWRF*'):
                 y_vals = swrf_weight(x_vals, mean_dist, std_dist, dead_band)
-            elif 'TBD_1' in self.name:
-                y_vals = tbd1_weight(x_vals, mean_dist, std_dist, dead_band)
-            elif 'TBD_2' in self.name:
+            elif self.name in ('MultiSWRF', 'MultiSWRF*'):
+                y_vals = multiswrf_weight(x_vals, mean_dist, std_dist, dead_band)
+            elif 'MultiSWRFDB' in self.name:
                 if 'linear' in self.name:
                     if '3SD' in self.name:
-                        y_vals = tbd2_linear_3sd_weight(x_vals, mean_dist, std_dist, dead_band)
+                        y_vals = multiswrfdb_linear_3sd_weight(x_vals, mean_dist, std_dist, dead_band)
                     else:
-                        y_vals = tbd2_linear_weight(x_vals, mean_dist, std_dist, dead_band)
+                        y_vals = multiswrfdb_linear_weight(x_vals, mean_dist, std_dist, dead_band)
                 elif 'exponential' in self.name:
                     if '3SD' in self.name:
-                        y_vals = tbd2_exponential_3sd_weight(x_vals, mean_dist, std_dist, dead_band)
+                        y_vals = multiswrfdb_exponential_3sd_weight(x_vals, mean_dist, std_dist, dead_band)
                     else:
-                        y_vals = tbd2_exponential_weight(x_vals, mean_dist, std_dist, dead_band)
+                        y_vals = multiswrfdb_exponential_weight(x_vals, mean_dist, std_dist, dead_band)
                 else:
-                    y_vals = tbd2_weight(x_vals, mean_dist, std_dist, dead_band)
+                    y_vals = multiswrfdb_weight(x_vals, mean_dist, std_dist, dead_band)
             else:
                 y_vals = None
 
@@ -419,54 +419,54 @@ class SWRF(BaseSWRF):
         super().__init__('SWRF', swrf_weight, ignore_far=True, **kwargs)
 
 
-class TBD1(BaseSWRF):
+class MultiSWRF(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_1', tbd1_weight, ignore_far=True, **kwargs)
+        super().__init__('MultiSWRF', multiswrf_weight, ignore_far=True, **kwargs)
 
 
-class TBD1star(BaseSWRF):
+class MultiSWRFstar(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_1*', tbd1_weight, ignore_far=False, **kwargs)
+        super().__init__('MultiSWRF*', multiswrf_weight, ignore_far=False, **kwargs)
 
 
-class TBD2(BaseSWRF):
+class MultiSWRFDB(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2', tbd2_weight, ignore_far=True, **kwargs)
+        super().__init__('MultiSWRFDB', multiswrfdb_weight, ignore_far=True, **kwargs)
 
 
-class TBD2star(BaseSWRF):
+class MultiSWRFDBstar(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2*', tbd2_weight, ignore_far=False, **kwargs)
+        super().__init__('MultiSWRFDB*', multiswrfdb_weight, ignore_far=False, **kwargs)
 
-class TBD2linear(BaseSWRF):
+class MultiSWRFDBlinear(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2_linear', tbd2_linear_weight, ignore_far=True, **kwargs)
+        super().__init__('MultiSWRFDB_linear', multiswrfdb_linear_weight, ignore_far=True, **kwargs)
 
-class TBD2linearstar(BaseSWRF):
+class MultiSWRFDBlinearstar(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2_linear*', tbd2_linear_weight, ignore_far=False, **kwargs)
+        super().__init__('MultiSWRFDB_linear*', multiswrfdb_linear_weight, ignore_far=False, **kwargs)
 
-class TBD2exponential(BaseSWRF):
+class MultiSWRFDBexponential(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2_exponential', tbd2_exponential_weight, ignore_far=True, **kwargs)
+        super().__init__('MultiSWRFDB_exponential', multiswrfdb_exponential_weight, ignore_far=True, **kwargs)
 
-class TBD2exponentialstar(BaseSWRF):
+class MultiSWRFDBexponentialstar(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2_exponential*', tbd2_exponential_weight, ignore_far=False, **kwargs)
+        super().__init__('MultiSWRFDB_exponential*', multiswrfdb_exponential_weight, ignore_far=False, **kwargs)
 
-# 3 SD versions of TBD2 variants:
-class TBD2linear3SD(BaseSWRF):
+# 3 SD versions of MultiSWRFDB variants:
+class MultiSWRFDBlinear3SD(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2_linear_3SD', tbd2_linear_3sd_weight, ignore_far=True, **kwargs)
+        super().__init__('MultiSWRFDB_linear_3SD', multiswrfdb_linear_3sd_weight, ignore_far=True, **kwargs)
 
-class TBD2linear3SDstar(BaseSWRF):
+class MultiSWRFDBlinear3SDstar(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2_linear_3SD*', tbd2_linear_3sd_weight, ignore_far=False, **kwargs)
+        super().__init__('MultiSWRFDB_linear_3SD*', multiswrfdb_linear_3sd_weight, ignore_far=False, **kwargs)
 
-class TBD2exponential3SD(BaseSWRF):
+class MultiSWRFDBexponential3SD(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2_exponential_3SD', tbd2_exponential_3sd_weight, ignore_far=True, **kwargs)
+        super().__init__('MultiSWRFDB_exponential_3SD', multiswrfdb_exponential_3sd_weight, ignore_far=True, **kwargs)
 
-class TBD2exponential3SDstar(BaseSWRF):
+class MultiSWRFDBexponential3SDstar(BaseSWRF):
     def __init__(self, **kwargs):
-        super().__init__('TBD_2_exponential_3SD*', tbd2_exponential_3sd_weight, ignore_far=False, **kwargs)
+        super().__init__('MultiSWRFDB_exponential_3SD*', multiswrfdb_exponential_3sd_weight, ignore_far=False, **kwargs)

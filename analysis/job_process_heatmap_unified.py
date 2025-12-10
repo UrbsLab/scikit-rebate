@@ -67,13 +67,13 @@ def main():
 
     # rba_order = [
     #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',
-    #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','TBD1','TBD1star','TBD2','TBD2star'
+    #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','MultiSWRF','MultiSWRFstar','MultiSWRFDB','MultiSWRFDBstar'
     # ]
     rba_order = [
-        'RandomShuffle', 'MutualInfo', 'TBD2', 'TBD2star', 'TBD2linear', 'TBD2linear3SD', 'TBD2linearstar', 'TBD2linear3SDstar', 'TBD2exponential', 'TBD2exponential3SD', 'TBD2exponentialstar', 'TBD2exponential3SDstar'
+        'RandomShuffle', 'MutualInfo', 'MultiSWRFDB', 'MultiSWRFDBstar', 'MultiSWRFDBlinear', 'MultiSWRFDBlinear3SD', 'MultiSWRFDBlinearstar', 'MultiSWRFDBlinear3SDstar', 'MultiSWRFDBexponential', 'MultiSWRFDBexponential3SD', 'MultiSWRFDBexponentialstar', 'MultiSWRFDBexponential3SDstar'
     ]
     # rba_order = [
-    #     'TBD2', 'TBD2star'
+    #     'MultiSWRFDB', 'MultiSWRFDBstar'
     # ]
 
     # Grab all Results folders (for 100 feature datasets)
@@ -414,8 +414,8 @@ def main():
     outdir = os.path.basename(os.path.normpath(args.basedir))
     parentdir = os.path.dirname(os.path.normpath(args.basedir))
     # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps.pdf")
-    # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_tbd2test.pdf")
-    save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_tbd2test_with3sd.pdf")
+    # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_MultiSWRFDBtest.pdf")
+    save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_MultiSWRFDBtest_with3sd.pdf")
     # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_validcheck.pdf")
     plt.savefig(save_path, format='pdf', bbox_inches='tight')
     plt.close()
