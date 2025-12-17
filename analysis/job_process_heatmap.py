@@ -76,6 +76,8 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFstar',
         'MultiSWRFDB',
         'MultiSWRFDBstar',
+        'MuRelief10',
+        'MuRelief100',
     ]
 
     # Define a mapping from your RBA order to new descriptive names
@@ -95,6 +97,8 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFstar': 'MultiSWRF*',
         'MultiSWRFDB': 'MultiSWRFDB',
         'MultiSWRFDBstar': 'MultiSWRFDB*',
+        'MuRelief10': 'MuRelief 10N',
+        'MuRelief100': 'MuRelief 100N',
     }
 
     n_pred = all_rankings_df['Feature'].nunique()

@@ -87,11 +87,14 @@ def main():
 
     is_xor = ('XOR' in args.basedir)
     is_mainEff_or_core2wayEpistasis = ('mainEff_Datasets' in args.basedir or 'core2wayEpistasis' in args.basedir)
+    is_mainEffadditive_or_2wayEpiHet = ('mainEff_additive' in args.basedir or '2wayEpiHeterogeneity' in args.basedir)
 
     # Build a mapping of (n_instances, heritability, EDMtype) -> percentages_df
     pattern_n = re.compile(r"s_(\d+)")
     if is_xor:
         pattern_h = re.compile(r"xor_(\d+)")
+    elif is_mainEffadditive_or_2wayEpiHet:
+        pattern_h = re.compile(r"r_(\d+)")
     else:
         pattern_h = re.compile(r"her_(\d+\.\d+)__maf")
     pattern_edm = re.compile(r"EDM-(\d+)")
@@ -105,6 +108,9 @@ def main():
             n = int(n_match.group(1))
             if is_xor:
                 h = int(h_match.group(1))
+            elif is_mainEffadditive_or_2wayEpiHet:
+                # to turn r_75 or r_50 into 0.75 or 0.5
+                h = int(h_match.group(1)) / 100
             else:
                 h = float(h_match.group(1))
             edm = edm_match.group(1)  # '1' or '2'
@@ -326,6 +332,8 @@ def main():
     # fig.supylabel("Heritability of Model", fontsize=22, x=label_x, y=0.5)
     if is_xor:
         fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
+    elif is_mainEffadditive_or_2wayEpiHet:
+        fig.supylabel("Proportion of Instances from Subgroup 1", fontsize=22, x=0.02, y=0.5)
     else:
         fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
