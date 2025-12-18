@@ -91,11 +91,13 @@ def main():
     print("Is mainEffadditive or 2wayEpiHet:", is_mainEffadditive_or_2wayEpiHet)
 
     # Build a mapping of (n_instances, heritability, EDMtype) -> percentages_df
-    pattern_n = re.compile(r"s_(\d+)")
+    # pattern_n = re.compile(r"s_(\d+)")
+    pattern_n = re.compile(r"/s_(\d+)")
     if is_xor:
         pattern_h = re.compile(r"xor_(\d+)")
     elif is_mainEffadditive_or_2wayEpiHet:
-        pattern_h = re.compile(r"r_(\d+)")
+        # pattern_h = re.compile(r"r_(\d+)")
+        pattern_h = re.compile(r"/r_(\d+)")
     else:
         pattern_h = re.compile(r"her_(\d+\.\d+)__maf")
     pattern_edm = re.compile(r"EDM-(\d+)")
