@@ -88,6 +88,7 @@ def main():
     is_xor = ('XOR' in args.basedir)
     is_mainEff_or_core2wayEpistasis = ('mainEff_Datasets' in args.basedir or 'core2wayEpistasis' in args.basedir)
     is_mainEffadditive_or_2wayEpiHet = ('mainEff_additive' in args.basedir or '2wayEpiHeterogeneity' in args.basedir)
+    print("Is mainEffadditive or 2wayEpiHet:", is_mainEffadditive_or_2wayEpiHet)
 
     # Build a mapping of (n_instances, heritability, EDMtype) -> percentages_df
     pattern_n = re.compile(r"s_(\d+)")
@@ -101,6 +102,7 @@ def main():
 
     data_dict = {}
     for rd in results_dirs:
+        print("Results directory:", rd)
         n_match = pattern_n.search(rd)
         h_match = pattern_h.search(rd)
         edm_match = pattern_edm.search(rd)
@@ -111,6 +113,7 @@ def main():
             elif is_mainEffadditive_or_2wayEpiHet:
                 # to turn r_75 or r_50 into 0.75 or 0.5
                 h = int(h_match.group(1)) / 100
+                print("H value:", h)
             else:
                 h = float(h_match.group(1))
             edm = edm_match.group(1)  # '1' or '2'
@@ -121,6 +124,9 @@ def main():
 
     n_values = sorted({k[0] for k in data_dict.keys()})
     h_values = sorted({k[1] for k in data_dict.keys()})
+    print("Data dictionary:", data_dict, "\n")
+    print("H values:", h_values, "\n")
+    print("N values:", n_values, "\n")
 
     # fig, axes = plt.subplots(len(h_values)*2, len(n_values), figsize=(4*len(n_values), 3*len(h_values)*2))
     # --- NEW ATTEMPT TO INCREASE SPACING
@@ -332,8 +338,8 @@ def main():
     # fig.supylabel("Heritability of Model", fontsize=22, x=label_x, y=0.5)
     if is_xor:
         fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
-    elif is_mainEffadditive_or_2wayEpiHet:
-        fig.supylabel("Proportion of Instances from Subgroup 1", fontsize=22, x=0.02, y=0.5)
+    # elif is_mainEffadditive_or_2wayEpiHet:
+    #     fig.supylabel("Proportion of Instances from Subgroup 1", fontsize=22, x=0.02, y=0.5)
     else:
         fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
