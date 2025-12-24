@@ -340,8 +340,8 @@ def main():
     # fig.supylabel("Heritability of Model", fontsize=22, x=label_x, y=0.5)
     if is_xor:
         fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
-    # elif is_mainEffadditive_or_2wayEpiHet:
-    #     fig.supylabel("Proportion of Instances from Subgroup 1", fontsize=22, x=0.02, y=0.5)
+    elif is_mainEffadditive_or_2wayEpiHet:
+        fig.supylabel("Proportion of Instances from Subgroup 1", fontsize=22, x=0.02, y=0.5)
     else:
         fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 

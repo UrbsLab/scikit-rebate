@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from numpy.random import default_rng
 from sklearn.model_selection import train_test_split
-from sklearn.feature_selection import mutual_info_classif
+from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
 import hashlib
 
 package_path = os.path.abspath(os.path.join("", ".."))
@@ -96,7 +96,13 @@ def process_mutual_info(file_path):
     # X_train, _, y_train, _ = train_test_split(features, labels)
     # scores = mutual_info_classif(X_train, y_train)
     # fs = type('MI', (), {'feature_importances_': scores})()  # Mock object with same interface
-    fs = mutual_info_classif
+    df = pd.read_csv(file_path, sep='\t')
+    # counting the number of labels in the 'Class' column to determine whether this is a classification or regression problem:
+    num_labels = df['Class'].nunique()
+    if num_labels <= 10:
+        fs = mutual_info_classif
+    else:
+        fs = mutual_info_regression
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_relieff10(file_path):
