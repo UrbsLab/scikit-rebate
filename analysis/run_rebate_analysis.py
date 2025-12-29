@@ -92,7 +92,7 @@ def find_dataset_files(root_dir):
                     dataset_files.append(os.path.join(dirpath, filename))
     return dataset_files
 
-def generate_hpc_jobs(dataset_files, algorithms, job_dir, suffix, hpctype="slurm"):
+def generate_hpc_jobs(data_dir, dataset_files, algorithms, job_dir, suffix, hpctype="slurm"):
     ensure_dir(job_dir)
     if hpctype == "lsf":
         TEMPLATE = LSF_TEMPLATE
@@ -102,7 +102,15 @@ def generate_hpc_jobs(dataset_files, algorithms, job_dir, suffix, hpctype="slurm
         raise Exception(f"Unsupported HPC type: {hpctype}")
     job_paths = []
     for dataset in dataset_files:
-        base_name = os.path.splitext(os.path.basename(dataset))[0]
+        # base_name = os.path.splitext(os.path.basename(dataset))[0]
+        rel_path = os.path.relpath(dataset, data_dir)
+        # Split into parts
+        parts = rel_path.split(os.sep)
+        last_dirs_and_file = parts[-3:]  # [-3:] = last 2 dirs + file
+        # Join with underscore
+        safe_path = "_".join(last_dirs_and_file)
+        safe_path = safe_path.replace(".", "")
+        base_name = os.path.splitext(safe_path)[0]
         for algo in algorithms:
             job_name = f"{base_name}_{algo}_{suffix}"
             job_path = os.path.join(job_dir, f"{job_name}.sh")
@@ -129,7 +137,7 @@ def main():
 
     suffix = time.strftime("%Y%m%d_%H%M%S")
     dataset_files = find_dataset_files(args.datadir)
-    job_files = generate_hpc_jobs(dataset_files, args.algorithms, args.jobdir, suffix, hpctype=args.hpctype)
+    job_files = generate_hpc_jobs(args.datadir, dataset_files, args.algorithms, args.jobdir, suffix, hpctype=args.hpctype)
     ensure_dir(os.path.join("", "logs"))
 
     print(f"Generated {len(job_files)} job scripts in: {args.jobdir}")
