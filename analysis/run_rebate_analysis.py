@@ -104,11 +104,9 @@ def generate_hpc_jobs(data_dir, dataset_files, algorithms, job_dir, suffix, hpct
     for dataset in dataset_files:
         # base_name = os.path.splitext(os.path.basename(dataset))[0]
         rel_path = os.path.relpath(dataset, data_dir)
-        # Split into parts
-        parts = rel_path.split(os.sep)
+        parts = rel_path.split(os.sep) # Split into parts
         last_dirs_and_file = parts[-3:]  # [-3:] = last 2 dirs + file
-        # Join with underscore
-        safe_path = "_".join(last_dirs_and_file)
+        safe_path = "_".join(last_dirs_and_file) # Join with underscore
         safe_path = safe_path.replace(".", "")
         base_name = os.path.splitext(safe_path)[0]
         for algo in algorithms:
