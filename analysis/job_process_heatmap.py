@@ -80,7 +80,18 @@ def process_results_dir(results_dir, prefix=""):
     #     'MuRelief100',
     # ]
     rba_order = [
-        'RandomShuffle', 'MutualInfo', 'MultiSWRFDB', 'MultiSWRFDBstar', 'MultiSWRFDBlinear', 'MultiSWRFDBlinear3SD', 'MultiSWRFDBlinearstar', 'MultiSWRFDBlinear3SDstar', 'MultiSWRFDBexponential', 'MultiSWRFDBexponential3SD', 'MultiSWRFDBexponentialstar', 'MultiSWRFDBexponential3SDstar'
+        'RandomShuffle', 
+        # 'MutualInfo', 
+        'MultiSWRFDB', 
+        'MultiSWRFDBstar', 
+        'MultiSWRFDBlinear', 
+        'MultiSWRFDBlinear3SD', 
+        'MultiSWRFDBlinearstar', 
+        'MultiSWRFDBlinear3SDstar', 
+        'MultiSWRFDBexponential', 
+        'MultiSWRFDBexponential3SD', 
+        'MultiSWRFDBexponentialstar', 
+        'MultiSWRFDBexponential3SDstar'
     ]
 
     # Define a mapping from your RBA order to new descriptive names
@@ -105,7 +116,7 @@ def process_results_dir(results_dir, prefix=""):
     # }
     rba_descriptive_names = {
         'RandomShuffle': 'Random Shuffle',
-        'MutualInfo': 'Mutual Info',
+        # 'MutualInfo': 'Mutual Info',
         'MultiSWRFDB': 'MultiSWRFDB',
         'MultiSWRFDBstar': 'MultiSWRFDB*',
         'MultiSWRFDBlinear': 'MultiSWRFDB-L',
