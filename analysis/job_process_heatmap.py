@@ -81,7 +81,7 @@ def process_results_dir(results_dir, prefix=""):
     # ]
     rba_order = [
         'RandomShuffle', 
-        # 'MutualInfo', 
+        'MutualInfo', 
         'MultiSWRFDB', 
         'MultiSWRFDBstar', 
         'MultiSWRFDBlinear', 
@@ -116,7 +116,7 @@ def process_results_dir(results_dir, prefix=""):
     # }
     rba_descriptive_names = {
         'RandomShuffle': 'Random Shuffle',
-        # 'MutualInfo': 'Mutual Info',
+        'MutualInfo': 'Mutual Info',
         'MultiSWRFDB': 'MultiSWRFDB',
         'MultiSWRFDBstar': 'MultiSWRFDB*',
         'MultiSWRFDBlinear': 'MultiSWRFDB-L',
