@@ -1,4 +1,5 @@
 import os
+import time
 import sys
 import argparse
 import pandas as pd
@@ -23,11 +24,14 @@ def process_and_save_results(file_path, fs, method_name):
     X, y = df.drop('Class', axis=1).values, df['Class'].values
     # X_train, _, y_train, _ = train_test_split(features, labels)
 
+    # to keep track of runtime for large feature datasets
+    start_time = time.time()
     try:
         fs.fit(X, y)
     except AttributeError:
         scores = fs(X, y)
         fs = type('MI', (), {'feature_importances_': scores})()
+    end_time = time.time()
 
     temp_list = []
     for feature_name, feature_score in zip(df.drop('Class', axis=1).columns, fs.feature_importances_):
@@ -49,6 +53,15 @@ def process_and_save_results(file_path, fs, method_name):
     base_name = os.path.splitext(os.path.basename(file_path))[0]
     Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
     ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
+    # Save runtime CSV
+    runtime = end_time - start_time
+    runtime_df = pd.DataFrame([{
+        "Dataset": base_name,
+        "Algorithm": method_name,
+        "Runtime (sec)": round(runtime, 4),
+        "Runtime (min)": round(runtime / 60, 4)
+    }])
+    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime.csv"), index=False)
 
     if method_name in ["SWRFstar2", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
         fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
@@ -237,6 +250,7 @@ def main():
         raise ValueError(f"Unsupported algorithm: {args.algorithm}")
     
     alg_map[args.algorithm](args.input_file)
+
 
 if __name__ == "__main__":
     main()
