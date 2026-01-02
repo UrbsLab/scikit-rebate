@@ -210,7 +210,7 @@ class BaseSWRF(ReliefF):
             # dist_i = dist_i / max_dist
 
             mean_inst = np.mean(dist_i)
-            print("Mean for this target instance in MultiSWRF:", mean_inst)
+            print("Mean for this target instance in MultiSWRFDB:", mean_inst)
             std_inst = np.std(dist_i)
             dead_band_inst = std_inst / 2.0
             weights = self.weight_func(dist_i, mean_inst, std_inst, dead_band_inst)

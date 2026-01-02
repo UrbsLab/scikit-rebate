@@ -51,9 +51,11 @@ class MultiSURF(SURFstar):
 
         dist_vect = np.array(dist_vect)
         inst_avg_dist = np.average(dist_vect)
+        print("Avg dist for this target instance in MultiSURF:", inst_avg_dist)
         inst_std = np.std(dist_vect) / 2.
         # Defining a narrower radius based on the average instance distance minus the standard deviation of instance distances.
         near_threshold = inst_avg_dist - inst_std
+        print("(Avg dist - deadband) for this target instance in MultiSURF:", near_threshold, "\n")
 
         # NEW: std for this current target instance
         true_std = np.std(dist_vect)
@@ -102,6 +104,7 @@ class MultiSURF(SURFstar):
                                           NN_near, self._headers, self._class_type, self._X, self._y, self._labels_std, self.data_type)
                                                         for instance_num, NN_near in zip(range(self._datalen), NNlist)), axis=0)
 
+        print(scores)
         return np.array(scores)
     
     def plot_distance_weight_map(self, save_fig=None, show_expected=True):
