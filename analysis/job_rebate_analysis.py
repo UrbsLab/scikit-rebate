@@ -251,6 +251,5 @@ def main():
     
     alg_map[args.algorithm](args.input_file)
 
-
 if __name__ == "__main__":
     main()
