@@ -119,12 +119,12 @@ class SURF(ReliefF):
             sm += sum(self._distance_array[i])
             cnt += len(self._distance_array[i])
         avg_dist = sm / float(cnt)
-        print("Sm (SURF):", sm)
-        print("Cnt (SURF):", cnt)
-        print("Avg dist for SURF:", avg_dist, "\n")
+        # print("Sm (SURF):", sm)
+        # print("Cnt (SURF):", cnt)
+        # print("Avg dist for SURF:", avg_dist, "\n")
 
         nan_entries = np.isnan(self._X)
-        print("Nan entries:\n", nan_entries)
+        # print("Nan entries:\n", nan_entries)
 
         self.distance_weight_log = []  # Reset log before run
         self.std_weight_log = []

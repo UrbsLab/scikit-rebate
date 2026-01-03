@@ -210,7 +210,7 @@ class BaseSWRF(ReliefF):
             # dist_i = dist_i / max_dist
 
             mean_inst = np.mean(dist_i)
-            print("Mean for this target instance in MultiSWRFDB:", mean_inst)
+            # print("Mean for this target instance in MultiSWRFDB:", mean_inst)
             std_inst = np.std(dist_i)
             dead_band_inst = std_inst / 2.0
             weights = self.weight_func(dist_i, mean_inst, std_inst, dead_band_inst)
@@ -299,7 +299,7 @@ class BaseSWRF(ReliefF):
         nan_mask = np.isnan(self._X)
         dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
         mean_dist = dists_flat.mean()
-        print("Mean dist:", mean_dist)
+        # print("Mean dist:", mean_dist)
         std_dist = dists_flat.std()
         dead_band = std_dist / 2 if 'MultiSWRF' in self.name else 0
 
@@ -316,7 +316,7 @@ class BaseSWRF(ReliefF):
         total_weight = np.sum(np.abs(feature_scores))
         if total_weight > 0:
             feature_scores /= total_weight
-        print("Feature scores:", feature_scores, "\n")
+        # print("Feature scores:", feature_scores, "\n")
         return feature_scores
 
     def plot_distance_weight_map(self, save_fig=None, show_expected=True):
