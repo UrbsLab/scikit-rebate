@@ -54,8 +54,8 @@ def get_row_missing(xc, xd, cdiffs, index, cindices, dindices):
         dmc = len(idx)
         d1 = np.delete(dinst1, idx)  # delete unique missing features from index instance
         d2 = np.delete(dinst2, idx)  # delete unique missing features from compared instance
-        print("D1:", d1)
-        print("D2:", d2, "\n")
+        # print("D1:", d1)
+        # print("D2:", d2, "\n")
 
         # Manage missing values in continuous features
         # Boolean mask locating missing values for continuous features for compared instance
@@ -71,7 +71,7 @@ def get_row_missing(xc, xd, cdiffs, index, cindices, dindices):
 
         # Add discrete feature distance contributions (missing values excluded) - Hamming distance
         dist += len(d1[d1 != d2])
-        print("Hamming distance:", dist)
+        # print("Hamming distance:", dist)
 
         # Add continuous feature distance contributions (missing values excluded) - Manhattan distance (Note that 0-1 continuous value normalization is included ~ subtraction of minimums cancel out)
         dist += np.sum(np.absolute(np.subtract(c1, c2)) / cdf)
@@ -80,7 +80,7 @@ def get_row_missing(xc, xd, cdiffs, index, cindices, dindices):
         tnmc = tf - dmc - cmc  # Total number of unique missing counted
         # Distance normalized by number of features included in distance sum (this seeks to handle missing values neutrally in distance calculation)
         dist = dist/float(tnmc)
-        print("Hamming distance after division by tnmc:", dist)
+        # print("Hamming distance after division by tnmc:", dist)
 
         # row = np.append(row, dist)
         # place into the pre‐allocated slot
