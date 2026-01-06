@@ -72,8 +72,9 @@ SLURM_TEMPLATE = """#!/bin/bash
 #SBATCH --output=logs/{job_name}.out
 #SBATCH --error=logs/{job_name}.err
 #SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
 #SBATCH --mem=4096
-#SBATCH --time=10:00:00
+#SBATCH --time=7-00:00:00
 #SBATCH --partition=defq
 
 python job_rebate_analysis.py --algorithm {algorithm} --input_file "{input_file}"
