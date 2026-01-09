@@ -119,96 +119,96 @@ def process_mutual_info(file_path):
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_relieff10(file_path):
-    fs = ReliefF(n_features_to_select=2,n_neighbors=10,n_jobs=8)
+    fs = ReliefF(n_features_to_select=2,n_neighbors=10,n_jobs=16)
     process_and_save_results(file_path, fs, "ReliefF10")
 
 def process_relieff100(file_path):
-    fs = ReliefF(n_features_to_select=2,n_neighbors=100,n_jobs=8)
+    fs = ReliefF(n_features_to_select=2,n_neighbors=100,n_jobs=16)
     process_and_save_results(file_path, fs, "ReliefF100")
 
 def process_surf(file_path):
-    fs = SURF(n_jobs=8)
+    fs = SURF(n_jobs=16)
     process_and_save_results(file_path, fs, "SURF")
 
 def process_surfstar(file_path):
-    fs = SURFstar(n_jobs=8)
+    fs = SURFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "SURFstar")
 
 def process_multisurf(file_path):
-    fs = MultiSURF(n_jobs=8)
+    fs = MultiSURF(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSURF")
 
 def process_multisurfstar(file_path):
-    fs = MultiSURFstar(n_jobs=8)
+    fs = MultiSURFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSURFstar")
 
 def process_swrfstar(file_path):
-    fs = SWRFstar(n_jobs=8)
+    fs = SWRFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRFstar")
 
 def process_swrfstar2(file_path):
-    fs = SWRFstar2(n_jobs=8)
+    fs = SWRFstar2(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRFstar2")
 
 def process_swrf(file_path):
-    fs = SWRF(n_jobs=8)
+    fs = SWRF(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRF")
 
 def process_multiswrfstar(file_path):
-    fs = MultiSWRFstar(n_jobs=8)
+    fs = MultiSWRFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFstar")
 
 def process_multiswrf(file_path):
-    fs = MultiSWRF(n_jobs=8)
+    fs = MultiSWRF(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRF")
 
 def process_multiswrfdbstar(file_path):
-    fs = MultiSWRFDBstar(n_jobs=8)
+    fs = MultiSWRFDBstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBstar")
 
 def process_multiswrfdb(file_path):
-    fs = MultiSWRFDB(n_jobs=8)
+    fs = MultiSWRFDB(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDB")
 
 def process_multiswrfdblinearstar(file_path):
-    fs = MultiSWRFDBlinearstar(n_jobs=8)
+    fs = MultiSWRFDBlinearstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBlinearstar")
 
 def process_multiswrfdblinear(file_path):
-    fs = MultiSWRFDBlinear(n_jobs=8)
+    fs = MultiSWRFDBlinear(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBlinear")
 
 def process_multiswrfdbexponentialstar(file_path):
-    fs = MultiSWRFDBexponentialstar(n_jobs=8)
+    fs = MultiSWRFDBexponentialstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBexponentialstar")
 
 def process_multiswrfdbexponential(file_path):
-    fs = MultiSWRFDBexponential(n_jobs=8)
+    fs = MultiSWRFDBexponential(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBexponential")
 
 # 3 SD versions of MultiSWRFDB variants:
 def process_multiswrfdblinear3SDstar(file_path):
-    fs = MultiSWRFDBlinear3SDstar(n_jobs=8)
+    fs = MultiSWRFDBlinear3SDstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBlinear3SDstar")
 
 def process_multiswrfdblinear3SD(file_path):
-    fs = MultiSWRFDBlinear3SD(n_jobs=8)
+    fs = MultiSWRFDBlinear3SD(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBlinear3SD")
 
 def process_multiswrfdbexponential3SDstar(file_path):
-    fs = MultiSWRFDBexponential3SDstar(n_jobs=8)
+    fs = MultiSWRFDBexponential3SDstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBexponential3SDstar")
 
 def process_multiswrfdbexponential3SD(file_path):
-    fs = MultiSWRFDBexponential3SD(n_jobs=8)
+    fs = MultiSWRFDBexponential3SD(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBexponential3SD")
 
 def process_murelief10(file_path):
-    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=8)
+    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=16)
     process_and_save_results(file_path, fs, "MuRelief10")
 
 def process_murelief100(file_path):
-    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=8)
+    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=16)
     process_and_save_results(file_path, fs, "MuRelief100")
 
 
