@@ -27,6 +27,7 @@ from .surfstar import SURFstar
 from joblib import Parallel, delayed
 from .scoring_utils import MultiSURF_compute_scores
 import matplotlib.pyplot as plt
+import time
 
 
 class MultiSURF(SURFstar):
@@ -91,7 +92,11 @@ class MultiSURF(SURFstar):
         self.std_weight_log = []
         self.instance_dist_stats = []
 
+        start_time = time.time()
         NNlist = [self._find_neighbors(datalen) for datalen in range(self._datalen)]
+        end_time = time.time()
+        total_time = end_time - start_time
+        print("Time taken to identify nearest neighbor sets in MultiSURF:", total_time)
 
         if isinstance(self._weights, np.ndarray) and self.weight_final_scores:
             scores = np.sum(Parallel(n_jobs=self.n_jobs)(delayed(
