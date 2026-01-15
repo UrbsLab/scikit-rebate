@@ -4,12 +4,28 @@ import numpy as np
 from joblib import Parallel, delayed
 from .relieff import ReliefF
 import matplotlib.pyplot as plt
+import time
 
 
 def sigmoid_weight(distances, mean_dist, std_dist):
+    start_time_std_eff = time.time()
     std_eff = std_dist if std_dist != 0 else 1.0
+    end_time_std_eff = time.time()
+    total_time_std_eff = end_time_std_eff - start_time_std_eff
+    print("Time taken to create std eff:", total_time_std_eff, "seconds\n")
+
+    start_time_diff = time.time()
     diff = (distances - mean_dist) * (4.0 / std_eff)
+    end_time_diff = time.time()
+    total_time_diff = end_time_diff - start_time_diff
+    print("Time taken to create diff:", total_time_diff, "seconds\n")
+
+    start_time_clip = time.time()
     diff = np.clip(diff, -50, 50)
+    end_time_clip = time.time()
+    total_time_clip = end_time_clip - start_time_clip
+    print("Time taken to create clip:", total_time_clip, "seconds\n")
+
     return 2.0 / (1.0 + np.exp(diff)) - 1.0
 
 def ramp_function(data_type, attr, fname, xinstfeature, xNNifeature):
@@ -69,11 +85,18 @@ def swrf_weight(distances, mean, std, dead_band=None):
 
 def multiswrf_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
+    start_time_db = time.time()
     lower, upper = deadband_bounds(mean, std, dead_band)
+    end_time_db = time.time()
+    total_time_db = end_time_db - start_time_db
+    print("Time taken to create deadband bounds:", total_time_db, "seconds\n")
     w_sig = sigmoid_weight(distances, mean, std)
     # weights = np.where(distances < lower,  1.0,
     #            np.where(distances > upper, -1.0, w_sig))
     weights = w_sig
+    end_time_function = time.time()
+    total_time_function = end_time_function - start_time_db
+    print("Time taken from start of deadband bounds to before final return for multiswrf_weight:", total_time_function, "seconds\n")
     return weights
 
 def multiswrfdb_weight(distances, mean, std, dead_band=None):
