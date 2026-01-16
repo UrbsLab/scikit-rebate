@@ -8,23 +8,23 @@ import time
 
 
 def sigmoid_weight(distances, mean_dist, std_dist):
-    start_time_std_eff = time.time()
+    # start_time_std_eff = time.time()
     std_eff = std_dist if std_dist != 0 else 1.0
-    end_time_std_eff = time.time()
-    total_time_std_eff = end_time_std_eff - start_time_std_eff
-    print("Time taken to create std eff:", total_time_std_eff, "seconds\n")
+    # end_time_std_eff = time.time()
+    # total_time_std_eff = end_time_std_eff - start_time_std_eff
+    # print("Time taken to create std eff:", total_time_std_eff, "seconds\n")
 
-    start_time_diff = time.time()
+    # start_time_diff = time.time()
     diff = (distances - mean_dist) * (4.0 / std_eff)
-    end_time_diff = time.time()
-    total_time_diff = end_time_diff - start_time_diff
-    print("Time taken to create diff:", total_time_diff, "seconds\n")
+    # end_time_diff = time.time()
+    # total_time_diff = end_time_diff - start_time_diff
+    # print("Time taken to create diff:", total_time_diff, "seconds\n")
 
-    start_time_clip = time.time()
+    # start_time_clip = time.time()
     diff = np.clip(diff, -50, 50)
-    end_time_clip = time.time()
-    total_time_clip = end_time_clip - start_time_clip
-    print("Time taken to create clip:", total_time_clip, "seconds\n")
+    # end_time_clip = time.time()
+    # total_time_clip = end_time_clip - start_time_clip
+    # print("Time taken to create clip:", total_time_clip, "seconds\n")
 
     return 2.0 / (1.0 + np.exp(diff)) - 1.0
 
@@ -85,18 +85,18 @@ def swrf_weight(distances, mean, std, dead_band=None):
 
 def multiswrf_weight(distances, mean, std, dead_band=None):
     distances = np.asarray(distances, dtype=float)
-    start_time_db = time.time()
+    # start_time_db = time.time()
     lower, upper = deadband_bounds(mean, std, dead_band)
-    end_time_db = time.time()
-    total_time_db = end_time_db - start_time_db
-    print("Time taken to create deadband bounds:", total_time_db, "seconds\n")
+    # end_time_db = time.time()
+    # total_time_db = end_time_db - start_time_db
+    # print("Time taken to create deadband bounds:", total_time_db, "seconds\n")
     w_sig = sigmoid_weight(distances, mean, std)
     # weights = np.where(distances < lower,  1.0,
     #            np.where(distances > upper, -1.0, w_sig))
     weights = w_sig
-    end_time_function = time.time()
-    total_time_function = end_time_function - start_time_db
-    print("Time taken from start of deadband bounds to before final return for multiswrf_weight:", total_time_function, "seconds\n")
+    # end_time_function = time.time()
+    # total_time_function = end_time_function - start_time_db
+    # print("Time taken from start of deadband bounds to before final return for multiswrf_weight:", total_time_function, "seconds\n")
     return weights
 
 def multiswrfdb_weight(distances, mean, std, dead_band=None):
@@ -318,27 +318,45 @@ class BaseSWRF(ReliefF):
         return feature_scores
 
     def _run_algorithm(self):
+        start_time = time.time()
         n_samples = self._datalen
+        print("Time taken to create n_samples:", time.time() - start_time, "seconds\n")
         nan_mask = np.isnan(self._X)
+        print("Time taken to create nan_mask:", time.time() - start_time, "seconds\n")
         dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
+        print("Time taken to create dists_flat:", time.time() - start_time, "seconds\n")
         mean_dist = dists_flat.mean()
+        print("Time taken to create mean_dist:", time.time() - start_time, "seconds\n")
         # print("Mean dist:", mean_dist)
         std_dist = dists_flat.std()
+        print("Time taken to create std_dist:", time.time() - start_time, "seconds\n")
         dead_band = std_dist / 2 if 'MultiSWRF' in self.name else 0
+        print("Time taken to create dead_band:", time.time() - start_time, "seconds\n")
+        if dead_band != 0:
+            print("'If MultiSWRF in self.name' check is True")
+        else:
+            print("'If MultiSWRF in self.name' check is False")
 
         self.distance_weight_log = []  # Reset log before run
+        print("Time taken to empty distance_weight_log:", time.time() - start_time, "seconds\n")
         self.instance_dist_stats = []
+        print("Time taken to empty instance_dist_stats:", time.time() - start_time, "seconds\n")
         # NEW: also reset this:
         self.std_weight_log = []
+        print("Time taken to empty std_weight_log:", time.time() - start_time, "seconds\n")
 
         results = Parallel(n_jobs=self.n_jobs)(
             delayed(self._score_instance)(i, (mean_dist, std_dist, dead_band), nan_mask)
             for i in range(n_samples)
         )
+        print("Time taken to finish scoring instances:", time.time() - start_time, "seconds\n")
         feature_scores = np.sum(results, axis=0)
+        print("Time taken to sum feature scores:", time.time() - start_time, "seconds\n")
         total_weight = np.sum(np.abs(feature_scores))
+        print("Time taken to sum total_weight:", time.time() - start_time, "seconds\n")
         if total_weight > 0:
             feature_scores /= total_weight
+        print("Time taken to divide feature scores by total_weight:", time.time() - start_time, "seconds\n")
         # print("Feature scores:", feature_scores, "\n")
         return feature_scores
 
