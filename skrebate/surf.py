@@ -102,12 +102,12 @@ class SURF(ReliefF):
                 std_d = (d - avg_dist) / std_dist
                 if d < avg_dist:  # Defining the neighborhood with an average distance radius.
                     min_indicies.append(i)
-                    # NEW: for plotting
-                    self.distance_weight_log.append((d, 1.0))
-                    self.std_weight_log.append((std_d, 1.0))
-                else:
-                    self.distance_weight_log.append((d, 0.0))
-                    self.std_weight_log.append((std_d, 0.0))
+                #     # NEW: for plotting
+                #     self.distance_weight_log.append((d, 1.0))
+                #     self.std_weight_log.append((std_d, 1.0))
+                # else:
+                #     self.distance_weight_log.append((d, 0.0))
+                #     self.std_weight_log.append((std_d, 0.0))
         for i in range(len(min_indicies)):
             NN.append(min_indicies[i])
         return np.array(NN, dtype=np.int32)

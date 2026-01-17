@@ -63,9 +63,10 @@ def process_and_save_results(file_path, fs, method_name):
     }])
     runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime.csv"), index=False)
 
-    if method_name in ["SWRFstar2", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
-        fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
-        # fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), save_file=os.path.join(method_dir, f"{base_name}_stdweightlog.txt"), show_expected=True)
+    # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
+    # if method_name in ["SWRFstar2", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
+    #     fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
+    #     # fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), save_file=os.path.join(method_dir, f"{base_name}_stdweightlog.txt"), show_expected=True)
 
     print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
 

@@ -76,18 +76,18 @@ class MultiSURFstar(SURFstar):
 
                 if d < near_threshold:
                     NN_near.append(j)
-                    # NEW: for plotting
-                    self.distance_weight_log.append((d, 1.0))
-                    self.std_weight_log.append((std_d, 1.0))
+                    # # NEW: for plotting
+                    # self.distance_weight_log.append((d, 1.0))
+                    # self.std_weight_log.append((std_d, 1.0))
                 elif d > far_threshold:
                     NN_far.append(j)
-                    # NEW: for plotting
-                    self.distance_weight_log.append((d, -1.0))
-                    self.std_weight_log.append((std_d, -1.0))
-                else:
-                    # NEW: for plotting
-                    self.distance_weight_log.append((d, 0.0))
-                    self.std_weight_log.append((std_d, 0.0))
+                #     # NEW: for plotting
+                #     self.distance_weight_log.append((d, -1.0))
+                #     self.std_weight_log.append((std_d, -1.0))
+                # else:
+                #     # NEW: for plotting
+                #     self.distance_weight_log.append((d, 0.0))
+                #     self.std_weight_log.append((std_d, 0.0))
 
         return np.array(NN_near), np.array(NN_far)
 
