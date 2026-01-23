@@ -29,6 +29,8 @@ from .scoring_utils import MultiSURF_compute_scores
 import matplotlib.pyplot as plt
 import time
 from pyinstrument import Profiler
+from line_profiler import LineProfiler
+from .scoring_utils import compute_score, ramp_function
 
 
 class MultiSURF(SURFstar):
@@ -93,14 +95,19 @@ class MultiSURF(SURFstar):
         self.std_weight_log = []
         self.instance_dist_stats = []
 
-        profiler = Profiler()
-        profiler.start()
+        lp = LineProfiler()
+        lp.add_function(compute_score)
+        lp.add_function(ramp_function)
+        # profiler = Profiler()
+        # profiler.start()
         # start_time = time.time()
         NNlist = [self._find_neighbors(datalen) for datalen in range(self._datalen)]
         # end_time = time.time()
         # total_time = end_time - start_time
         # print("Time taken to identify nearest neighbor sets in MultiSURF:", total_time)
 
+        lp.enable()
+        
         if isinstance(self._weights, np.ndarray) and self.weight_final_scores:
             scores = np.sum(Parallel(n_jobs=self.n_jobs)(delayed(
                 MultiSURF_compute_scores)(instance_num, self.attr, nan_entries, self._num_attributes, self.mcmap,
@@ -112,8 +119,10 @@ class MultiSURF(SURFstar):
                                           NN_near, self._headers, self._class_type, self._X, self._y, self._labels_std, self.data_type)
                                                         for instance_num, NN_near in zip(range(self._datalen), NNlist)), axis=0)
 
-        profiler.stop()
-        profiler.print()
+        lp.disable()
+        lp.print_stats()
+        # profiler.stop()
+        # profiler.print()
         
         # print(scores)
         return np.array(scores)
