@@ -61,7 +61,7 @@ def process_and_save_results(file_path, fs, method_name):
         "Runtime (sec)": round(runtime, 4),
         "Runtime (min)": round(runtime / 60, 4)
     }])
-    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime.csv"), index=False)
+    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime_diagnosticrun.csv"), index=False)
 
     # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
     # if method_name in ["SWRFstar2", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
@@ -136,7 +136,7 @@ def process_surfstar(file_path):
     process_and_save_results(file_path, fs, "SURFstar")
 
 def process_multisurf(file_path):
-    fs = MultiSURF(n_jobs=16)
+    fs = MultiSURF(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSURF")
 
 def process_multisurfstar(file_path):

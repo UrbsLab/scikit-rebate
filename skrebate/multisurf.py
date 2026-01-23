@@ -28,6 +28,7 @@ from joblib import Parallel, delayed
 from .scoring_utils import MultiSURF_compute_scores
 import matplotlib.pyplot as plt
 import time
+from pyinstrument import Profiler
 
 
 class MultiSURF(SURFstar):
@@ -92,11 +93,13 @@ class MultiSURF(SURFstar):
         self.std_weight_log = []
         self.instance_dist_stats = []
 
-        start_time = time.time()
+        profiler = Profiler()
+        profiler.start()
+        # start_time = time.time()
         NNlist = [self._find_neighbors(datalen) for datalen in range(self._datalen)]
-        end_time = time.time()
-        total_time = end_time - start_time
-        print("Time taken to identify nearest neighbor sets in MultiSURF:", total_time)
+        # end_time = time.time()
+        # total_time = end_time - start_time
+        # print("Time taken to identify nearest neighbor sets in MultiSURF:", total_time)
 
         if isinstance(self._weights, np.ndarray) and self.weight_final_scores:
             scores = np.sum(Parallel(n_jobs=self.n_jobs)(delayed(
@@ -109,6 +112,9 @@ class MultiSURF(SURFstar):
                                           NN_near, self._headers, self._class_type, self._X, self._y, self._labels_std, self.data_type)
                                                         for instance_num, NN_near in zip(range(self._datalen), NNlist)), axis=0)
 
+        profiler.stop()
+        profiler.print()
+        
         # print(scores)
         return np.array(scores)
     
