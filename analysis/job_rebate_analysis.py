@@ -136,7 +136,7 @@ def process_surfstar(file_path):
     process_and_save_results(file_path, fs, "SURFstar")
 
 def process_multisurf(file_path):
-    fs = MultiSURF(n_jobs=1)
+    fs = MultiSURF(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSURF")
 
 def process_multisurfstar(file_path):

@@ -65,7 +65,7 @@ class MultiSURF(SURFstar):
         true_std = np.std(dist_vect)
 
         # NEW: unique mean, std, and deadband values for this target instance, used to construct the expected curve
-        self.instance_dist_stats.append((inst_avg_dist, true_std, inst_std))
+        # self.instance_dist_stats.append((inst_avg_dist, true_std, inst_std))
 
         NN_near = []
         for j in range(self._datalen):
@@ -95,9 +95,9 @@ class MultiSURF(SURFstar):
         self.std_weight_log = []
         self.instance_dist_stats = []
 
-        lp = LineProfiler()
-        lp.add_function(compute_score)
-        lp.add_function(ramp_function)
+        # lp = LineProfiler()
+        # lp.add_function(compute_score)
+        # lp.add_function(ramp_function)
         # profiler = Profiler()
         # profiler.start()
         # start_time = time.time()
@@ -106,7 +106,7 @@ class MultiSURF(SURFstar):
         # total_time = end_time - start_time
         # print("Time taken to identify nearest neighbor sets in MultiSURF:", total_time)
 
-        lp.enable()
+        # lp.enable()
         
         if isinstance(self._weights, np.ndarray) and self.weight_final_scores:
             scores = np.sum(Parallel(n_jobs=self.n_jobs)(delayed(
@@ -119,8 +119,8 @@ class MultiSURF(SURFstar):
                                           NN_near, self._headers, self._class_type, self._X, self._y, self._labels_std, self.data_type)
                                                         for instance_num, NN_near in zip(range(self._datalen), NNlist)), axis=0)
 
-        lp.disable()
-        lp.print_stats()
+        # lp.disable()
+        # lp.print_stats()
         # profiler.stop()
         # profiler.print()
         
