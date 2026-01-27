@@ -203,53 +203,97 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
 
     xinstfeature = X[inst][feature]  # value of target instances target feature.
 
+    # NEW: bringing y_inst out of the loop and just looking it up once
+    y_inst = y[inst]
     #--------------------------------------------------------------------------
     if ctype == 'binary':
-        for i in range(len(NN)):
-            if nan_entries[NN[i]][feature]:  # skip any NN with a missing value for this feature.
-                continue
+        # for i in range(len(NN)):
+        #     if nan_entries[NN[i]][feature]:  # skip any NN with a missing value for this feature.
+        #         continue
 
-            xNNifeature = X[NN[i]][feature]
+        #     xNNifeature = X[NN[i]][feature]
 
-            if near:  # SCORING FOR NEAR INSTANCES
-                if y[inst] == y[NN[i]]:   # HIT
-                    count_hit += 1
-                    if ftype == 'continuous':
+        #     if near:  # SCORING FOR NEAR INSTANCES
+        #         if y[inst] == y[NN[i]]:   # HIT
+        #             count_hit += 1
+        #             if ftype == 'continuous':
+        #                 # diff_hit -= abs(xinstfeature - xNNifeature) / mmdiff #Normalize absolute value of feature value difference by max-min value range for feature (so score update lies between 0 and 1)
+        #                 diff_hit -= ramp_function(data_type, attr, fname, xinstfeature, xNNifeature)
+        #             else:  # discrete feature
+        #                 if xinstfeature != xNNifeature:  # A difference in feature value is observed
+        #                     # Feature score is reduced when we observe feature difference between 'near' instances with the same class.
+        #                     diff_hit -= 1
+        #         else:  # MISS
+        #             count_miss += 1
+        #             if ftype == 'continuous':
+        #                 #diff_miss += abs(xinstfeature - xNNifeature) / mmdiff
+        #                 diff_miss += ramp_function(data_type, attr, fname,
+        #                                            xinstfeature, xNNifeature)
+        #             else:  # discrete feature
+        #                 if xinstfeature != xNNifeature:  # A difference in feature value is observed
+        #                     # Feature score is increase when we observe feature difference between 'near' instances with different class values.
+        #                     diff_miss += 1
+            # else:  # SCORING FOR FAR INSTANCES (ONLY USED BY MULTISURF* BASED ON HOW CODED)
+            #     if y[inst] == y[NN[i]]:   # HIT
+            #         count_hit += 1
+            #         if ftype == 'continuous':
+
+            #             #diff_hit -= abs(xinstfeature - xNNifeature) / mmdiff  #Hits differently add continuous value differences rather than subtract them 
+            #             diff_hit -= (1-ramp_function(data_type, attr, fname, xinstfeature, xNNifeature)) #Sameness should yield most negative score
+            #         else: #discrete feature
+            #             if xinstfeature == xNNifeature: # The same feature value is observed (Used for more efficient 'far' scoring, since there should be fewer same values for 'far' instances)
+            #                 diff_hit -= 1 # Feature score is reduced when we observe the same feature value between 'far' instances with the same class.
+            #     else:  # MISS
+            #         count_miss += 1
+            #         if ftype == 'continuous':
+            #             #diff_miss += abs(xinstfeature - xNNifeature) / mmdiff #Misses differntly subtract continuous value differences rather than add them 
+            #             diff_miss += (1-ramp_function(data_type, attr, fname, xinstfeature, xNNifeature)) #Sameness should yield most negative score
+            #         else: #discrete feature
+            #             if xinstfeature == xNNifeature: # The same feature value is observed (Used for more efficient 'far' scoring, since there should be fewer same values for 'far' instances)
+            #                 diff_miss += 1 # Feature score is increased when we observe the same feature value between 'far' instances with different class values.
+        # *** NEW: experimenting on compute_score(), near neighbors and binary output
+        # NEW: moving near check outside of NN loop
+        if near: # SCORING FOR NEAR INSTANCES
+            # NEW: bringing ftype check outside of NN loop
+            if ftype == 'continuous':
+                # NEW: avoiding NN[i] lookup throughout this for loop
+                for nn in NN: 
+                    if nan_entries[nn][feature]:  # skip any NN with a missing value for this feature.
+                        continue
+
+                    xNNifeature = X[nn][feature]
+
+                    # if near:  # SCORING FOR NEAR INSTANCES
+                    if y_inst == y[nn]:   # HIT
+                        count_hit += 1
                         # diff_hit -= abs(xinstfeature - xNNifeature) / mmdiff #Normalize absolute value of feature value difference by max-min value range for feature (so score update lies between 0 and 1)
                         diff_hit -= ramp_function(data_type, attr, fname, xinstfeature, xNNifeature)
-                    else:  # discrete feature
+                    else:  # MISS
+                        count_miss += 1
+                        #diff_miss += abs(xinstfeature - xNNifeature) / mmdiff
+                        diff_miss += ramp_function(data_type, attr, fname,
+                                                        xinstfeature, xNNifeature)
+            else:
+                # NEW: avoiding NN[i] lookup throughout this for loop
+                for nn in NN: 
+                    if nan_entries[nn][feature]:  # skip any NN with a missing value for this feature.
+                        continue
+
+                    xNNifeature = X[nn][feature]
+
+                    # if near:  # SCORING FOR NEAR INSTANCES
+                    if y_inst == y[nn]:   # HIT
+                        count_hit += 1
                         if xinstfeature != xNNifeature:  # A difference in feature value is observed
                             # Feature score is reduced when we observe feature difference between 'near' instances with the same class.
                             diff_hit -= 1
-                else:  # MISS
-                    count_miss += 1
-                    if ftype == 'continuous':
-                        #diff_miss += abs(xinstfeature - xNNifeature) / mmdiff
-                        diff_miss += ramp_function(data_type, attr, fname,
-                                                   xinstfeature, xNNifeature)
-                    else:  # discrete feature
+                    else:  # MISS
+                        count_miss += 1
                         if xinstfeature != xNNifeature:  # A difference in feature value is observed
                             # Feature score is increase when we observe feature difference between 'near' instances with different class values.
                             diff_miss += 1
 
-            else:  # SCORING FOR FAR INSTANCES (ONLY USED BY MULTISURF* BASED ON HOW CODED)
-                if y[inst] == y[NN[i]]:   # HIT
-                    count_hit += 1
-                    if ftype == 'continuous':
-
-                        #diff_hit -= abs(xinstfeature - xNNifeature) / mmdiff  #Hits differently add continuous value differences rather than subtract them 
-                        diff_hit -= (1-ramp_function(data_type, attr, fname, xinstfeature, xNNifeature)) #Sameness should yield most negative score
-                    else: #discrete feature
-                        if xinstfeature == xNNifeature: # The same feature value is observed (Used for more efficient 'far' scoring, since there should be fewer same values for 'far' instances)
-                            diff_hit -= 1 # Feature score is reduced when we observe the same feature value between 'far' instances with the same class.
-                else:  # MISS
-                    count_miss += 1
-                    if ftype == 'continuous':
-                        #diff_miss += abs(xinstfeature - xNNifeature) / mmdiff #Misses differntly subtract continuous value differences rather than add them 
-                        diff_miss += (1-ramp_function(data_type, attr, fname, xinstfeature, xNNifeature)) #Sameness should yield most negative score
-                    else: #discrete feature
-                        if xinstfeature == xNNifeature: # The same feature value is observed (Used for more efficient 'far' scoring, since there should be fewer same values for 'far' instances)
-                            diff_miss += 1 # Feature score is increased when we observe the same feature value between 'far' instances with different class values.
+        # *** END NEW
 
         """ Score Normalizations:
         *'n' normalization dividing by the number of training instances (this helps ensure that all final scores end up in the -1 to 1 range
