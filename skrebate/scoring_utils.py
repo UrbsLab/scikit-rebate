@@ -354,7 +354,7 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
                 x_nn = X[nn_valid, feature]
                 y_nn = y[nn_valid]
 
-                # Step 3: Identify hits vs misses
+                # Step 3: Identify hits vs misses; hits and misses are boolean arrays through elementwise comparison
                 hits = (y_nn == y_inst)
                 misses = ~hits
 
@@ -373,7 +373,40 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
                     # discrete feature
                     diff_hit -= np.sum(x_nn[hits] != xinstfeature)
                     diff_miss += np.sum(x_nn[misses] != xinstfeature)
+        else: # Far scoring
+            # Step 1: Filter neighbors with non-missing feature values
+            valid = ~nan_entries[NN, feature]
+            nn_valid = NN[valid]
 
+            if nn_valid.size == 0:
+                count_hit = 0
+                count_miss = 0
+                diff_hit = 0.0
+                diff_miss = 0.0
+            else:
+                # Step 2: Gather neighbor feature values & labels
+                x_nn = X[nn_valid, feature]
+                y_nn = y[nn_valid]
+
+                # Step 3: Identify hits vs misses; hits and misses are boolean arrays through elementwise comparison
+                hits = (y_nn == y_inst)
+                misses = ~hits
+
+                count_hit = hits.sum()
+                count_miss = misses.sum()
+
+                # Step 4: Score updates
+                if ftype == 'continuous':
+                    # vectorized ramp function
+                    # ramp_vec must accept arrays
+                    diff_hit -= (1 - ramp_vec(data_type, attr, fname,
+                                        xinstfeature, x_nn[hits]).sum())
+                    diff_miss += (1 - ramp_vec(data_type, attr, fname,
+                                        xinstfeature, x_nn[misses]).sum())
+                else:
+                    # discrete feature
+                    diff_hit -= np.sum(x_nn[hits] == xinstfeature)
+                    diff_miss += np.sum(x_nn[misses] == xinstfeature)
 
         """ Score Normalizations:
         *'n' normalization dividing by the number of training instances (this helps ensure that all final scores end up in the -1 to 1 range
