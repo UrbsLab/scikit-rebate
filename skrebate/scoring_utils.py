@@ -521,7 +521,6 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
                 #     class_store[missClass][0] = count_miss
                 misses = ~hits
 
-
                 # Step 4: Score updates
                 if ftype == 'continuous':
                     # vectorized ramp function
