@@ -399,9 +399,10 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
                 if ftype == 'continuous':
                     # vectorized ramp function
                     # ramp_vec must accept arrays
-                    diff_hit -= (1 - ramp_vec(data_type, attr, fname,
+                    # for each hit or miss, -/+ 1 is added, so that's why count_hit/count_miss is subtracted
+                    diff_hit -= (count_hit - ramp_vec(data_type, attr, fname,
                                         xinstfeature, x_nn[hits]).sum())
-                    diff_miss += (1 - ramp_vec(data_type, attr, fname,
+                    diff_miss += (count_miss - ramp_vec(data_type, attr, fname,
                                         xinstfeature, x_nn[misses]).sum())
                 else:
                     # discrete feature
@@ -518,6 +519,8 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
                 #     misses = (y_nn == missClass)
                 #     count_miss = misses.sum()
                 #     class_store[missClass][0] = count_miss
+                misses = ~hits
+
 
                 # Step 4: Score updates
                 if ftype == 'continuous':
@@ -525,28 +528,46 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
                     # ramp_vec must accept arrays
                     diff_hit -= ramp_vec(data_type, attr, fname,
                                         xinstfeature, x_nn[hits]).sum()
-                    # For multiclass, need to keep track of count and diff for each miss class
-                    for missClass in class_store:
-                        misses = (y_nn == missClass)
-                        count_miss = misses.sum()
-                        class_store[missClass][0] = count_miss
+                    # # For multiclass, need to keep track of count and diff for each miss class
+                    # for missClass in class_store:
+                    #     misses = (y_nn == missClass)
+                    #     count_miss = misses.sum()
+                    #     class_store[missClass][0] = count_miss
 
-                        diff_miss = 0.0
-                        diff_miss += ramp_vec(data_type, attr, fname,
-                                        xinstfeature, x_nn[misses]).sum()
-                        class_store[missClass][1] = diff_miss
+                    #     diff_miss = 0.0
+                    #     diff_miss += ramp_vec(data_type, attr, fname,
+                    #                     xinstfeature, x_nn[misses]).sum()
+                    #     class_store[missClass][1] = diff_miss
+                    miss_diffs = ramp_vec(data_type, attr, fname, xinstfeature, x_nn[misses])
+                    classes, inv = np.unique(y_nn[misses], return_inverse=True)
+
+                    counts = np.bincount(inv)
+                    diff_sums = np.bincount(inv, weights=miss_diffs)
+                    for cls, cnt, diff_sum in zip(classes, counts, diff_sums):
+                        class_store[cls][0] = cnt
+                        class_store[cls][1] = diff_sum
+
                 else:
                     # discrete feature
                     diff_hit -= np.sum(x_nn[hits] != xinstfeature)
-                    # For multiclass, need to keep track of count and diff for each miss class
-                    for missClass in class_store:
-                        misses = (y_nn == missClass)
-                        count_miss = misses.sum()
-                        class_store[missClass][0] = count_miss
+                    # # For multiclass, need to keep track of count and diff for each miss class
+                    # for missClass in class_store:
+                    #     misses = (y_nn == missClass)
+                    #     count_miss = misses.sum()
+                    #     class_store[missClass][0] = count_miss
 
-                        diff_miss = 0.0
-                        diff_miss += np.sum(x_nn[misses] != xinstfeature)
-                        class_store[missClass][1] = diff_miss
+                    #     diff_miss = 0.0
+                    #     diff_miss += np.sum(x_nn[misses] != xinstfeature)
+                    #     class_store[missClass][1] = diff_miss
+                    miss_diffs = (x_nn[misses] != xinstfeature).astype(float)
+                    classes, inv = np.unique(y_nn[misses], return_inverse=True)
+
+                    counts = np.bincount(inv)
+                    diff_sums = np.bincount(inv, weights=miss_diffs)
+                    for cls, cnt, diff_sum in zip(classes, counts, diff_sums):
+                        class_store[cls][0] = cnt
+                        class_store[cls][1] = diff_sum
+
         else: # Far scoring
             # Step 1: Filter neighbors with non-missing feature values
             valid = ~nan_entries[NN, feature]
@@ -564,35 +585,52 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
                 # Step 3: Identify hits vs misses; hits and misses are boolean arrays through elementwise comparison
                 hits = (y_nn == y_inst)
                 count_hit = hits.sum()
+                misses = ~hits
 
                 # Step 4: Score updates
                 if ftype == 'continuous':
                     # vectorized ramp function
                     # ramp_vec must accept arrays
-                    diff_hit -= (1 - ramp_vec(data_type, attr, fname,
+                    diff_hit -= (count_hit - ramp_vec(data_type, attr, fname,
                                         xinstfeature, x_nn[hits]).sum())
-                    # For multiclass, need to keep track of count and diff for each miss class
-                    for missClass in class_store:
-                        misses = (y_nn == missClass)
-                        count_miss = misses.sum()
-                        class_store[missClass][0] = count_miss
+                    # # For multiclass, need to keep track of count and diff for each miss class
+                    # for missClass in class_store:
+                    #     misses = (y_nn == missClass)
+                    #     count_miss = misses.sum()
+                    #     class_store[missClass][0] = count_miss
 
-                        diff_miss = 0.0
-                        diff_miss += (1 - ramp_vec(data_type, attr, fname,
-                                        xinstfeature, x_nn[misses]).sum())
-                        class_store[missClass][1] = diff_miss
+                    #     diff_miss = 0.0
+                    #     diff_miss += (1 - ramp_vec(data_type, attr, fname,
+                    #                     xinstfeature, x_nn[misses]).sum())
+                    #     class_store[missClass][1] = diff_miss
+                    miss_diffs = ramp_vec(data_type, attr, fname, xinstfeature, x_nn[misses])
+                    classes, inv = np.unique(y_nn[misses], return_inverse=True)
+
+                    counts = np.bincount(inv)
+                    diff_sums = np.bincount(inv, weights=miss_diffs)
+                    for cls, cnt, diff_sum in zip(classes, counts, diff_sums):
+                        class_store[cls][0] = cnt
+                        class_store[cls][1] = (cnt - diff_sum)
                 else:
                     # discrete feature
                     diff_hit -= np.sum(x_nn[hits] == xinstfeature)
-                    # For multiclass, need to keep track of count and diff for each miss class
-                    for missClass in class_store:
-                        misses = (y_nn == missClass)
-                        count_miss = misses.sum()
-                        class_store[missClass][0] = count_miss
+                    # # For multiclass, need to keep track of count and diff for each miss class
+                    # for missClass in class_store:
+                    #     misses = (y_nn == missClass)
+                    #     count_miss = misses.sum()
+                    #     class_store[missClass][0] = count_miss
 
-                        diff_miss = 0.0
-                        diff_miss += np.sum(x_nn[misses] == xinstfeature)
-                        class_store[missClass][1] = diff_miss
+                    #     diff_miss = 0.0
+                    #     diff_miss += np.sum(x_nn[misses] == xinstfeature)
+                    #     class_store[missClass][1] = diff_miss
+                    miss_diffs = (x_nn[misses] == xinstfeature).astype(float)
+                    classes, inv = np.unique(y_nn[misses], return_inverse=True)
+
+                    counts = np.bincount(inv)
+                    diff_sums = np.bincount(inv, weights=miss_diffs)
+                    for cls, cnt, diff_sum in zip(classes, counts, diff_sums):
+                        class_store[cls][0] = cnt
+                        class_store[cls][1] = diff_sum
 
         """ Score Normalizations:
         *'n' normalization dividing by the number of training instances (this helps ensure that all final scores end up in the -1 to 1 range
