@@ -160,7 +160,7 @@ def process_multiswrfstar(file_path):
     process_and_save_results(file_path, fs, "MultiSWRFstar")
 
 def process_multiswrf(file_path):
-    fs = MultiSWRF(n_jobs=16)
+    fs = MultiSWRF(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRF")
 
 def process_multiswrfdbstar(file_path):
