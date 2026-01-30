@@ -62,7 +62,7 @@ def process_results_dir(results_dir, prefix=""):
     # Define your preferred order of the RBAs as a list
     rba_order = [
         'RandomShuffle',
-        # 'MutualInfo',
+        'MutualInfo',
         'ReliefF10',
         'ReliefF100',
         'SURF',
@@ -97,7 +97,7 @@ def process_results_dir(results_dir, prefix=""):
     # Define a mapping from your RBA order to new descriptive names
     rba_descriptive_names = {
         'RandomShuffle': 'Random Shuffle',
-        # 'MutualInfo': 'Mutual Info',
+        'MutualInfo': 'Mutual Info',
         'ReliefF10': 'ReliefF 10NN',
         'ReliefF100': 'ReliefF 100NN',
         'SURF': 'SURF',
