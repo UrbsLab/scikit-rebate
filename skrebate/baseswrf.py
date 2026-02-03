@@ -1606,7 +1606,9 @@ class BaseSWRF(ReliefF):
         # print("Time taken to create std_dist:", time.time() - start_time, "seconds\n")
         # print("STD of the distances:", std_dist, "\n")
 
-        NN_near_list, weights_near_list, NN_far_list, weights_far_list = [self._find_neighbors(datalen, mean_dist, std_dist) for datalen in range(self._datalen)]
+        # NN_near_list, weights_near_list, NN_far_list, weights_far_list = [self._find_neighbors(datalen, mean_dist, std_dist) for datalen in range(self._datalen)]
+        NN_near_list, weights_near_list, NN_far_list, weights_far_list = zip(*[self._find_neighbors(datalen, mean_dist, std_dist)
+                                                                               for datalen in range(self._datalen)])
 
         if self.ignore_far: # only near neighbors
             if isinstance(self._weights, np.ndarray) and self.weight_final_scores:
@@ -1619,7 +1621,7 @@ class BaseSWRF(ReliefF):
                     self.BaseSWRF_compute_scores)(instance_num, self.attr, nan_entries, self._num_attributes, self.mcmap,
                                             NN_near, self._headers, self._class_type, self._X, self._y, self._labels_std, self.data_type, weights_near)
                                                             for instance_num, NN_near, weights_near in zip(range(self._datalen), NN_near_list, weights_near_list)), axis=0)
-        else: # star algroithm that uses far neighbors
+        else: # star algorithm that uses far neighbors
             if isinstance(self._weights, np.ndarray) and self.weight_final_scores:
                 scores = np.sum(Parallel(n_jobs=self.n_jobs)(delayed(
                     self.BaseSWRFstar_compute_scores)(instance_num, self.attr, nan_entries, self._num_attributes, self.mcmap,
