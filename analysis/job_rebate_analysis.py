@@ -64,9 +64,9 @@ def process_and_save_results(file_path, fs, method_name):
     runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime_diagnosticrun.csv"), index=False)
 
     # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
-    # if method_name in ["SWRFstar2", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
-    #     fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
-    #     # fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), save_file=os.path.join(method_dir, f"{base_name}_stdweightlog.txt"), show_expected=True)
+    if method_name in ["SWRFstar2", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
+        fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
+        # fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), save_file=os.path.join(method_dir, f"{base_name}_stdweightlog.txt"), show_expected=True)
 
     print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
 
@@ -144,19 +144,19 @@ def process_multisurfstar(file_path):
     process_and_save_results(file_path, fs, "MultiSURFstar")
 
 def process_swrfstar(file_path):
-    fs = SWRFstar(n_jobs=16)
+    fs = SWRFstar(n_jobs=1)
     process_and_save_results(file_path, fs, "SWRFstar")
 
 def process_swrfstar2(file_path):
-    fs = SWRFstar2(n_jobs=16)
+    fs = SWRFstar2(n_jobs=1)
     process_and_save_results(file_path, fs, "SWRFstar2")
 
 def process_swrf(file_path):
-    fs = SWRF(n_jobs=16)
+    fs = SWRF(n_jobs=1)
     process_and_save_results(file_path, fs, "SWRF")
 
 def process_multiswrfstar(file_path):
-    fs = MultiSWRFstar(n_jobs=16)
+    fs = MultiSWRFstar(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFstar")
 
 def process_multiswrf(file_path):
@@ -164,44 +164,44 @@ def process_multiswrf(file_path):
     process_and_save_results(file_path, fs, "MultiSWRF")
 
 def process_multiswrfdbstar(file_path):
-    fs = MultiSWRFDBstar(n_jobs=16)
+    fs = MultiSWRFDBstar(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBstar")
 
 def process_multiswrfdb(file_path):
-    fs = MultiSWRFDB(n_jobs=16)
+    fs = MultiSWRFDB(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDB")
 
 def process_multiswrfdblinearstar(file_path):
-    fs = MultiSWRFDBlinearstar(n_jobs=16)
+    fs = MultiSWRFDBlinearstar(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBlinearstar")
 
 def process_multiswrfdblinear(file_path):
-    fs = MultiSWRFDBlinear(n_jobs=16)
+    fs = MultiSWRFDBlinear(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBlinear")
 
 def process_multiswrfdbexponentialstar(file_path):
-    fs = MultiSWRFDBexponentialstar(n_jobs=16)
+    fs = MultiSWRFDBexponentialstar(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBexponentialstar")
 
 def process_multiswrfdbexponential(file_path):
-    fs = MultiSWRFDBexponential(n_jobs=16)
+    fs = MultiSWRFDBexponential(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBexponential")
 
 # 3 SD versions of MultiSWRFDB variants:
 def process_multiswrfdblinear3SDstar(file_path):
-    fs = MultiSWRFDBlinear3SDstar(n_jobs=16)
+    fs = MultiSWRFDBlinear3SDstar(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBlinear3SDstar")
 
 def process_multiswrfdblinear3SD(file_path):
-    fs = MultiSWRFDBlinear3SD(n_jobs=16)
+    fs = MultiSWRFDBlinear3SD(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBlinear3SD")
 
 def process_multiswrfdbexponential3SDstar(file_path):
-    fs = MultiSWRFDBexponential3SDstar(n_jobs=16)
+    fs = MultiSWRFDBexponential3SDstar(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBexponential3SDstar")
 
 def process_multiswrfdbexponential3SD(file_path):
-    fs = MultiSWRFDBexponential3SD(n_jobs=16)
+    fs = MultiSWRFDBexponential3SD(n_jobs=1)
     process_and_save_results(file_path, fs, "MultiSWRFDBexponential3SD")
 
 def process_murelief10(file_path):
