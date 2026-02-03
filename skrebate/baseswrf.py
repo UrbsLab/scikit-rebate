@@ -1659,10 +1659,11 @@ class BaseSWRF(ReliefF):
                 means, stds, deadband = zip(*self.instance_dist_stats)
                 mean_dist = np.mean(means)
                 std_dist = np.mean(stds)
-                dead_band = np.mean(deadband)
-                # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
-                near_threshold = mean_dist - dead_band
-                far_threshold = mean_dist + dead_band
+                if 'MultiSWRFDB' in self.name:
+                    dead_band = np.mean(deadband)
+                    # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
+                    near_threshold = mean_dist - dead_band
+                    far_threshold = mean_dist + dead_band
 
                 # NEW: for plotting in terms of STD
                 x_vals_std = (x_vals - mean_dist) / std_dist
