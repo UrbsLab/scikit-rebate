@@ -208,6 +208,7 @@ def ramp_vec(data_type, attr, fname, xinstfeature, x_nn):
     rawfd = np.abs(xinstfeature - x_nn) # prenormalized feature value difference
 
     if data_type == 'mixed':
+        print("Ramp_vec is treating this dataset's data type (features) as MIXED")
         standDev = attr[fname][4]
 
         # If rawfd > standDev → 1, else rawfd / mmdiff
@@ -217,6 +218,7 @@ def ramp_vec(data_type, attr, fname, xinstfeature, x_nn):
             rawfd / mmdiff
         )
     else:
+        print("Ramp_vec is treating this dataset's data type (features) as CONTINUOUS")
         diff = rawfd / mmdiff
 
     return diff
@@ -251,6 +253,7 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
     y_inst = y[inst]
     #--------------------------------------------------------------------------
     if ctype == 'binary':
+        print("Compute_score is treating this dataset outcome as BINARY")
         # for i in range(len(NN)):
         #     if nan_entries[NN[i]][feature]:  # skip any NN with a missing value for this feature.
         #         continue
@@ -424,6 +427,7 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
 
     #--------------------------------------------------------------------------
     elif ctype == 'multiclass':
+        print("Compute_score is treating this dataset outcome as MULTICLASS")
         # class_store = dict() #only 'miss' classes will be stored
         # #missClassPSum = 0
 
@@ -660,6 +664,7 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
 
     #--------------------------------------------------------------------------
     else:  # CONTINUOUS endpoint
+        print("Compute_score is treating this dataset outcome as CONTINUOUS")
         # same_class_bound = labels_std
 
         # for i in range(len(NN)):
@@ -743,6 +748,7 @@ def compute_score(attr, mcmap, NN, feature, inst, nan_entries, headers, class_ty
                     diff_miss += ramp_vec(data_type, attr, fname,
                                         xinstfeature, x_nn[misses]).sum()
                 else:
+                    print("Compute_score is treating this dataset's data type (features) as DISCRETE")
                     # discrete feature
                     diff_hit -= np.sum(x_nn[hits] != xinstfeature)
                     diff_miss += np.sum(x_nn[misses] != xinstfeature)
