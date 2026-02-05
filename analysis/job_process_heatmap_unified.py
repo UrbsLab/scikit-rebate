@@ -65,10 +65,14 @@ def main():
     # custom colormap & ordering
     custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
 
+    # rba_order = [
+    #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',
+    #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','MultiSWRF','MultiSWRFstar','MultiSWRFDB','MultiSWRFDBstar',
+    #     'MuRelief10','MuRelief100'
+    # ]
     rba_order = [
-        'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',
-        'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','MultiSWRF','MultiSWRFstar','MultiSWRFDB','MultiSWRFDBstar',
-        'MuRelief10','MuRelief100'
+        'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
+        'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar2','MultiSWRFstar','MultiSWRFDBstar'
     ]
     # rba_order = [
     #     'RandomShuffle', 'MutualInfo', 'MultiSWRFDB', 'MultiSWRFDBstar', 'MultiSWRFDBlinear', 'MultiSWRFDBlinear3SD', 'MultiSWRFDBlinearstar', 'MultiSWRFDBlinear3SDstar', 'MultiSWRFDBexponential', 'MultiSWRFDBexponential3SD', 'MultiSWRFDBexponentialstar', 'MultiSWRFDBexponential3SDstar'
