@@ -167,8 +167,6 @@ class ReliefF(BaseEstimator):
             if self.verbose:
                 print(f"Automatically identify label type as {self._class_type}")
 
-        print("The label type given to this dataset:", self._class_type, "\n")
-
         # Set mcmap accordingly
         if self._class_type in ('binary', 'continuous'):
             self.mcmap = 0
@@ -213,8 +211,6 @@ class ReliefF(BaseEstimator):
             self.data_type = 'continuous'
         else:
             raise ValueError('Invalid data type in data set.')
-        
-        print("The data type (features) given to this dataset:", self.data_type, "\n")
         #--------------------------------------------------------------------------------------------------------------------
 
         # Compute the distance array between all data points ----------------------------------------------------------------
