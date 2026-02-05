@@ -1,27 +1,6 @@
 import os
 import time
 
-# ALGORITHMS = [
-#     "mutual_info",
-#     "relieff10",
-#     "relieff100",
-#     "surf",
-#     "surfstar",
-#     "multisurf",
-#     "multisurfstar",
-#     # "swrfstar",
-#     "random",
-#     "swrfstar2",
-#     "swrf",
-#     "multiswrfstar",
-#     "multiswrf",
-#     "multiswrfdbstar",
-#     "multiswrfdb",
-#     "murelief10",
-#     "murelief100"
-# ]
-
-# editing default algorithms for balance when running run_rebate_analysis
 ALGORITHMS = [
     "mutual_info",
     "relieff10",
@@ -37,8 +16,29 @@ ALGORITHMS = [
     "multiswrfstar",
     "multiswrf",
     "multiswrfdbstar",
-    "multiswrfdb"
+    "multiswrfdb",
+    "murelief10",
+    "murelief100"
 ]
+
+# # editing default algorithms for balance when running run_rebate_analysis
+# ALGORITHMS = [
+#     "mutual_info",
+#     "relieff10",
+#     "relieff100",
+#     "surf",
+#     "surfstar",
+#     "multisurf",
+#     "multisurfstar",
+#     # "swrfstar",
+#     "random",
+#     "swrfstar2",
+#     "swrf",
+#     "multiswrfstar",
+#     "multiswrf",
+#     "multiswrfdbstar",
+#     "multiswrfdb"
+# ]
 
 # ALGORITHMS = [
 #     # "random",
