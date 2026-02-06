@@ -9,6 +9,35 @@ def collect_rba_rankings(root_dir):
     print(f"Searching for Results folders under: {root_dir}")
     all_rankings_df = pd.DataFrame()
 
+    # dict to create cleaner RBA names in mean/median rank tables
+    rba_descriptive_names = {
+        'RandomShuffle': 'Random Shuffle',
+        'MutualInfo': 'Mutual Info',
+        'ReliefF10': 'ReliefF 10NN',
+        'ReliefF100': 'ReliefF 100NN',
+        'SURF': 'SURF',
+        'SURFstar': 'SURF*',
+        'MultiSURF': 'MultiSURF',
+        'MultiSURFstar': 'MultiSURF*',
+        # 'SWRFstar': 'SWRF*',
+        'SWRF': 'SWRF',
+        'SWRFstar2': 'SWRF*',
+        'MultiSWRF': 'MultiSWRF',
+        'MultiSWRFstar': 'MultiSWRF*',
+        'MultiSWRFDB': 'MultiSWRFDB',
+        'MultiSWRFDBstar': 'MultiSWRFDB*',
+        'MuRelief10': 'MuRelief 10N',
+        'MuRelief100': 'MuRelief 100N',
+        'MultiSWRFDBlinear': 'MultiSWRFDB-L',
+        'MultiSWRFDBlinear3SD': 'MultiSWRFDB-L-3SD',
+        'MultiSWRFDBlinearstar': 'MultiSWRFDB-L*',
+        'MultiSWRFDBlinear3SDstar': 'MultiSWRFDB-L-3SD*',
+        'MultiSWRFDBexponential': 'MultiSWRFDB-E',
+        'MultiSWRFDBexponential3SD': 'MultiSWRFDB-E-3SD',
+        'MultiSWRFDBexponentialstar': 'MultiSWRFDB-E*',
+        'MultiSWRFDBexponential3SDstar': 'MultiSWRFDB-E-3SD*',
+    }
+
     for subdir, dirs, _ in os.walk(root_dir):
         subgroup_rankings_df = pd.DataFrame()
         # Only process Results folders that are within a_100 directories
@@ -41,7 +70,8 @@ def collect_rba_rankings(root_dir):
 
                     # Only keep true predictive features
                     predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank']]
-                    predictive_df['RBA'] = rba
+                    # predictive_df['RBA'] = rba
+                    predictive_df['RBA'] = rba_descriptive_names[rba]
 
                     # for subgroup ranking (ex. mainEff, her=0.2, EDM-1); i.e. group of 30 replicate dataset files
                     subgroup_rankings_df = pd.concat([subgroup_rankings_df, predictive_df], ignore_index=True)
