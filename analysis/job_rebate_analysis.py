@@ -108,8 +108,8 @@ def process_random_shuffle(file_path):
     # shuffled_df.to_csv(output_path, index=False, sep='\t')
 
     base_name = os.path.splitext(os.path.basename(file_path))[0]
-    # Take the last 6 characters
-    seed_str = base_name[-6:]  # example: "01.txt"
+    # Take the last 2 characters of base_name (i.e. the file number)
+    seed_str = base_name[-2:]  # example: "01"
     # Convert to deterministic integer seed
     file_seed = int(hashlib.sha256(seed_str.encode()).hexdigest(), 16) % (2**32)
 
