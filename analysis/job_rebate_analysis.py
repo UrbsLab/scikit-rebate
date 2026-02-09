@@ -8,6 +8,7 @@ from numpy.random import default_rng
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
 import hashlib
+from functools import partial
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
@@ -114,9 +115,11 @@ def process_mutual_info(file_path):
     # counting the number of labels in the 'Class' column to determine whether this is a classification or regression problem:
     num_labels = df['Class'].nunique()
     if num_labels <= 10:
-        fs = mutual_info_classif
+        # fs = mutual_info_classif
+        fs = partial(mutual_info_classif, random_state=42) # setting random_state for mutual_info
     else:
-        fs = mutual_info_regression
+        # fs = mutual_info_regression
+        fs = partial(mutual_info_regression, random_state=42)
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_relieff10(file_path):
