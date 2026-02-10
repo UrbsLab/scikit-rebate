@@ -43,9 +43,7 @@ def compute_percentages(results_dir):
 
             total_features_per_rba[rba] = max(method_feature_counts) if method_feature_counts else 0
 
-    # N = next(iter(total_features_per_rba.values()))
-    print(total_features_per_rba)
-    N = min(total_features_per_rba.values())
+    N = next(iter(total_features_per_rba.values()))
     lowest_ranks = all_rankings_df.groupby(['RBA', 'Dataset'])['Rank'].max().reset_index()
     percentages = {rba: [0] * N for rba in lowest_ranks['RBA'].unique()}
     for rba in percentages:

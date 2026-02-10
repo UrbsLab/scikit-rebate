@@ -85,47 +85,47 @@ def process_random_shuffle(file_path):
 
     # Shuffle feature column names (excluding 'Class' if present)
     if 'Class' in df.columns:
-        # columns_to_shuffle = df.drop('Class', axis=1).columns.tolist()
-        columns_to_shuffle = sorted(df.drop('Class', axis=1).columns.tolist())
+        columns_to_shuffle = df.drop('Class', axis=1).columns.tolist()
+        # columns_to_shuffle = sorted(df.drop('Class', axis=1).columns.tolist())
     else:
-        # columns_to_shuffle = df.columns.tolist()
-        columns_to_shuffle = sorted(df.columns.tolist())
+        columns_to_shuffle = df.columns.tolist()
+        # columns_to_shuffle = sorted(df.columns.tolist())
 
-    # # shuffled_columns = np.random.permutation(columns_to_shuffle)
-    # # NEW: reproducible shuffling based on file name
-    # base_name = os.path.splitext(os.path.basename(file_path))[0]
-    # # creating a deterministic seed based on the file name
-    # seed = int(hashlib.sha256(base_name.encode()).hexdigest(), 16) % (2**32)
-    # # creating a local RNG seeded from the file name
-    # rng = default_rng(seed)
-    # # shuffle columns deterministically for this file
-    # shuffled_columns = rng.permutation(columns_to_shuffle)
-
-    # shuffled_df = pd.DataFrame(shuffled_columns, columns=['Feature'])
-
-    # # base_name = os.path.splitext(os.path.basename(file_path))[0]
-    # output_path = os.path.join(results_dir, f"{base_name}_RandShuffle.txt")
-    # shuffled_df.to_csv(output_path, index=False, sep='\t')
-
+    # shuffled_columns = np.random.permutation(columns_to_shuffle)
+    # NEW: reproducible shuffling based on file name
     base_name = os.path.splitext(os.path.basename(file_path))[0]
-    # Take the last 2 characters of base_name (i.e. the file number)
-    seed_str = base_name[-2:]  # example: "01"
-    # Convert to deterministic integer seed
-    file_seed = int(hashlib.sha256(seed_str.encode()).hexdigest(), 16) % (2**32)
+    # creating a deterministic seed based on the file name
+    seed = int(hashlib.sha256(base_name.encode()).hexdigest(), 16) % (2**32)
+    # creating a local RNG seeded from the file name
+    rng = default_rng(seed)
+    # shuffle columns deterministically for this file
+    shuffled_columns = rng.permutation(columns_to_shuffle)
 
-    for i in range(40): # 40 random shuffles per replicate file (40 X 30 = 1200 random shuffles per configuration)
-        seed = file_seed + i
-        # creating a local RNG seeded from the file name
-        rng = default_rng(seed)
-        # shuffle columns deterministically for this file
-        shuffled_columns = rng.permutation(columns_to_shuffle)
+    shuffled_df = pd.DataFrame(shuffled_columns, columns=['Feature'])
 
-        shuffled_df = pd.DataFrame(shuffled_columns, columns=['Feature'])
+    # base_name = os.path.splitext(os.path.basename(file_path))[0]
+    output_path = os.path.join(results_dir, f"{base_name}_RandShuffle.txt")
+    shuffled_df.to_csv(output_path, index=False, sep='\t')
 
-        # base_name = os.path.splitext(os.path.basename(file_path))[0]
-        # output_path = os.path.join(results_dir, f"{base_name}_RandShuffle.txt")
-        output_path = os.path.join(results_dir, f"{base_name}{i}_RandShuffle.txt")
-        shuffled_df.to_csv(output_path, index=False, sep='\t')
+    # base_name = os.path.splitext(os.path.basename(file_path))[0]
+    # # Take the last 2 characters of base_name (i.e. the file number)
+    # seed_str = base_name[-2:]  # example: "01"
+    # # Convert to deterministic integer seed
+    # file_seed = int(hashlib.sha256(seed_str.encode()).hexdigest(), 16) % (2**32)
+
+    # for i in range(40): # 40 random shuffles per replicate file (40 X 30 = 1200 random shuffles per configuration)
+    #     seed = file_seed + i
+    #     # creating a local RNG seeded from the file name
+    #     rng = default_rng(seed)
+    #     # shuffle columns deterministically for this file
+    #     shuffled_columns = rng.permutation(columns_to_shuffle)
+
+    #     shuffled_df = pd.DataFrame(shuffled_columns, columns=['Feature'])
+
+    #     # base_name = os.path.splitext(os.path.basename(file_path))[0]
+    #     # output_path = os.path.join(results_dir, f"{base_name}_RandShuffle.txt")
+    #     output_path = os.path.join(results_dir, f"{base_name}{i}_RandShuffle.txt")
+    #     shuffled_df.to_csv(output_path, index=False, sep='\t')
 
 def process_mutual_info(file_path):
     # df = pd.read_csv(file_path, sep='\t')
