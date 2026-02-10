@@ -54,6 +54,8 @@ def compute_percentages(results_dir):
 
     percentages_df = pd.DataFrame(percentages, index=range(1, N + 1))
     n_pred = all_rankings_df['Feature'].nunique()
+    print("N_pred:", n_pred, "\n")
+    print(percentages_df)
     return percentages_df.iloc[n_pred-1:]  # same trimming
 
 def main():
