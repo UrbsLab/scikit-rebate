@@ -55,7 +55,9 @@ def compute_percentages(results_dir):
     percentages_df = pd.DataFrame(percentages, index=range(1, N + 1))
     n_pred = all_rankings_df['Feature'].nunique()
     print("N_pred:", n_pred, "\n")
+    pd.set_option('display.max_rows', None)
     print(percentages_df["SWRFstar2"])
+    pd.reset_option('display.max_rows')  # optional: restore default
     return percentages_df.iloc[n_pred-1:]  # same trimming
 
 def main():
