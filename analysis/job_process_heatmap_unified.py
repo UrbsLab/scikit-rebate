@@ -172,6 +172,9 @@ def main():
         fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
     else:
         fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
+    # NEW: replacement for tight_layout
+    fig.set_constrained_layout(True)
+    fig.subplots_adjust(left=0.05, right=0.95, bottom=0.05, top=0.95)
     gs = gridspec.GridSpec(
         nrows=len(height_ratios),
         ncols=len(width_ratios),
@@ -354,7 +357,7 @@ def main():
         fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
     # Tight layout with extra spacing
-    plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
+    # plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
     # plt.tight_layout(rect=[0.05, 0.05, 0.85, 0.95])
 
     # # CODE TO DRAW TICK MARK SEPARATORS:
