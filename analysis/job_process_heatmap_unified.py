@@ -70,8 +70,12 @@ def main():
     #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','MultiSWRF','MultiSWRFstar','MultiSWRFDB','MultiSWRFDBstar',
     #     'MuRelief10','MuRelief100'
     # ]
+    # rba_order = [
+    #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
+    #     'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar2','MultiSWRFstar','MultiSWRFDBstar'
+    # ]
     rba_order = [
-        'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
+        'MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
         'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar2','MultiSWRFstar','MultiSWRFDBstar'
     ]
     # rba_order = [
