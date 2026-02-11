@@ -67,8 +67,8 @@ def main():
     args = parser.parse_args()
 
     # custom colormap & ordering
-    # custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
-    custom_cmap = sns.color_palette("Blues", as_cmap=True)
+    custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
+    # custom_cmap = sns.color_palette("Blues", as_cmap=True)
 
     # rba_order = [
     #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',
