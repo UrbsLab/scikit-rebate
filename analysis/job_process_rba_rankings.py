@@ -43,7 +43,8 @@ def collect_rba_rankings(root_dir):
         # Only process Results folders that are within a_100 directories
         if os.path.basename(subdir) == "Results" and "a_100" in subdir:
             for rba in os.listdir(subdir):
-                if "ABS" in rba or "Shuffle" in rba:
+                # if "ABS" in rba or "Shuffle" in rba:
+                if "ABS" in rba:
                     continue
                 rba_path = os.path.join(subdir, rba)
                 if not os.path.isdir(rba_path):
