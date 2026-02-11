@@ -156,25 +156,28 @@ def main():
         height_ratios.append(1)
         if is_mainEff_or_core2wayEpistasis:
             if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
-                height_ratios.append(0.15)  # this adds vertical gap spacing
+                # height_ratios.append(0.15)  # this adds vertical gap spacing
+                height_ratios.append(0.05)
         else:
             if i != total_rows - 1:
-                height_ratios.append(0.15)
+                # height_ratios.append(0.15)
+                height_ratios.append(0.05)
 
     # For columns, add an extra gap after every column
     width_ratios = []
     for j in range(total_cols):
         width_ratios.append(1)
         if j != total_cols - 1:  # after each column except last
-            width_ratios.append(0.10)  # horizontal gap spacing
+            # width_ratios.append(0.10)  # horizontal gap spacing
+            width_ratios.append(0.05)
 
     # Define figure and gridspec with custom spacing
     if is_mainEff_or_core2wayEpistasis:
-        # fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
-        fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)*2))
+        fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
+        # fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)*2))
     else:
-        # fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
-        fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)))
+        fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
+        # fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)))
     gs = gridspec.GridSpec(
         nrows=len(height_ratios),
         ncols=len(width_ratios),
