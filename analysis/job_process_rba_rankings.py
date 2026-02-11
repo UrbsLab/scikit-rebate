@@ -55,19 +55,30 @@ def collect_rba_rankings(root_dir):
                         continue
                     file_path = os.path.join(rba_path, file)
 
-                    try:
-                        df = pd.read_csv(file_path, sep='\t', usecols=['Feature', 'Feature_Importance'])
-                    except Exception as e:
-                        print(f"Skipping {file_path} (error: {e})")
-                        continue
+                    if "Shuffle" in rba:
+                        try:
+                            df = pd.read_csv(file_path, sep='\t', usecols=['Feature'])
+                        except Exception as e:
+                            print(f"Skipping {file_path} (error: {e})")
+                            continue
 
-                    # Sort by descending feature importance and assign ranks
-                    df.sort_values(by='Feature_Importance', ascending=False, inplace=True)
-                    df.reset_index(drop=True, inplace=True)
-                    df['Rank'] = df.index + 1
-                    # Normalize feature importance between 0 and 1
-                    df['Normalized_Feature_Importance'] = (df['Feature_Importance'] - df['Feature_Importance'].min()) / \
-                                                            (df['Feature_Importance'].max() - df['Feature_Importance'].min())
+                        df['Rank'] = df.index + 1
+                        df['Feature_Importance'] = np.nan
+                        df['Normalized_Feature_Importance'] = np.nan
+                    else:
+                        try:
+                            df = pd.read_csv(file_path, sep='\t', usecols=['Feature', 'Feature_Importance'])
+                        except Exception as e:
+                            print(f"Skipping {file_path} (error: {e})")
+                            continue
+
+                        # Sort by descending feature importance and assign ranks
+                        df.sort_values(by='Feature_Importance', ascending=False, inplace=True)
+                        df.reset_index(drop=True, inplace=True)
+                        df['Rank'] = df.index + 1
+                        # Normalize feature importance between 0 and 1
+                        df['Normalized_Feature_Importance'] = (df['Feature_Importance'] - df['Feature_Importance'].min()) / \
+                                                                (df['Feature_Importance'].max() - df['Feature_Importance'].min())
 
                     # Only keep true predictive features
                     predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank']]
