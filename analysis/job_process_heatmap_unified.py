@@ -170,9 +170,11 @@ def main():
 
     # Define figure and gridspec with custom spacing
     if is_mainEff_or_core2wayEpistasis:
-        fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
+        # fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
+        fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)*2))
     else:
-        fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
+        # fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
+        fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)))
     gs = gridspec.GridSpec(
         nrows=len(height_ratios),
         ncols=len(width_ratios),
