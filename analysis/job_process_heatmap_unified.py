@@ -54,10 +54,10 @@ def compute_percentages(results_dir):
 
     percentages_df = pd.DataFrame(percentages, index=range(1, N + 1))
     n_pred = all_rankings_df['Feature'].nunique()
-    print("N_pred:", n_pred, "\n")
-    pd.set_option('display.max_rows', None)
-    print(percentages_df["RandomShuffle"])
-    pd.reset_option('display.max_rows')  # optional: restore default
+    # print("N_pred:", n_pred, "\n")
+    # pd.set_option('display.max_rows', None)
+    # print(percentages_df["RandomShuffle"])
+    # pd.reset_option('display.max_rows')  # optional: restore default
     return percentages_df.iloc[n_pred-1:]  # same trimming
 
 def main():
@@ -67,7 +67,7 @@ def main():
     args = parser.parse_args()
 
     # custom colormap & ordering
-    custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:780] + sns.color_palette('Blues', n_colors=1000)[780:]
+    custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
 
     # rba_order = [
     #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',
@@ -217,13 +217,13 @@ def main():
                 df2 = data_dict.get((n,h,'2'))
                 df1 = data_dict.get((n,h,'1'))
                 if df2 is not None:
-                    sns.heatmap(df2, ax=ax_top, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
+                    sns.heatmap(df2, ax=ax_top, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
                     # ax_top.set_title(f"n={n}, h={h}", fontsize=10)
                 else:
                     ax_top.axis('off')
                 if df1 is not None:
                     # sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=xtick_labels, yticklabels=False)
-                    sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
+                    sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
                 else:
                     ax_bot.axis('off')
 
@@ -249,7 +249,7 @@ def main():
                 )
 
                 if df is not None:
-                    sns.heatmap(df, ax=ax, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False)
+                    sns.heatmap(df, ax=ax, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
                 else:
                     ax.axis('off')
                 
