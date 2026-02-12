@@ -213,6 +213,8 @@ def main():
         axes = np.array([[axes]])  # ensure 2D
 
     xtick_labels = ['Optimal','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%']
+    # where to draw black lines separating RBA groups in each heatmap
+    separators = [2, 6, 11]
     # for i, h in enumerate(h_values):
     # flipped so that y-axis is shown in ascending order from bottom to top
     for i, h in enumerate(sorted(h_values, reverse=True)):
@@ -225,8 +227,6 @@ def main():
                 df2 = data_dict.get((n,h,'2'))
                 df1 = data_dict.get((n,h,'1'))
 
-                # where to draw black lines separating RBA groups in each heatmap
-                separators = [2, 6, 11]
                 if df2 is not None:
                     sns.heatmap(df2, ax=ax_top, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
                     # ax_top.set_title(f"n={n}, h={h}", fontsize=10)
