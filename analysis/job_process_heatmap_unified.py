@@ -443,20 +443,20 @@ def main():
             # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
             #                     transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
-    else:
-        for i in range(0, len(h_values) - 1):
-            prev_bottom = axes[i, 0].get_position().y0  # bottom of bottom subplot of previous block
-            next_top = axes[i+1, 0].get_position().y1             # top of top subplot of next block
-            y_mid = (prev_bottom + next_top) / 2
-            x_left = axes[0,0].get_position().x0
-            x_right = axes[0,-1].get_position().x1
+    # else:
+    #     for i in range(0, len(h_values) - 1):
+    #         prev_bottom = axes[i, 0].get_position().y0  # bottom of bottom subplot of previous block
+    #         next_top = axes[i+1, 0].get_position().y1             # top of top subplot of next block
+    #         y_mid = (prev_bottom + next_top) / 2
+    #         x_left = axes[0,0].get_position().x0
+    #         x_right = axes[0,-1].get_position().x1
 
-            # Horizontal line (spanning entire figure)
-            # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-            #                     transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
-            # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-            #                     transform=fig.transFigure, color='black', linewidth=2.5)
-            fig.add_artist(line)
+    #         # Horizontal line (spanning entire figure)
+    #         line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+    #                             transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
+    #         # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+    #         #                     transform=fig.transFigure, color='black', linewidth=2.5)
+    #         fig.add_artist(line)
         
 
     outdir = os.path.basename(os.path.normpath(args.basedir))
