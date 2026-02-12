@@ -409,54 +409,54 @@ def main():
     #                                 [bbox_bottom_right, bbox_bottom_right], 
     #                                 transform=fig.transFigure, color='black', linewidth=4))
 
-    # # ** LINES BETWEEN INSTANCE/HERITABILITY COMBINATIONS:
-    # # --- DRAW DIVIDER LINES THROUGH GAP COLUMNS AND ROWS ---
-    # # Use figure coordinates (0–1 range)
-    # for j in range(total_cols - 1):
-    #     # Compute midpoint between the right edge of column j and left edge of next column
-    #     left_bbox = axes[0, j].get_position()
-    #     right_bbox = axes[0, j+1].get_position()
-    #     x_mid = (left_bbox.x1 + right_bbox.x0) / 2
-    #     y_bottom = axes[-1,0].get_position().y0
-    #     y_top = axes[0,0].get_position().y1
+    # ** LINES BETWEEN INSTANCE/HERITABILITY COMBINATIONS:
+    # --- DRAW DIVIDER LINES THROUGH GAP COLUMNS AND ROWS ---
+    # Use figure coordinates (0–1 range)
+    for j in range(total_cols - 1):
+        # Compute midpoint between the right edge of column j and left edge of next column
+        left_bbox = axes[0, j].get_position()
+        right_bbox = axes[0, j+1].get_position()
+        x_mid = (left_bbox.x1 + right_bbox.x0) / 2
+        y_bottom = axes[-1,0].get_position().y0
+        y_top = axes[0,0].get_position().y1
 
-    #     # Vertical line (spanning entire figure)
-    #     line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
-    #                         transform=fig.transFigure, color='black', linewidth=1.5)
-    #     # line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
-    #     #                     transform=fig.transFigure, color='black', linewidth=2.5)
-    #     fig.add_artist(line)
+        # Vertical line (spanning entire figure)
+        line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
+                            transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.2)
+        # line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
+        #                     transform=fig.transFigure, color='black', linewidth=2.5)
+        fig.add_artist(line)
 
-    # if is_mainEff_or_core2wayEpistasis:
-    #     # Horizontal dividers after every heritability block (every 2 rows)
-    #     for i in range(1, len(h_values)):
-    #         # Get bounding boxes for last heatmap in block i-1 and first in block i
-    #         prev_bottom = axes[(i-1)*2 + 1, 0].get_position().y0  # bottom of bottom subplot of previous block
-    #         next_top = axes[i*2, 0].get_position().y1             # top of top subplot of next block
-    #         y_mid = (prev_bottom + next_top) / 2
-    #         x_left = axes[0,0].get_position().x0
-    #         x_right = axes[0,-1].get_position().x1
+    if is_mainEff_or_core2wayEpistasis:
+        # Horizontal dividers after every heritability block (every 2 rows)
+        for i in range(1, len(h_values)):
+            # Get bounding boxes for last heatmap in block i-1 and first in block i
+            prev_bottom = axes[(i-1)*2 + 1, 0].get_position().y0  # bottom of bottom subplot of previous block
+            next_top = axes[i*2, 0].get_position().y1             # top of top subplot of next block
+            y_mid = (prev_bottom + next_top) / 2
+            x_left = axes[0,0].get_position().x0
+            x_right = axes[0,-1].get_position().x1
 
-    #         # Horizontal line (spanning entire figure)
-    #         line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-    #                             transform=fig.transFigure, color='black', linewidth=1.5)
-    #         # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-    #         #                     transform=fig.transFigure, color='black', linewidth=2.5)
-    #         fig.add_artist(line)
-    # else:
-    #     for i in range(0, len(h_values) - 1):
-    #         prev_bottom = axes[i, 0].get_position().y0  # bottom of bottom subplot of previous block
-    #         next_top = axes[i+1, 0].get_position().y1             # top of top subplot of next block
-    #         y_mid = (prev_bottom + next_top) / 2
-    #         x_left = axes[0,0].get_position().x0
-    #         x_right = axes[0,-1].get_position().x1
+            # Horizontal line (spanning entire figure)
+            line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.2)
+            # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+            #                     transform=fig.transFigure, color='black', linewidth=2.5)
+            fig.add_artist(line)
+    else:
+        for i in range(0, len(h_values) - 1):
+            prev_bottom = axes[i, 0].get_position().y0  # bottom of bottom subplot of previous block
+            next_top = axes[i+1, 0].get_position().y1             # top of top subplot of next block
+            y_mid = (prev_bottom + next_top) / 2
+            x_left = axes[0,0].get_position().x0
+            x_right = axes[0,-1].get_position().x1
 
-    #         # Horizontal line (spanning entire figure)
-    #         line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-    #                             transform=fig.transFigure, color='black', linewidth=1.5)
-    #         # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-    #         #                     transform=fig.transFigure, color='black', linewidth=2.5)
-    #         fig.add_artist(line)
+            # Horizontal line (spanning entire figure)
+            line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.2)
+            # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+            #                     transform=fig.transFigure, color='black', linewidth=2.5)
+            fig.add_artist(line)
         
 
     outdir = os.path.basename(os.path.normpath(args.basedir))
