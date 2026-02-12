@@ -157,11 +157,11 @@ def main():
         if is_mainEff_or_core2wayEpistasis:
             if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
                 # height_ratios.append(0.15)  # this adds vertical gap spacing
-                height_ratios.append(0.10)
+                height_ratios.append(0.05)
         else:
             if i != total_rows - 1:
                 # height_ratios.append(0.15)
-                height_ratios.append(0.10)
+                height_ratios.append(0.05)
 
     # For columns, add an extra gap after every column
     width_ratios = []
@@ -169,7 +169,7 @@ def main():
         width_ratios.append(1)
         if j != total_cols - 1:  # after each column except last
             # width_ratios.append(0.10)  # horizontal gap spacing
-            width_ratios.append(0.10)
+            width_ratios.append(0.05)
 
     # Define figure and gridspec with custom spacing
     if is_mainEff_or_core2wayEpistasis:
@@ -186,8 +186,8 @@ def main():
         width_ratios=width_ratios,
         # hspace=0.25,  # fine-tune base spacing
         # wspace=0.25
-        hspace=0.15,  # fine-tune base spacing
-        wspace=0.15
+        hspace=0.10,  # fine-tune base spacing
+        wspace=0.10
     )
 
     # Build axes array only in the actual plot cells (skip gap cells)
@@ -422,7 +422,7 @@ def main():
 
         # Vertical line (spanning entire figure)
         line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
-                            transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.2)
+                            transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.4)
         # line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
         #                     transform=fig.transFigure, color='black', linewidth=2.5)
         fig.add_artist(line)
@@ -439,7 +439,7 @@ def main():
 
             # Horizontal line (spanning entire figure)
             line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.2)
+                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.4)
             # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
             #                     transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
@@ -453,7 +453,7 @@ def main():
 
             # Horizontal line (spanning entire figure)
             line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.2)
+                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.4)
             # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
             #                     transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
