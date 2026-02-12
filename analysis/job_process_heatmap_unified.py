@@ -422,7 +422,7 @@ def main():
 
         # Vertical line (spanning entire figure)
         line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
-                            transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.4)
+                            transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
         # line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
         #                     transform=fig.transFigure, color='black', linewidth=2.5)
         fig.add_artist(line)
@@ -439,7 +439,7 @@ def main():
 
             # Horizontal line (spanning entire figure)
             line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.4)
+                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
             # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
             #                     transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
@@ -453,7 +453,7 @@ def main():
 
             # Horizontal line (spanning entire figure)
             line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.4)
+                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
             # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
             #                     transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
