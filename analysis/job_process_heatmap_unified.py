@@ -452,8 +452,8 @@ def main():
             x_right = axes[0,-1].get_position().x1
 
             # Horizontal line (spanning entire figure)
-            line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
+            # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+            #                     transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
             # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
             #                     transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
