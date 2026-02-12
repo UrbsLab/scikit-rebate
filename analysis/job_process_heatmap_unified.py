@@ -157,11 +157,11 @@ def main():
         if is_mainEff_or_core2wayEpistasis:
             if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
                 # height_ratios.append(0.15)  # this adds vertical gap spacing
-                height_ratios.append(0.10)
+                height_ratios.append(0.05)
         else:
             if i != total_rows - 1:
                 # height_ratios.append(0.15)
-                height_ratios.append(0.10)
+                height_ratios.append(0.05)
 
     # For columns, add an extra gap after every column
     width_ratios = []
@@ -169,7 +169,7 @@ def main():
         width_ratios.append(1)
         if j != total_cols - 1:  # after each column except last
             # width_ratios.append(0.10)  # horizontal gap spacing
-            width_ratios.append(0.10)
+            width_ratios.append(0.05)
 
     # Define figure and gridspec with custom spacing
     if is_mainEff_or_core2wayEpistasis:
@@ -186,8 +186,8 @@ def main():
         width_ratios=width_ratios,
         # hspace=0.25,  # fine-tune base spacing
         # wspace=0.25
-        hspace=0.15,  # fine-tune base spacing
-        wspace=0.15
+        hspace=0.10,  # fine-tune base spacing
+        wspace=0.10
     )
 
     # Build axes array only in the actual plot cells (skip gap cells)
@@ -224,14 +224,21 @@ def main():
 
                 df2 = data_dict.get((n,h,'2'))
                 df1 = data_dict.get((n,h,'1'))
+
+                # where to draw black lines separating RBA groups in each heatmap
+                separators = [2, 6, 11]
                 if df2 is not None:
                     sns.heatmap(df2, ax=ax_top, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
                     # ax_top.set_title(f"n={n}, h={h}", fontsize=10)
+                    for y in separators:
+                        ax_top.axhline(y, color='black', linewidth=1.2)
                 else:
                     ax_top.axis('off')
                 if df1 is not None:
                     # sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=xtick_labels, yticklabels=False)
                     sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
+                    for y in separators:
+                        ax_bot.axhline(y, color='black', linewidth=1.2)
                 else:
                     ax_bot.axis('off')
 
@@ -258,6 +265,8 @@ def main():
 
                 if df is not None:
                     sns.heatmap(df, ax=ax, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
+                    for y in separators:
+                        ax.axhline(y, color='black', linewidth=1.2)
                 else:
                     ax.axis('off')
                 
