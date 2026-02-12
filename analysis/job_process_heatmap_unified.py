@@ -186,8 +186,8 @@ def main():
         width_ratios=width_ratios,
         # hspace=0.25,  # fine-tune base spacing
         # wspace=0.25
-        hspace=0.05,  # fine-tune base spacing
-        wspace=0.05
+        hspace=0.10,  # fine-tune base spacing
+        wspace=0.10
     )
 
     # Build axes array only in the actual plot cells (skip gap cells)
