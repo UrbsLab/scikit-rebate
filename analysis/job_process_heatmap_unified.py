@@ -421,8 +421,10 @@ def main():
         y_top = axes[0,0].get_position().y1
 
         # Vertical line (spanning entire figure)
+        # line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
+        #                     transform=fig.transFigure, color='black', linewidth=1.5)
         line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
-                            transform=fig.transFigure, color='black', linewidth=1.5)
+                            transform=fig.transFigure, color='black', linewidth=2.5)
         fig.add_artist(line)
 
     if is_mainEff_or_core2wayEpistasis:
@@ -436,8 +438,10 @@ def main():
             x_right = axes[0,-1].get_position().x1
 
             # Horizontal line (spanning entire figure)
+            # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+            #                     transform=fig.transFigure, color='black', linewidth=1.5)
             line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-                                transform=fig.transFigure, color='black', linewidth=1.5)
+                                transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
     else:
         for i in range(0, len(h_values) - 1):
@@ -448,8 +452,10 @@ def main():
             x_right = axes[0,-1].get_position().x1
 
             # Horizontal line (spanning entire figure)
+            # line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
+            #                     transform=fig.transFigure, color='black', linewidth=1.5)
             line = mlines.Line2D([x_left, x_right], [y_mid, y_mid],
-                                transform=fig.transFigure, color='black', linewidth=1.5)
+                                transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
         
 
