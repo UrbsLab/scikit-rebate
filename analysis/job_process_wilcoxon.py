@@ -19,6 +19,7 @@ def permutation_test(x, y, U_obs, n_permutations=10000, seed=42):
         new_y = combined[n_x:]
         # Z-score using U
         # U_perm = ranksums(new_x, new_y).statistic
+        # Now U_perm = U score
         U_perm = mannwhitneyu(new_x, new_y, alternative="two-sided", method="asymptotic").statistic
 
         # if abs(U_perm) >= abs(U_obs):
