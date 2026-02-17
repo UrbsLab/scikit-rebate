@@ -88,9 +88,9 @@ class SURF(ReliefF):
         NN = []
         min_indicies = []
 
-        # NEW: STD calculated from distance array, for use in plot_distance_weight_map
-        dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
-        std_dist = dists_flat.std()
+        # # NEW: STD calculated from distance array, for use in plot_distance_weight_map
+        # dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
+        # std_dist = dists_flat.std()
 
         for i in range(self._datalen):
             if inst != i:
@@ -98,8 +98,8 @@ class SURF(ReliefF):
                 if i > inst:
                     locator.reverse()
                 d = self._distance_array[locator[0]][locator[1]]
-                # NEW: how many std's d is away from the mean distance
-                std_d = (d - avg_dist) / std_dist
+                # # NEW: how many std's d is away from the mean distance
+                # std_d = (d - avg_dist) / std_dist
                 if d < avg_dist:  # Defining the neighborhood with an average distance radius.
                     min_indicies.append(i)
                 #     # NEW: for plotting
@@ -114,14 +114,17 @@ class SURF(ReliefF):
 
     def _run_algorithm(self):
         """ Runs nearest neighbor (NN) identification and feature scoring to yield SURF scores. """
-        sm = cnt = 0
-        for i in range(self._datalen):
-            sm += sum(self._distance_array[i])
-            cnt += len(self._distance_array[i])
-        avg_dist = sm / float(cnt)
-        # print("Sm (SURF):", sm)
-        # print("Cnt (SURF):", cnt)
-        # print("Avg dist for SURF:", avg_dist, "\n")
+        # sm = cnt = 0
+        # for i in range(self._datalen):
+        #     sm += sum(self._distance_array[i])
+        #     cnt += len(self._distance_array[i])
+        # avg_dist = sm / float(cnt)
+        # # print("Sm (SURF):", sm)
+        # # print("Cnt (SURF):", cnt)
+        # # print("Avg dist for SURF:", avg_dist, "\n")
+        # NEW: using numpy to compute global mean
+        dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
+        avg_dist = dists_flat.mean()
 
         nan_entries = np.isnan(self._X)
         # print("Nan entries:\n", nan_entries)
