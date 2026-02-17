@@ -155,11 +155,11 @@ def process_relieff100(file_path):
     process_and_save_results(file_path, fs, "ReliefF100")
 
 def process_surf(file_path):
-    fs = SURF(n_jobs=16)
+    fs = SURF(n_jobs=1)
     process_and_save_results(file_path, fs, "SURF")
 
 def process_surfstar(file_path):
-    fs = SURFstar(n_jobs=16)
+    fs = SURFstar(n_jobs=1)
     process_and_save_results(file_path, fs, "SURFstar")
 
 def process_multisurf(file_path):
