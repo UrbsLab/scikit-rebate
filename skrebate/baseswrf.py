@@ -647,11 +647,14 @@ class BaseSWRF(ReliefF):
                     dist_vect.append(self._distance_array[locator[0]][locator[1]])
 
             dist_vect = np.array(dist_vect)
-            inst_avg_dist = np.average(dist_vect)
-            true_std = np.std(dist_vect)
+            # inst_avg_dist = np.average(dist_vect)
+            # true_std = np.std(dist_vect)
+            inst_avg_dist = np.nanmean(dist_vect)
+            true_std = np.nanstd(dist_vect)
             
             if 'MultiSWRFDB' in self.name:
-                inst_deadband = np.std(dist_vect) / 2. # calculate deadband distance
+                # inst_deadband = np.std(dist_vect) / 2. # calculate deadband distance
+                inst_deadband = np.nanstd(dist_vect) / 2. # calculate deadband distance
 
                 # NEW: unique mean, std, and deadband values for this target instance, used to construct the expected curve
                 # self.instance_dist_stats.append((inst_avg_dist, true_std, inst_std))
@@ -1599,10 +1602,12 @@ class BaseSWRF(ReliefF):
         # print("Time taken to create nan_mask:", time.time() - start_time, "seconds\n")
         dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
         # print("Time taken to create dists_flat:", time.time() - start_time, "seconds\n")
-        mean_dist = dists_flat.mean()
+        # mean_dist = dists_flat.mean()
+        mean_dist = np.nanmean(dists_flat)
         # print("Time taken to create mean_dist:", time.time() - start_time, "seconds\n")
         # print("Mean dist:", mean_dist, "\n")
-        std_dist = dists_flat.std()
+        # std_dist = dists_flat.std()
+        std_dist = np.nanstd(dists_flat)
         # print("Time taken to create std_dist:", time.time() - start_time, "seconds\n")
         # print("STD of the distances:", std_dist, "\n")
 
@@ -1669,8 +1674,10 @@ class BaseSWRF(ReliefF):
                 x_vals_std = (x_vals - mean_dist) / std_dist
             else:
                 x_vals = np.linspace(min(distances), max(distances), 500)
-                mean_dist = np.mean(distances)
-                std_dist = np.std(distances)
+                # mean_dist = np.mean(distances)
+                # std_dist = np.std(distances)
+                mean_dist = np.nanmean(distances)
+                std_dist = np.nanstd(distances)
                 dead_band = std_dist / 4.0 if 'MultiSWRF' in self.name else 0
 
                 # NEW: for plotting in terms of STD

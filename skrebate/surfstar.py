@@ -89,7 +89,8 @@ class SURFstar(SURF):
         # avg_dist = sm / float(cnt)
         # NEW: using numpy to compute global mean
         dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
-        avg_dist = dists_flat.mean()
+        # avg_dist = dists_flat.mean()
+        avg_dist = np.nanmean(dists_flat)
 
         nan_entries = np.isnan(self._X)
 
@@ -129,8 +130,10 @@ class SURFstar(SURF):
 
         if show_expected:
             x_vals = np.linspace(min(distances), max(distances), 500)
-            mean_dist = np.mean(distances)
-            std_dist = np.std(distances)
+            # mean_dist = np.mean(distances)
+            # std_dist = np.std(distances)
+            mean_dist = np.nanmean(distances)
+            std_dist = np.nanstd(distances)
 
             # NEW: for plotting in terms of STD
             x_vals_std = (x_vals - mean_dist) / std_dist
