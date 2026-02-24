@@ -75,16 +75,17 @@ def main():
     #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','MultiSWRF','MultiSWRFstar','MultiSWRFDB','MultiSWRFDBstar',
     #     'MuRelief10','MuRelief100'
     # ]
-    rba_order = [
-        'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
-        'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar2','MultiSWRFstar','MultiSWRFDBstar'
-    ]
+    # MAIN:
+    # rba_order = [
+    #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
+    #     'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar2','MultiSWRFstar','MultiSWRFDBstar'
+    # ]
     # rba_order = [
     #     'RandomShuffle', 'MutualInfo', 'MultiSWRFDB', 'MultiSWRFDBstar', 'MultiSWRFDBlinear', 'MultiSWRFDBlinear3SD', 'MultiSWRFDBlinearstar', 'MultiSWRFDBlinear3SDstar', 'MultiSWRFDBexponential', 'MultiSWRFDBexponential3SD', 'MultiSWRFDBexponentialstar', 'MultiSWRFDBexponential3SDstar'
     # ]
-    # rba_order = [
-    #     'MultiSWRFDB', 'MultiSWRFDBstar'
-    # ]
+    # for absolute value heatmap:
+    rba_order = ['RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MultiSURF','MultiSURFstar',
+                 'ABS_ReliefF10','ABS_ReliefF100','ABS_MultiSURF','ABS_MultiSURFstar',]
 
     # Grab all Results folders (for 100 feature datasets)
     # * can later potentially add the dataset feature lengths you want for the heatmap as a parameter (ex. 100 for a_100 datasets)
@@ -214,7 +215,9 @@ def main():
 
     xtick_labels = ['Optimal','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%']
     # where to draw black lines separating RBA groups in each heatmap
-    separators = [2, 6, 11]
+    # separators = [2, 6, 11]
+    # for ABS heatmaps:
+    separators = [2, 6]
     # for i, h in enumerate(h_values):
     # flipped so that y-axis is shown in ascending order from bottom to top
     for i, h in enumerate(sorted(h_values, reverse=True)):

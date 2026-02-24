@@ -79,19 +79,31 @@ def process_results_dir(results_dir, prefix=""):
     #     'MultiSWRFstar',
     #     'MultiSWRFDBstar',
     # ]
+    # rba_order = [
+    #     'RandomShuffle', 
+    #     'MutualInfo', 
+    #     'MultiSWRFDB', 
+    #     'MultiSWRFDBstar', 
+    #     'MultiSWRFDBlinear', 
+    #     'MultiSWRFDBlinear3SD', 
+    #     'MultiSWRFDBlinearstar', 
+    #     'MultiSWRFDBlinear3SDstar', 
+    #     'MultiSWRFDBexponential', 
+    #     'MultiSWRFDBexponential3SD', 
+    #     'MultiSWRFDBexponentialstar', 
+    #     'MultiSWRFDBexponential3SDstar'
+    # ]
     rba_order = [
-        'RandomShuffle', 
-        'MutualInfo', 
-        'MultiSWRFDB', 
-        'MultiSWRFDBstar', 
-        'MultiSWRFDBlinear', 
-        'MultiSWRFDBlinear3SD', 
-        'MultiSWRFDBlinearstar', 
-        'MultiSWRFDBlinear3SDstar', 
-        'MultiSWRFDBexponential', 
-        'MultiSWRFDBexponential3SD', 
-        'MultiSWRFDBexponentialstar', 
-        'MultiSWRFDBexponential3SDstar'
+        'RandomShuffle',
+        'MutualInfo',
+        'ReliefF10',
+        'ReliefF100',
+        'MultiSURF',
+        'MultiSURFstar',
+        'ABS_ReliefF10',
+        'ABS_ReliefF100',
+        'ABS_MultiSURF',
+        'ABS_MultiSURFstar',
     ]
 
     # Define a mapping from your RBA order to new descriptive names
@@ -114,19 +126,31 @@ def process_results_dir(results_dir, prefix=""):
     #     'MultiSWRFstar': 'MultiSWRF*',
     #     'MultiSWRFDBstar': 'MultiSWRFDB*',
     # }
+    # rba_descriptive_names = {
+    #     'RandomShuffle': 'Random Shuffle',
+    #     'MutualInfo': 'Mutual Info',
+    #     'MultiSWRFDB': 'MultiSWRFDB',
+    #     'MultiSWRFDBstar': 'MultiSWRFDB*',
+    #     'MultiSWRFDBlinear': 'MultiSWRFDB-L',
+    #     'MultiSWRFDBlinear3SD': 'MultiSWRFDB-L-3SD',
+    #     'MultiSWRFDBlinearstar': 'MultiSWRFDB-L*',
+    #     'MultiSWRFDBlinear3SDstar': 'MultiSWRFDB-L-3SD*',
+    #     'MultiSWRFDBexponential': 'MultiSWRFDB-E',
+    #     'MultiSWRFDBexponential3SD': 'MultiSWRFDB-E-3SD',
+    #     'MultiSWRFDBexponentialstar': 'MultiSWRFDB-E*',
+    #     'MultiSWRFDBexponential3SDstar': 'MultiSWRFDB-E-3SD*',
+    # }
     rba_descriptive_names = {
         'RandomShuffle': 'Random Shuffle',
         'MutualInfo': 'Mutual Info',
-        'MultiSWRFDB': 'MultiSWRFDB',
-        'MultiSWRFDBstar': 'MultiSWRFDB*',
-        'MultiSWRFDBlinear': 'MultiSWRFDB-L',
-        'MultiSWRFDBlinear3SD': 'MultiSWRFDB-L-3SD',
-        'MultiSWRFDBlinearstar': 'MultiSWRFDB-L*',
-        'MultiSWRFDBlinear3SDstar': 'MultiSWRFDB-L-3SD*',
-        'MultiSWRFDBexponential': 'MultiSWRFDB-E',
-        'MultiSWRFDBexponential3SD': 'MultiSWRFDB-E-3SD',
-        'MultiSWRFDBexponentialstar': 'MultiSWRFDB-E*',
-        'MultiSWRFDBexponential3SDstar': 'MultiSWRFDB-E-3SD*',
+        'ReliefF10': 'ReliefF 10NN',
+        'ReliefF100': 'ReliefF 100NN',
+        'MultiSURF': 'MultiSURF',
+        'MultiSURFstar': 'MultiSURF*',
+        'ABS_ReliefF10': 'ReliefF 10NN (ABS)',
+        'ABS_ReliefF100': 'ReliefF 100NN (ABS)',
+        'ABS_MultiSURF': 'MultiSURF (ABS)',
+        'ABS_MultiSURFstar': 'MultiSURF* (ABS)',
     }
 
     n_pred = all_rankings_df['Feature'].nunique()
