@@ -55,17 +55,30 @@ class MultiSURF(SURFstar):
 
         dist_vect = np.array(dist_vect)
         # inst_avg_dist = np.average(dist_vect)
-        inst_avg_dist = np.nanmean(dist_vect)
+        # inst_avg_dist = np.nanmean(dist_vect)
         # print("Avg dist for this target instance in MultiSURF:", inst_avg_dist)
         # inst_std = np.std(dist_vect) / 2.
-        inst_std = np.nanstd(dist_vect) / 2.
+        # inst_std = np.nanstd(dist_vect) / 2.
         # Defining a narrower radius based on the average instance distance minus the standard deviation of instance distances.
-        near_threshold = inst_avg_dist - inst_std
+        # near_threshold = inst_avg_dist - inst_std
         # print("(Avg dist - deadband) for this target instance in MultiSURF:", near_threshold, "\n")
 
         # NEW: std for this current target instance
         # true_std = np.std(dist_vect)
-        true_std = np.nanstd(dist_vect)
+        # true_std = np.nanstd(dist_vect)
+        if self.distarray_has_nan:
+            inst_avg_dist = np.nanmean(dist_vect)
+            inst_std = np.nanstd(dist_vect) / 2.
+            # Defining a narrower radius based on the average instance distance minus the standard deviation of instance distances.
+            near_threshold = inst_avg_dist - inst_std
+            true_std = np.nanstd(dist_vect)
+        else:
+            inst_avg_dist = np.mean(dist_vect)
+            inst_std = np.std(dist_vect) / 2.
+            # Defining a narrower radius based on the average instance distance minus the standard deviation of instance distances.
+            near_threshold = inst_avg_dist - inst_std
+            true_std = np.std(dist_vect)
+
 
         # NEW: unique mean, std, and deadband values for this target instance, used to construct the expected curve
         # self.instance_dist_stats.append((inst_avg_dist, true_std, inst_std))

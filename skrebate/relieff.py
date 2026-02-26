@@ -221,6 +221,7 @@ class ReliefF(BaseEstimator):
         xc = self._X[:, cidx]  # Subset of continuous-valued feature data
         xd = self._X[:, didx]  # Subset of discrete-valued feature data
 
+        self.distarray_has_nan = False
         """ For efficiency, the distance array is computed more efficiently for data with no missing values.
         This distance array will only be used to identify nearest neighbors. """
         if self._missing_data_count > 0:
@@ -228,6 +229,10 @@ class ReliefF(BaseEstimator):
                 self._distance_array = self._distarray_missing(xc, xd, cdiffs)
             else:
                 self._distance_array = self._distarray_missing_iter(xc, xd, cdiffs, self._weights)
+            
+            # if distance array has nan values, will use np.nanmean/np.nanstd downstream
+            if np.isnan(self._distance_array).any():
+                self.distarray_has_nan = True
         else:
             if not isinstance(self._weights, np.ndarray):
                 self._distance_array = self._distarray_no_missing(xc, xd)
