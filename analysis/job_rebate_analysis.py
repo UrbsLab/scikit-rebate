@@ -155,47 +155,47 @@ def process_relieff100(file_path):
     process_and_save_results(file_path, fs, "ReliefF100")
 
 def process_surf(file_path):
-    fs = SURF(n_jobs=1)
+    fs = SURF(n_jobs=16)
     process_and_save_results(file_path, fs, "SURF")
 
 def process_surfstar(file_path):
-    fs = SURFstar(n_jobs=1)
+    fs = SURFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "SURFstar")
 
 def process_multisurf(file_path):
-    fs = MultiSURF(n_jobs=1)
+    fs = MultiSURF(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSURF")
 
 def process_multisurfstar(file_path):
-    fs = MultiSURFstar(n_jobs=1)
+    fs = MultiSURFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSURFstar")
 
 def process_swrfstar(file_path):
-    fs = SWRFstar(n_jobs=1)
+    fs = SWRFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRFstar")
 
 def process_swrfstar2(file_path):
-    fs = SWRFstar2(n_jobs=1)
+    fs = SWRFstar2(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRFstar2")
 
 def process_swrf(file_path):
-    fs = SWRF(n_jobs=1)
+    fs = SWRF(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRF")
 
 def process_multiswrfstar(file_path):
-    fs = MultiSWRFstar(n_jobs=1)
+    fs = MultiSWRFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFstar")
 
 def process_multiswrf(file_path):
-    fs = MultiSWRF(n_jobs=1)
+    fs = MultiSWRF(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRF")
 
 def process_multiswrfdbstar(file_path):
-    fs = MultiSWRFDBstar(n_jobs=1)
+    fs = MultiSWRFDBstar(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDBstar")
 
 def process_multiswrfdb(file_path):
-    fs = MultiSWRFDB(n_jobs=1)
+    fs = MultiSWRFDB(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDB")
 
 def process_multiswrfdblinearstar(file_path):
