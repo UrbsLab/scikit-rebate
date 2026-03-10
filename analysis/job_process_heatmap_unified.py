@@ -76,16 +76,16 @@ def main():
     #     'MuRelief10','MuRelief100'
     # ]
     # MAIN:
-    # rba_order = [
-    #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
-    #     'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar2','MultiSWRFstar','MultiSWRFDBstar'
-    # ]
+    rba_order = [
+        'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
+        'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar2','MultiSWRFstar','MultiSWRFDBstar'
+    ]
     # rba_order = [
     #     'RandomShuffle', 'MutualInfo', 'MultiSWRFDB', 'MultiSWRFDBstar', 'MultiSWRFDBlinear', 'MultiSWRFDBlinear3SD', 'MultiSWRFDBlinearstar', 'MultiSWRFDBlinear3SDstar', 'MultiSWRFDBexponential', 'MultiSWRFDBexponential3SD', 'MultiSWRFDBexponentialstar', 'MultiSWRFDBexponential3SDstar'
     # ]
-    # for absolute value heatmap:
-    rba_order = ['RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MultiSURF','MultiSURFstar',
-                 'ABS_ReliefF10','ABS_ReliefF100','ABS_MultiSURF','ABS_MultiSURFstar',]
+    # # for absolute value heatmap:
+    # rba_order = ['RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MultiSURF','MultiSURFstar',
+    #              'ABS_ReliefF10','ABS_ReliefF100','ABS_MultiSURF','ABS_MultiSURFstar',]
 
     # Grab all Results folders (for 100 feature datasets)
     # * can later potentially add the dataset feature lengths you want for the heatmap as a parameter (ex. 100 for a_100 datasets)
@@ -251,10 +251,10 @@ def main():
                 # Put "E" and "H" labels on the right side of the heatmaps in the last column
                 if j == len(n_values) - 1:
                     # maybe add if clauses in the event that a dataset does not have EDM-1 or EDM-2
-                    ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
+                    ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=26)
                     ax_top.yaxis.set_label_position("right")
                     
-                    ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
+                    ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=26)
                     ax_bot.yaxis.set_label_position("right")
             else:
                 ax = axes[i, j]
@@ -300,7 +300,7 @@ def main():
     for j, n in enumerate(n_values):
         # Place label centered below the corresponding column (under the last row for that column)
         mid_axs = axes[-1, j] if len(h_values)*2 > 1 else axes[1, j]
-        mid_axs.set_xlabel(str(n), fontsize=20)
+        mid_axs.set_xlabel(str(n), fontsize=26)
         mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
 
     # Set y-axis labels for Heritability of Model (once per heritability row)
@@ -316,7 +316,7 @@ def main():
             
             # if there is only one column, can't use set_ylabel twice on the same axis (will overwrite the first one, "E"); so use .text instead
             if len(n_values) == 1:
-                ax_top.text(-0.2, mid_y - 0.1, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax_top.transAxes)
+                ax_top.text(-0.2, mid_y - 0.1, str(h), rotation=0, fontsize=26, va='center', ha='center', transform=ax_top.transAxes)
             else:
                 # Use the top subplot to place the label vertically centered
                 ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
@@ -328,9 +328,9 @@ def main():
             mid_y = 0.5
 
             if len(n_values) == 1:
-                ax.text(-0.2, mid_y, str(h), rotation=0, fontsize=20, va='center', ha='center', transform=ax.transAxes)
+                ax.text(-0.2, mid_y, str(h), rotation=0, fontsize=26, va='center', ha='center', transform=ax.transAxes)
             else:
-                ax.set_ylabel(str(h), rotation=0, fontsize=20)
+                ax.set_ylabel(str(h), rotation=0, fontsize=26)
                 ax.yaxis.set_label_coords(-0.2, mid_y)
 
     # # Total rows and columns
@@ -359,19 +359,15 @@ def main():
     #     line = mlines.Line2D([0, 1], [y, y], transform=fig.transFigure, color='black', linewidth=1.5)
     #     fig.add_artist(line)
 
-    # Adjust global labels with extra padding
-    fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
-    # fig.canvas.draw()
-    # renderer = fig.canvas.get_renderer()
-    # bbox_axes = axes[0,0].get_position()
-    # label_x = bbox_axes.x0 - 0.05  # offset by ~5% of figure width
-    # fig.supylabel("Heritability of Model", fontsize=22, x=label_x, y=0.5)
-    if is_xor:
-        fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
-    elif is_mainEffadditive_or_2wayEpiHet:
-        fig.supylabel("Proportion of Instances from Subgroup 1", fontsize=22, x=0.02, y=0.5)
-    else:
-        fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
+    # # Adjust global labels with extra padding
+    # fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
+    
+    # if is_xor:
+    #     fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
+    # elif is_mainEffadditive_or_2wayEpiHet:
+    #     fig.supylabel("Proportion of Instances from Subgroup 1", fontsize=22, x=0.02, y=0.5)
+    # else:
+    #     fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
     # Tight layout with extra spacing
     plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
@@ -467,7 +463,7 @@ def main():
     # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps.pdf")
     # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_MultiSWRFDBtest.pdf")
     # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_MultiSWRFDBtest_with3sd.pdf")
-    save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_withMuRelief.pdf")
+    save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_withMuRelief_biggerfont.pdf")
     # save_path = os.path.join(parentdir, outdir, args.prefix + "unified_heatmaps_validcheck.pdf")
     plt.savefig(save_path, format='pdf', bbox_inches='tight')
     plt.close()
