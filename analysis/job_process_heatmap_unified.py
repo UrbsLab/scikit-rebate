@@ -145,9 +145,14 @@ def main():
     # only mainEff and core2wayEpistasis have both EDM-1 and EDM-2
     if is_mainEff_or_core2wayEpistasis:
         total_rows = len(h_values) * 2
+    elif is_xor:
+        total_rows = len(n_values) # = 1
     else:
         total_rows = len(h_values)
-    total_cols = len(n_values)
+    if is_xor:
+        total_cols = len(h_values) # = 4
+    else:
+        total_cols = len(n_values)
 
     # Create custom height and width ratios
     # --> every 2 rows, insert an extra gap by slightly enlarging the space below (for mainEff and core2wayEpistasis)
@@ -177,7 +182,8 @@ def main():
         fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
         # fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)*2))
     else:
-        fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
+        # fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
+        fig = plt.figure(figsize=(4*len(h_values) * 1.15, 3*len(n_values) * 1.1))
         # fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)))
     gs = gridspec.GridSpec(
         nrows=len(height_ratios),
@@ -257,7 +263,8 @@ def main():
                     ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=26)
                     ax_bot.yaxis.set_label_position("right")
             else:
-                ax = axes[i, j]
+                # ax = axes[i, j]
+                ax = axes[j, i]
 
                 # Find the value in the dict corresponding to this n and h (could be either EDM-1 or EDM-2 depending on dataset, but only one of them)
                 df = next(
@@ -273,14 +280,14 @@ def main():
                 else:
                     ax.axis('off')
                 
-                if j == len(n_values) - 1:
-                    edm_value = next(key[2] for key in data_dict if key[0] == n and key[1] == h)
-                    if edm_value == '1':
-                        ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
-                    elif edm_value == '2':
-                        ax.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
+                # if j == len(n_values) - 1:
+                #     edm_value = next(key[2] for key in data_dict if key[0] == n and key[1] == h)
+                #     if edm_value == '1':
+                #         ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
+                #     elif edm_value == '2':
+                #         ax.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
 
-                    ax.yaxis.set_label_position("right")
+                #     ax.yaxis.set_label_position("right")
                     
 
 
@@ -296,12 +303,13 @@ def main():
 
     # plt.tight_layout(rect=[0, 0, 0.95, 0.95])
 
-    # Set x-axis labels for Number of Training Instances
-    for j, n in enumerate(n_values):
-        # Place label centered below the corresponding column (under the last row for that column)
-        mid_axs = axes[-1, j] if len(h_values)*2 > 1 else axes[1, j]
-        mid_axs.set_xlabel(str(n), fontsize=26)
-        mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
+    if is_mainEff_or_core2wayEpistasis:
+        # Set x-axis labels for Number of Training Instances
+        for j, n in enumerate(n_values):
+            # Place label centered below the corresponding column (under the last row for that column)
+            mid_axs = axes[-1, j] if len(h_values)*2 > 1 else axes[1, j]
+            mid_axs.set_xlabel(str(n), fontsize=26)
+            mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
 
     # Set y-axis labels for Heritability of Model (once per heritability row)
     # for i, h in enumerate(h_values):
@@ -319,19 +327,19 @@ def main():
                 ax_top.text(-0.2, mid_y - 0.1, str(h), rotation=0, fontsize=26, va='center', ha='center', transform=ax_top.transAxes)
             else:
                 # Use the top subplot to place the label vertically centered
-                ax_top.set_ylabel(str(h), rotation=0, fontsize=20)
+                ax_top.set_ylabel(str(h), rotation=0, fontsize=26)
                 ax_top.yaxis.set_label_coords(-0.2, mid_y)
-        else:
-            # First column only
-            ax = axes[i, 0]
+        # else:
+        #     # First column only
+        #     ax = axes[i, 0]
 
-            mid_y = 0.5
+        #     mid_y = 0.5
 
-            if len(n_values) == 1:
-                ax.text(-0.2, mid_y, str(h), rotation=0, fontsize=26, va='center', ha='center', transform=ax.transAxes)
-            else:
-                ax.set_ylabel(str(h), rotation=0, fontsize=26)
-                ax.yaxis.set_label_coords(-0.2, mid_y)
+        #     if len(n_values) == 1:
+        #         ax.text(-0.2, mid_y, str(h), rotation=0, fontsize=26, va='center', ha='center', transform=ax.transAxes)
+        #     else:
+        #         ax.set_ylabel(str(h), rotation=0, fontsize=26)
+        #         ax.yaxis.set_label_coords(-0.2, mid_y)
 
     # # Total rows and columns
     # total_rows = len(h_values)*2
@@ -408,23 +416,24 @@ def main():
     #                                 [bbox_bottom_right, bbox_bottom_right], 
     #                                 transform=fig.transFigure, color='black', linewidth=4))
 
-    # ** LINES BETWEEN INSTANCE/HERITABILITY COMBINATIONS:
-    # --- DRAW DIVIDER LINES THROUGH GAP COLUMNS AND ROWS ---
-    # Use figure coordinates (0–1 range)
-    for j in range(total_cols - 1):
-        # Compute midpoint between the right edge of column j and left edge of next column
-        left_bbox = axes[0, j].get_position()
-        right_bbox = axes[0, j+1].get_position()
-        x_mid = (left_bbox.x1 + right_bbox.x0) / 2
-        y_bottom = axes[-1,0].get_position().y0
-        y_top = axes[0,0].get_position().y1
+    if is_mainEff_or_core2wayEpistasis:
+        # ** LINES BETWEEN INSTANCE/HERITABILITY COMBINATIONS:
+        # --- DRAW DIVIDER LINES THROUGH GAP COLUMNS AND ROWS ---
+        # Use figure coordinates (0–1 range)
+        for j in range(total_cols - 1):
+            # Compute midpoint between the right edge of column j and left edge of next column
+            left_bbox = axes[0, j].get_position()
+            right_bbox = axes[0, j+1].get_position()
+            x_mid = (left_bbox.x1 + right_bbox.x0) / 2
+            y_bottom = axes[-1,0].get_position().y0
+            y_top = axes[0,0].get_position().y1
 
-        # Vertical line (spanning entire figure)
-        line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
-                            transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
-        # line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
-        #                     transform=fig.transFigure, color='black', linewidth=2.5)
-        fig.add_artist(line)
+            # Vertical line (spanning entire figure)
+            line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
+                                transform=fig.transFigure, color='black', linewidth=1.5, alpha=0.3)
+            # line = mlines.Line2D([x_mid, x_mid], [y_bottom, y_top],
+            #                     transform=fig.transFigure, color='black', linewidth=2.5)
+            fig.add_artist(line)
 
     if is_mainEff_or_core2wayEpistasis:
         # Horizontal dividers after every heritability block (every 2 rows)
