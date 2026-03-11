@@ -149,6 +149,7 @@ def main():
         total_rows = len(n_values) # = 1
     else:
         total_rows = len(h_values)
+
     if is_xor:
         total_cols = len(h_values) # = 4
     else:
@@ -328,7 +329,7 @@ def main():
             else:
                 # Use the top subplot to place the label vertically centered
                 ax_top.set_ylabel(str(h), rotation=0, fontsize=26)
-                ax_top.yaxis.set_label_coords(-0.2, mid_y - 0.3)
+                ax_top.yaxis.set_label_coords(-0.2, mid_y - 0.15)
         # else:
         #     # First column only
         #     ax = axes[i, 0]
