@@ -221,9 +221,9 @@ def main():
 
     xtick_labels = ['Optimal','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%']
     # where to draw black lines separating RBA groups in each heatmap
-    # separators = [2, 6, 11]
+    separators = [2, 6, 11]
     # for ABS heatmaps:
-    separators = [2, 6]
+    # separators = [2, 6]
     # for i, h in enumerate(h_values):
     # flipped so that y-axis is shown in ascending order from bottom to top
     for i, h in enumerate(sorted(h_values, reverse=True)):
