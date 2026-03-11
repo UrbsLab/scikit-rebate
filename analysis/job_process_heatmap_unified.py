@@ -163,11 +163,11 @@ def main():
         if is_mainEff_or_core2wayEpistasis:
             if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
                 # height_ratios.append(0.15)  # this adds vertical gap spacing
-                height_ratios.append(0.15)
+                height_ratios.append(0.05)
         else:
             if i != total_rows - 1:
                 # height_ratios.append(0.15)
-                height_ratios.append(0.15)
+                height_ratios.append(0.05)
 
     # For columns, add an extra gap after every column
     width_ratios = []
@@ -175,7 +175,7 @@ def main():
         width_ratios.append(1)
         if j != total_cols - 1:  # after each column except last
             # width_ratios.append(0.10)  # horizontal gap spacing
-            width_ratios.append(0.10)
+            width_ratios.append(0.05)
 
     # Define figure and gridspec with custom spacing
     if is_mainEff_or_core2wayEpistasis:
@@ -193,8 +193,8 @@ def main():
         width_ratios=width_ratios,
         # hspace=0.25,  # fine-tune base spacing
         # wspace=0.25
-        hspace=0.25,  # fine-tune base spacing
-        wspace=0.25
+        hspace=0.10,  # fine-tune base spacing
+        wspace=0.10
     )
 
     # Build axes array only in the actual plot cells (skip gap cells)
@@ -328,7 +328,7 @@ def main():
             else:
                 # Use the top subplot to place the label vertically centered
                 ax_top.set_ylabel(str(h), rotation=0, fontsize=26)
-                ax_top.yaxis.set_label_coords(-0.2, mid_y - 0.1)
+                ax_top.yaxis.set_label_coords(-0.2, mid_y - 0.3)
         # else:
         #     # First column only
         #     ax = axes[i, 0]
