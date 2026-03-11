@@ -164,11 +164,14 @@ def main():
         if is_mainEff_or_core2wayEpistasis:
             if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
                 # height_ratios.append(0.15)  # this adds vertical gap spacing
-                height_ratios.append(0.05)
+                if 'core2wayEpistasis' in args.basedir:
+                    height_ratios.append(0.05)
+                else:
+                    height_ratios.append(0.10)
         else:
             if i != total_rows - 1:
                 # height_ratios.append(0.15)
-                height_ratios.append(0.05)
+                height_ratios.append(0.15)
 
     # For columns, add an extra gap after every column
     width_ratios = []
@@ -176,7 +179,10 @@ def main():
         width_ratios.append(1)
         if j != total_cols - 1:  # after each column except last
             # width_ratios.append(0.10)  # horizontal gap spacing
-            width_ratios.append(0.05)
+            if 'core2wayEpistasis' in args.basedir:
+                width_ratios.append(0.05)
+            else:
+                width_ratios.append(0.10)
 
     # Define figure and gridspec with custom spacing
     if is_mainEff_or_core2wayEpistasis:
@@ -186,6 +192,13 @@ def main():
         # fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
         fig = plt.figure(figsize=(4*len(h_values) * 1.15, 3*len(n_values) * 1.1))
         # fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)))
+    
+    if 'core2wayEpistasis' in args.basedir:
+        spacing_value = 0.10
+    elif 'mainEff_Datasets' in args.basedir:
+        spacing_value = 0.15
+    else:
+        spacing_value = 0.25
     gs = gridspec.GridSpec(
         nrows=len(height_ratios),
         ncols=len(width_ratios),
@@ -194,8 +207,8 @@ def main():
         width_ratios=width_ratios,
         # hspace=0.25,  # fine-tune base spacing
         # wspace=0.25
-        hspace=0.10,  # fine-tune base spacing
-        wspace=0.10
+        hspace=spacing_value,  # fine-tune base spacing
+        wspace=spacing_value
     )
 
     # Build axes array only in the actual plot cells (skip gap cells)
