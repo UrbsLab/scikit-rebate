@@ -328,7 +328,7 @@ def main():
             else:
                 # Use the top subplot to place the label vertically centered
                 ax_top.set_ylabel(str(h), rotation=0, fontsize=26)
-                ax_top.yaxis.set_label_coords(-0.2, mid_y)
+                ax_top.yaxis.set_label_coords(-0.2, mid_y - 0.1)
         # else:
         #     # First column only
         #     ax = axes[i, 0]
