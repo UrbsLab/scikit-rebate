@@ -185,12 +185,13 @@ def process_results_dir(results_dir, prefix=""):
     # heatmap.set_title(prefix + dataset_id, fontsize=16)
     # heatmap.set_xlabel('Predictive features in top % of ranked features', fontsize=14)
     # heatmap.set_ylabel('Method', fontsize=14)
-    # heatmap.set_xticks(xtick_positions)
-    # heatmap.set_xticklabels(xtick_labels, rotation=0, fontsize=11)
+    heatmap.set_xticks(xtick_positions)
+    heatmap.set_xticklabels(xtick_labels, rotation=0, fontsize=16)
     new_ytick_labels = [rba_descriptive_names[rba] for rba in percentages_df_ordered.index]
-    heatmap.set_yticklabels(new_ytick_labels, fontsize=11)
+    # heatmap.set_yticklabels(new_ytick_labels, fontsize=11)
+    heatmap.set_yticklabels(new_ytick_labels, fontsize=16)
     # NEW: to remove xticks altogether:
-    heatmap.set_xticks([])
+    # heatmap.set_xticks([])
 
     plt.rcParams['font.sans-serif'] = 'Helvetica'
     plt.rcParams['font.family'] = 'sans-serif'
