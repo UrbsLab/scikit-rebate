@@ -30,6 +30,13 @@ def collect_rankings(root_dir, include_subdirs=None):
             print(f"[ERROR] Could not read {rankings_path}: {e}")
             continue
 
+        if "a_1000/" in rankings_path:
+            df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 999
+        elif "a_10000/" in rankings_path:
+            df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 9999
+        elif "a_100000/" in rankings_path:
+            df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 99999
+
         all_dfs.append(df)
         print(f"[INFO] Loaded rankings_list.csv from {sub}")
 
@@ -96,14 +103,30 @@ def main():
     if combined_df is None:
         return
 
+    # NEW: going back up to data directory from AbsVal_Benchmark_Data to then enter Sanity_Check_Data
+    parent_dir = os.path.dirname(root_dir)
+    largerfeature_dir = os.path.join(
+        parent_dir,
+        "Sanity_Check_Data",
+        "benchmark-data",
+        "Simulated_Benchmark_Archive",
+        "GAMETES_2.2_dev_peter_2wayEpiFeatures_Datasets_Loc_2_Qnt_2_Pop_100000"
+    )
+    
+    # getting rankings from a_100, a_1000, a_10000, a_100000 (all subdirs of largerfeature_dir)
+    largerfeature_df = collect_rankings(largerfeature_dir)
+
+    # all rankings from all tested datasets with >= 100 features
+    final_combined_df = pd.concat([combined_df, largerfeature_df], ignore_index=True)
+
     # --- Save global concatenated rankings_list.csv ---
-    global_rankings_path = os.path.join(root_dir, 'global_rankings_list.csv')
-    combined_df.to_csv(global_rankings_path, index=False)
+    global_rankings_path = os.path.join(parent_dir, 'global_rankings_list.csv')
+    final_combined_df.to_csv(global_rankings_path, index=False)
     print(f"[INFO] Saved global rankings list: {global_rankings_path}")
 
     # --- Compute and save global RBA rankings ---
-    global_summary_df = compute_global_summary(combined_df)
-    global_summary_path = os.path.join(root_dir, 'global_rba_rankings.csv')
+    global_summary_df = compute_global_summary(final_combined_df)
+    global_summary_path = os.path.join(parent_dir, 'global_rba_rankings.csv')
     global_summary_df.to_csv(global_summary_path, index=False)
     print(f"[INFO] Saved global RBA rankings: {global_summary_path}")
 
