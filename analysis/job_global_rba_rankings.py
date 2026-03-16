@@ -19,16 +19,34 @@ def collect_rankings(root_dir, include_subdirs=None):
         if include_subdirs and sub not in include_subdirs:
             continue
 
-        rankings_path = os.path.join(sub_path, 'rankings_list.csv')
-        if not os.path.exists(rankings_path):
-            print(f"[WARN] rankings_list.csv not found in {sub_path}, skipping.")
-            continue
+        if sub == "GAMETES_2.2_dev_peter_XOR": # for XOR, will only use the xor-2 and xor-3 configurations (excluding 4 and 5-way)
+            # get path to xor-2 and xor-3 rankings_list.csv only (rankings_path1 & rankings_path2), turn it into df1 and df2, then combine them into df
+            # rankings_path_xor2 = sub_path + "xor_2/a_100/s_1600/xor_2_a_100s_1600_EDM-1/Results/rankings_list.csv"
+            # rankings_path_xor3 = sub_path + "xor_3/a_100/s_1600/xor_3_a_100s_1600_EDM-1/Results/rankings_list.csv"
+            rankings_path_xor2 = os.path.join(sub_path, "xor_2", "a_100", "s_1600", "xor_2_a_100s_1600_EDM-1", "Results", "rankings_list.csv")
+            rankings_path_xor3 = os.path.join(sub_path, "xor_3", "a_100", "s_1600", "xor_3_a_100s_1600_EDM-1", "Results", "rankings_list.csv")
+            if not os.path.exists(rankings_path_xor2) or not os.path.exists(rankings_path_xor3):
+                print(f"[WARN] rankings_list.csv not found in {sub_path} for xor-2 or xor-3, skipping.")
+                continue
 
-        try:
-            df = pd.read_csv(rankings_path, comment='#')  # ignore comment line with title
-        except Exception as e:
-            print(f"[ERROR] Could not read {rankings_path}: {e}")
-            continue
+            try:
+                df_xor2 = pd.read_csv(rankings_path_xor2, comment='#')  # ignore comment line with title
+                df_xor3 = pd.read_csv(rankings_path_xor3, comment='#')  # ignore comment line with title
+                df = pd.concat([df_xor2, df_xor3], ignore_index=True) # combining xor-2 and xor-3 into one df
+            except Exception as e:
+                print(f"[ERROR] Could not read {rankings_path_xor2} or {rankings_path_xor3}: {e}")
+                continue
+        else:
+            rankings_path = os.path.join(sub_path, 'rankings_list.csv')
+            if not os.path.exists(rankings_path):
+                print(f"[WARN] rankings_list.csv not found in {sub_path}, skipping.")
+                continue
+
+            try:
+                df = pd.read_csv(rankings_path, comment='#')  # ignore comment line with title
+            except Exception as e:
+                print(f"[ERROR] Could not read {rankings_path}: {e}")
+                continue
 
         if "a_1000/" in rankings_path:
             df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 999
