@@ -307,10 +307,10 @@ def main():
                     ax.axis('off')
                 
                 if i == 0 and edm == '2': # if first column and the EDM = 2 (E) row
-                    ax.set_ylabel("E", rotation=0, labelpad=20, fontsize=36)
+                    ax.set_ylabel("E", rotation=0, labelpad=20, fontsize=30)
                     ax.yaxis.set_label_position("left")
                 elif i == 0 and edm == '1': # if first column and the EDM = 1 (H) row    
-                    ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=36)
+                    ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=30)
                     ax.yaxis.set_label_position("left")
 
     if is_core2wayEpistasis:
@@ -325,7 +325,7 @@ def main():
         for i, h in enumerate(h_values):
             # Place label centered below the corresponding column (under the last row for that column)
             mid_axs = axes[-1, i] if len(edm_values)*2 > 1 else axes[1, i]
-            mid_axs.set_xlabel(str(h), fontsize=36)
+            mid_axs.set_xlabel(str(h), fontsize=30)
             mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
 
     if is_core2wayEpistasis:
@@ -347,6 +347,19 @@ def main():
                 ax_top.set_ylabel(str(h), rotation=0, fontsize=26)
                 ax_top.yaxis.set_label_coords(-0.2, mid_y - 0.1)
 
+    # Adjust global labels with extra padding
+    if is_mainEff:
+        fig.supxlabel("Heritability of Model", fontsize=30, x=0.5, y=0.02)
+    else:
+        fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
+    
+    if is_mainEff:
+        fig.supylabel("Model Difficulty", fontsize=30, x=0.02, y=0.5)
+    elif is_xor:
+        fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
+    elif is_core2wayEpistasis:
+        fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
+    
     # Tight layout with extra spacing
     plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
     # plt.tight_layout(rect=[0.05, 0.05, 0.85, 0.95])
