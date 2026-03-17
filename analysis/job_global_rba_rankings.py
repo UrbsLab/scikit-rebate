@@ -65,6 +65,71 @@ def collect_rankings(root_dir, include_subdirs=None):
     combined_df = pd.concat(all_dfs, ignore_index=True)
     return combined_df
 
+def collect_relative_order(root_dir, include_subdirs=None):
+    """
+    Go through rba_rankings.csv files from subdirectories under root_dir, collect the relative order ranking of RBAs from each file.
+    Optionally filter which subdirectories to include.
+    """
+    all_dfs = []
+    
+    for sub in os.listdir(root_dir):
+        sub_path = os.path.join(root_dir, sub)
+        if not os.path.isdir(sub_path):
+            continue
+
+        # If --include is specified, skip subdirs not in the list
+        if include_subdirs and sub not in include_subdirs:
+            continue
+
+        if sub == "GAMETES_2.2_dev_peter_XOR": # for XOR, will only use the xor-2 and xor-3 configurations (excluding 4 and 5-way)
+            rankings_path_xor2 = os.path.join(sub_path, "xor_2", "a_100", "s_1600", "xor_2_a_100s_1600_EDM-1", "Results", "rba_rankings.csv")
+            rankings_path_xor3 = os.path.join(sub_path, "xor_3", "a_100", "s_1600", "xor_3_a_100s_1600_EDM-1", "Results", "rba_rankings.csv")
+            if not os.path.exists(rankings_path_xor2) or not os.path.exists(rankings_path_xor3):
+                print(f"[WARN] rba_rankings.csv not found in {sub_path} for xor-2 or xor-3, skipping.")
+                continue
+
+            try:
+                df_xor2 = pd.read_csv(rankings_path_xor2, comment='#')  # ignore comment line with title
+                # Sort by Mean, then Median
+                df_xor2 = df_xor2.sort_values(by=["Mean", "Median"])
+                # Assign rank (same Mean + Median -> same rank)
+                df_xor2["Rank"] = (df_xor2.groupby(["Mean", "Median"], sort=False).ngroup() + 1)
+
+                df_xor3 = pd.read_csv(rankings_path_xor3, comment='#')  # ignore comment line with title
+                # Sort by Mean, then Median
+                df_xor3 = df_xor3.sort_values(by=["Mean", "Median"])
+                # Assign rank (same Mean + Median -> same rank)
+                df_xor3["Rank"] = (df_xor3.groupby(["Mean", "Median"], sort=False).ngroup() + 1)
+
+                df = pd.concat([df_xor2, df_xor3], ignore_index=True) # combining xor-2 and xor-3 into one df
+            except Exception as e:
+                print(f"[ERROR] Could not read {rankings_path_xor2} or {rankings_path_xor3}: {e}")
+                continue
+        else:
+            rankings_path = os.path.join(sub_path, 'rba_rankings.csv')
+            if not os.path.exists(rankings_path):
+                print(f"[WARN] rba_rankings.csv not found in {sub_path}, skipping.")
+                continue
+
+            try:
+                df = pd.read_csv(rankings_path, comment='#')  # ignore comment line with title
+                # Sort by Mean, then Median
+                df = df.sort_values(by=["Mean", "Median"])
+                # Assign rank (same Mean + Median -> same rank)
+                df["Rank"] = (df.groupby(["Mean", "Median"], sort=False).ngroup() + 1)
+            except Exception as e:
+                print(f"[ERROR] Could not read {rankings_path}: {e}")
+                continue
+
+        all_dfs.append(df)
+        print(f"[INFO] Loaded rba_rankings.csv from {sub}")
+
+    if not all_dfs:
+        print("[ERROR] No valid rba_rankings.csv files found.")
+        return None
+    
+    combined_df = pd.concat(all_dfs, ignore_index=True)
+    return combined_df
 
 def compute_global_summary(all_rankings_df):
     """
@@ -85,9 +150,12 @@ def main():
     parser.add_argument("root_dir", help="Top-level directory containing dataset subdirectories.")
     parser.add_argument("--include", nargs="+", default=None,
                         help="Optional list of subdirectories to include (default: all).")
+    parser.add_argument("--ranking_type", choices=["precise", "relative_order"], default="precise", help="Type of final global ranking to produce.")
 
     args = parser.parse_args()
     root_dir = args.root_dir
+    ranking_type = args.ranking_type
+    print(f"[INFO] Using ranking_type = {ranking_type}")
 
     # short names -> actual subdirectory names
     SHORT_TO_FULL_SUBDIR = {
@@ -117,10 +185,6 @@ def main():
     
     print(f"[INFO] Subdirectories to include: {include_subdirs}")
 
-    combined_df = collect_rankings(root_dir, include_subdirs)
-    if combined_df is None:
-        return
-
     # NEW: going back up to data directory from AbsVal_Benchmark_Data to then enter Sanity_Check_Data
     parent_dir = os.path.dirname(root_dir)
     largerfeature_dir = os.path.join(
@@ -130,23 +194,50 @@ def main():
         "Simulated_Benchmark_Archive",
         "GAMETES_2.2_dev_peter_2wayEpiFeatures_Datasets_Loc_2_Qnt_2_Pop_100000"
     )
-    
-    # getting rankings from a_100, a_1000, a_10000, a_100000 (all subdirs of largerfeature_dir)
-    largerfeature_df = collect_rankings(largerfeature_dir)
 
-    # all rankings from all tested datasets with >= 100 features
-    final_combined_df = pd.concat([combined_df, largerfeature_df], ignore_index=True)
+    if ranking_type == "precise":
+        combined_df = collect_rankings(root_dir, include_subdirs)
+        if combined_df is None:
+            return
+        
+        # getting rankings from a_100, a_1000, a_10000, a_100000 (all subdirs of largerfeature_dir)
+        largerfeature_df = collect_rankings(largerfeature_dir)
 
-    # --- Save global concatenated rankings_list.csv ---
-    global_rankings_path = os.path.join(parent_dir, 'global_rankings_list.csv')
-    final_combined_df.to_csv(global_rankings_path, index=False)
-    print(f"[INFO] Saved global rankings list: {global_rankings_path}")
+        # all rankings from all tested datasets with >= 100 features
+        final_combined_df = pd.concat([combined_df, largerfeature_df], ignore_index=True)
 
-    # --- Compute and save global RBA rankings ---
-    global_summary_df = compute_global_summary(final_combined_df)
-    global_summary_path = os.path.join(parent_dir, 'global_rba_rankings.csv')
-    global_summary_df.to_csv(global_summary_path, index=False)
-    print(f"[INFO] Saved global RBA rankings: {global_summary_path}")
+        # --- Save global concatenated rankings_list.csv ---
+        global_rankings_path = os.path.join(parent_dir, 'global_rankings_list.csv')
+        final_combined_df.to_csv(global_rankings_path, index=False)
+        print(f"[INFO] Saved global rankings list: {global_rankings_path}")
+
+        # --- Compute and save global RBA rankings ---
+        global_summary_df = compute_global_summary(final_combined_df)
+        global_summary_path = os.path.join(parent_dir, 'global_rba_rankings.csv')
+        global_summary_df.to_csv(global_summary_path, index=False)
+        print(f"[INFO] Saved global RBA rankings: {global_summary_path}")
+    else: # use relative order for final ranking
+        combined_df = collect_relative_order(root_dir, include_subdirs)
+        if combined_df is None:
+            return
+        
+        # getting rankings from a_100, a_1000, a_10000, a_100000 (all subdirs of largerfeature_dir)
+        largerfeature_df = collect_relative_order(largerfeature_dir)
+
+        # all rankings from all tested datasets with >= 100 features
+        final_combined_df = pd.concat([combined_df, largerfeature_df], ignore_index=True)
+
+        # --- Save global concatenated rankings_list.csv ---
+        global_rankings_path = os.path.join(parent_dir, 'global_rankings_list_relorder.csv')
+        final_combined_df.to_csv(global_rankings_path, index=False)
+        print(f"[INFO] Saved global rankings list: {global_rankings_path}")
+
+        # --- Compute and save global RBA rankings ---
+        global_summary_df = compute_global_summary(final_combined_df)
+        global_summary_path = os.path.join(parent_dir, 'global_rba_rankings_relorder.csv')
+        global_summary_df.to_csv(global_summary_path, index=False)
+        print(f"[INFO] Saved global RBA rankings: {global_summary_path}")
+        
 
 
 if __name__ == "__main__":
