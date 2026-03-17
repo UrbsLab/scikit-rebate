@@ -96,18 +96,15 @@ def main():
                 results_dirs.append(os.path.join(root, d))
 
     is_xor = ('XOR' in args.basedir)
-    is_mainEff_or_core2wayEpistasis = ('mainEff_Datasets' in args.basedir or 'core2wayEpistasis' in args.basedir)
-    is_mainEffadditive_or_2wayEpiHet = ('mainEff_additive' in args.basedir or '2wayEpiHeterogeneity' in args.basedir)
-    print("Is mainEffadditive or 2wayEpiHet:", is_mainEffadditive_or_2wayEpiHet)
+    # is_mainEff_or_core2wayEpistasis = ('mainEff_Datasets' in args.basedir or 'core2wayEpistasis' in args.basedir)
+    is_core2wayEpistasis = ('core2wayEpistasis' in args.basedir)
+    is_mainEff = ('mainEff_Datasets' in args.basedir)
 
     # Build a mapping of (n_instances, heritability, EDMtype) -> percentages_df
     # pattern_n = re.compile(r"s_(\d+)")
     pattern_n = re.compile(r"/s_(\d+)")
     if is_xor:
         pattern_h = re.compile(r"xor_(\d+)")
-    elif is_mainEffadditive_or_2wayEpiHet:
-        # pattern_h = re.compile(r"r_(\d+)")
-        pattern_h = re.compile(r"/r_(\d+)")
     else:
         pattern_h = re.compile(r"her_(\d+\.\d+)__maf")
     pattern_edm = re.compile(r"EDM-(\d+)")
@@ -122,10 +119,6 @@ def main():
             n = int(n_match.group(1))
             if is_xor:
                 h = int(h_match.group(1))
-            elif is_mainEffadditive_or_2wayEpiHet:
-                # to turn r_75 or r_50 into 0.75 or 0.5
-                h = int(h_match.group(1)) / 100
-                print("H value:", h)
             else:
                 h = float(h_match.group(1))
             edm = edm_match.group(1)  # '1' or '2'
@@ -136,6 +129,7 @@ def main():
 
     n_values = sorted({k[0] for k in data_dict.keys()})
     h_values = sorted({k[1] for k in data_dict.keys()})
+    edm_values = sorted({k[2] for k in data_dict.keys()})
     print("Data dictionary:", data_dict, "\n")
     print("H values:", h_values, "\n")
     print("N values:", n_values, "\n")
@@ -143,14 +137,14 @@ def main():
     # fig, axes = plt.subplots(len(h_values)*2, len(n_values), figsize=(4*len(n_values), 3*len(h_values)*2))
     # --- NEW ATTEMPT TO INCREASE SPACING
     # only mainEff and core2wayEpistasis have both EDM-1 and EDM-2
-    if is_mainEff_or_core2wayEpistasis:
+    if is_core2wayEpistasis:
         total_rows = len(h_values) * 2
     elif is_xor:
         total_rows = len(n_values) # = 1
     else:
-        total_rows = len(h_values)
+        total_rows = len(edm_values) # 2 rows for mainEff
 
-    if is_xor:
+    if is_xor or is_mainEff:
         total_cols = len(h_values) # = 4
     else:
         total_cols = len(n_values)
@@ -161,13 +155,10 @@ def main():
     height_ratios = []
     for i in range(total_rows):
         height_ratios.append(1)
-        if is_mainEff_or_core2wayEpistasis:
+        if is_core2wayEpistasis:
             if i % 2 == 1 and i != total_rows - 1:  # after every 2nd row (except last)
                 # height_ratios.append(0.15)  # this adds vertical gap spacing
-                if 'core2wayEpistasis' in args.basedir:
-                    height_ratios.append(0.05)
-                else:
-                    height_ratios.append(0.10)
+                height_ratios.append(0.05)
         else:
             if i != total_rows - 1:
                 # height_ratios.append(0.15)
@@ -179,23 +170,25 @@ def main():
         width_ratios.append(1)
         if j != total_cols - 1:  # after each column except last
             # width_ratios.append(0.10)  # horizontal gap spacing
-            if 'core2wayEpistasis' in args.basedir:
+            if is_core2wayEpistasis:
                 width_ratios.append(0.05)
             else:
                 width_ratios.append(0.10)
 
     # Define figure and gridspec with custom spacing
-    if is_mainEff_or_core2wayEpistasis:
+    if is_core2wayEpistasis:
         fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values)*2 * 1.1))
         # fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)*2))
+    elif is_mainEff:
+        fig = plt.figure(figsize=(4*len(h_values) * 1.15, 3*len(edm_values) * 1.1))
     else:
         # fig = plt.figure(figsize=(4*len(n_values) * 1.15, 3*len(h_values) * 1.1))
         fig = plt.figure(figsize=(4*len(h_values) * 1.15, 3*len(n_values) * 1.1))
         # fig = plt.figure(figsize=(8*len(n_values), 6*len(h_values)))
     
-    if 'core2wayEpistasis' in args.basedir:
+    if is_core2wayEpistasis:
         spacing_value = 0.10
-    elif 'mainEff_Datasets' in args.basedir:
+    elif is_mainEff:
         spacing_value = 0.15
     else:
         spacing_value = 0.25
@@ -215,7 +208,7 @@ def main():
     axes = np.empty((total_rows, total_cols), dtype=object)
     row_ptr, col_ptr = 0, 0
     for i in range(len(height_ratios)):
-        if is_mainEff_or_core2wayEpistasis:
+        if is_core2wayEpistasis:
             if i % 3 == 2:  # skip gap row
                 continue
         else:
@@ -238,53 +231,72 @@ def main():
     separators = [2, 6, 11]
     # for ABS heatmaps:
     # separators = [2, 6]
-    # for i, h in enumerate(h_values):
-    # flipped so that y-axis is shown in ascending order from bottom to top
-    for i, h in enumerate(sorted(h_values, reverse=True)):
-        for j, n in enumerate(n_values):
-            if is_mainEff_or_core2wayEpistasis:
-                # top EDM-2
-                ax_top = axes[i*2, j] if len(h_values)*2 > 1 else axes[0, j]
-                ax_bot = axes[i*2+1, j] if len(h_values)*2 > 1 else axes[1, j]
+    if is_core2wayEpistasis or is_xor:
+        # for i, h in enumerate(h_values):
+        # flipped so that y-axis is shown in ascending order from bottom to top
+        for i, h in enumerate(sorted(h_values, reverse=True)):
+            for j, n in enumerate(n_values):
+                if is_core2wayEpistasis:
+                    # top EDM-2
+                    ax_top = axes[i*2, j] if len(h_values)*2 > 1 else axes[0, j]
+                    ax_bot = axes[i*2+1, j] if len(h_values)*2 > 1 else axes[1, j]
 
-                df2 = data_dict.get((n,h,'2'))
-                df1 = data_dict.get((n,h,'1'))
+                    df2 = data_dict.get((n,h,'2'))
+                    df1 = data_dict.get((n,h,'1'))
 
-                if df2 is not None:
-                    sns.heatmap(df2, ax=ax_top, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
-                    # ax_top.set_title(f"n={n}, h={h}", fontsize=10)
-                    for y in separators:
-                        ax_top.axhline(y, color='black', linewidth=1.2)
+                    if df2 is not None:
+                        sns.heatmap(df2, ax=ax_top, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
+                        # ax_top.set_title(f"n={n}, h={h}", fontsize=10)
+                        for y in separators:
+                            ax_top.axhline(y, color='black', linewidth=1.2)
+                    else:
+                        ax_top.axis('off')
+                    if df1 is not None:
+                        # sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=xtick_labels, yticklabels=False)
+                        sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
+                        for y in separators:
+                            ax_bot.axhline(y, color='black', linewidth=1.2)
+                    else:
+                        ax_bot.axis('off')
+
+                    # if j==0:
+                    #     ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=12)
+                    #     ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=12)
+                    # Put "E" and "H" labels on the right side of the heatmaps in the last column
+                    if j == len(n_values) - 1:
+                        # maybe add if clauses in the event that a dataset does not have EDM-1 or EDM-2
+                        ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=26)
+                        ax_top.yaxis.set_label_position("right")
+                        
+                        ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=26)
+                        ax_bot.yaxis.set_label_position("right")
                 else:
-                    ax_top.axis('off')
-                if df1 is not None:
-                    # sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=xtick_labels, yticklabels=False)
-                    sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
-                    for y in separators:
-                        ax_bot.axhline(y, color='black', linewidth=1.2)
-                else:
-                    ax_bot.axis('off')
+                    # ax = axes[i, j]
+                    ax = axes[j, i]
 
-                # if j==0:
-                #     ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=12)
-                #     ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=12)
-                # Put "E" and "H" labels on the right side of the heatmaps in the last column
-                if j == len(n_values) - 1:
-                    # maybe add if clauses in the event that a dataset does not have EDM-1 or EDM-2
-                    ax_top.set_ylabel("E", rotation=0, labelpad=20, fontsize=26)
-                    ax_top.yaxis.set_label_position("right")
-                    
-                    ax_bot.set_ylabel("H", rotation=0, labelpad=20, fontsize=26)
-                    ax_bot.yaxis.set_label_position("right")
-            else:
-                # ax = axes[i, j]
+                    # Find the value in the dict corresponding to this n and h (could be either EDM-1 or EDM-2 depending on dataset, but only one of them)
+                    df = next(
+                        data_dict[key] 
+                        for key in data_dict 
+                        if key[0] == n and key[1] == h
+                    )
+
+                    if df is not None:
+                        sns.heatmap(df, ax=ax, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
+                        for y in separators:
+                            ax.axhline(y, color='black', linewidth=1.2)
+                    else:
+                        ax.axis('off')
+    elif is_mainEff:
+        for j, edm in enumerate(sorted(edm_values, reverse=True)):
+            for i, h in enumerate(sorted(h_values)):
                 ax = axes[j, i]
 
                 # Find the value in the dict corresponding to this n and h (could be either EDM-1 or EDM-2 depending on dataset, but only one of them)
                 df = next(
                     data_dict[key] 
                     for key in data_dict 
-                    if key[0] == n and key[1] == h
+                    if key[2] == edm and key[1] == h
                 )
 
                 if df is not None:
@@ -294,48 +306,39 @@ def main():
                 else:
                     ax.axis('off')
                 
-                # if j == len(n_values) - 1:
-                #     edm_value = next(key[2] for key in data_dict if key[0] == n and key[1] == h)
-                #     if edm_value == '1':
-                #         ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=18)
-                #     elif edm_value == '2':
-                #         ax.set_ylabel("E", rotation=0, labelpad=20, fontsize=18)
+                if i == 0 and edm == '2': # if first column and the EDM = 2 (E) row
+                    ax.set_ylabel("E", rotation=0, labelpad=20, fontsize=36)
+                    ax.yaxis.set_label_position("left")
+                elif i == 0 and edm == '1': # if first column and the EDM = 1 (H) row    
+                    ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=36)
+                    ax.yaxis.set_label_position("left")
 
-                #     ax.yaxis.set_label_position("right")
-                    
-
-
-    # # Add one colorbar on the far right
-    # cbar_ax = fig.add_axes([1.02, 0.15, 0.02, 0.7])
-    # # take any df to draw dummy heatmap for cbar
-    # any_df = next(iter(data_dict.values()))
-    # sns.heatmap(any_df, cmap=custom_cmap, cbar_ax=cbar_ax, cbar_kws={'label': 'Power (Frequency of Success)'}, annot=False)
-
-    # # fig.suptitle("Unified Heatmaps", fontsize=16)
-    # fig.supxlabel("Number of Training Instances (n)", fontsize=14)
-    # fig.supylabel("Heritability of Model", fontsize=14)
-
-    # plt.tight_layout(rect=[0, 0, 0.95, 0.95])
-
-    if is_mainEff_or_core2wayEpistasis:
+    if is_core2wayEpistasis:
         # Set x-axis labels for Number of Training Instances
         for j, n in enumerate(n_values):
             # Place label centered below the corresponding column (under the last row for that column)
             mid_axs = axes[-1, j] if len(h_values)*2 > 1 else axes[1, j]
             mid_axs.set_xlabel(str(n), fontsize=26)
             mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
+    elif is_mainEff:
+        # Set x-axis labels for Heritability of Model
+        for i, h in enumerate(h_values):
+            # Place label centered below the corresponding column (under the last row for that column)
+            mid_axs = axes[-1, i] if len(edm_values)*2 > 1 else axes[1, i]
+            mid_axs.set_xlabel(str(h), fontsize=36)
+            mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
 
-    # Set y-axis labels for Heritability of Model (once per heritability row)
-    # for i, h in enumerate(h_values):
-    for i, h in enumerate(sorted(h_values, reverse=True)):
-        if is_mainEff_or_core2wayEpistasis:
+    if is_core2wayEpistasis:
+        # Set y-axis labels for Heritability of Model (once per heritability row)
+        # for i, h in enumerate(h_values):
+        for i, h in enumerate(sorted(h_values, reverse=True)):
             # First column only
             ax_top = axes[i*2, 0]
             ax_bot = axes[i*2 + 1, 0]
-            
+                
             # Position the label in the middle of top and bottom heatmaps
             mid_y = 0  # normalized vertical coordinate (0 = bottom of ax, 1 = top of ax)
-            
+                
             # if there is only one column, can't use set_ylabel twice on the same axis (will overwrite the first one, "E"); so use .text instead
             if len(n_values) == 1:
                 ax_top.text(-0.2, mid_y - 0.1, str(h), rotation=0, fontsize=26, va='center', ha='center', transform=ax_top.transAxes)
@@ -343,97 +346,16 @@ def main():
                 # Use the top subplot to place the label vertically centered
                 ax_top.set_ylabel(str(h), rotation=0, fontsize=26)
                 ax_top.yaxis.set_label_coords(-0.2, mid_y - 0.1)
-        # else:
-        #     # First column only
-        #     ax = axes[i, 0]
-
-        #     mid_y = 0.5
-
-        #     if len(n_values) == 1:
-        #         ax.text(-0.2, mid_y, str(h), rotation=0, fontsize=26, va='center', ha='center', transform=ax.transAxes)
-        #     else:
-        #         ax.set_ylabel(str(h), rotation=0, fontsize=26)
-        #         ax.yaxis.set_label_coords(-0.2, mid_y)
-
-    # # Total rows and columns
-    # total_rows = len(h_values)*2
-    # total_cols = len(n_values)
-
-    # # Draw vertical lines between columns (n-values)
-    # for j in range(1, total_cols):
-    #     # Get right edge of previous column and left edge of next column
-    #     left_bbox = axes[0, j-1].get_position()
-    #     right_bbox = axes[0, j].get_position()
-    #     x = (left_bbox.x1 + right_bbox.x0) / 2  # middle between subplots
-    #     line = mlines.Line2D([x, x], [0, 1], transform=fig.transFigure, color='black', linewidth=1.5)
-    #     fig.add_artist(line)
-
-    # # Draw horizontal lines between heritabilities (h-values)
-    # for i in range(1, len(h_values)):
-    #     # Bottom of the bottom subplot in previous heritability
-    #     prev_bottom_bbox = axes[(i-1)*2 + 1, 0].get_position()
-    #     # Top of the top subplot in current heritability
-    #     curr_top_bbox = axes[i*2, 0].get_position()
-        
-    #     # Midpoint between these two edges
-    #     y = (prev_bottom_bbox.y0 + curr_top_bbox.y1) / 2
-        
-    #     line = mlines.Line2D([0, 1], [y, y], transform=fig.transFigure, color='black', linewidth=1.5)
-    #     fig.add_artist(line)
-
-    # # Adjust global labels with extra padding
-    # fig.supxlabel("Number of Training Instances (n)", fontsize=22, x=0.5, y=0.02)
-    
-    # if is_xor:
-    #     fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
-    # elif is_mainEffadditive_or_2wayEpiHet:
-    #     fig.supylabel("Proportion of Instances from Subgroup 1", fontsize=22, x=0.02, y=0.5)
-    # else:
-    #     fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
 
     # Tight layout with extra spacing
     plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
     # plt.tight_layout(rect=[0.05, 0.05, 0.85, 0.95])
 
-    # # CODE TO DRAW TICK MARK SEPARATORS:
-    # # Number of rows and columns in the grid
-    # total_rows = len(h_values) * 2
-    # total_cols = len(n_values)
-
-    # # --- X-axis tick marks (vertical) ---
-    # for j in range(total_cols - 1):  # exclude last column
-    #     # Right edge of column j
-    #     bbox_right = axes[0, j].get_position().x1  # top row
-    #     bbox_right_bottom = axes[-1, j].get_position().x1  # bottom row
-        
-    #     # Top tick (first row)
-    #     fig.add_artist(mlines.Line2D([bbox_right, bbox_right], 
-    #                                 [axes[0, j].get_position().y1, axes[0, j].get_position().y1 + 0.02],
-    #                                 transform=fig.transFigure, color='black', linewidth=4))
-    #     # Bottom tick (last row)
-    #     fig.add_artist(mlines.Line2D([bbox_right_bottom, bbox_right_bottom], 
-    #                                 [axes[-1, j].get_position().y0 - 0.02, axes[-1, j].get_position().y0],
-    #                                 transform=fig.transFigure, color='black', linewidth=4))
-
-    # # --- Y-axis tick marks (horizontal) ---
-    # for i in range(1, total_rows - 2, 2):  # every 2 rows
-    #     # Bottom edge of row i (top of next heritability)
-    #     bbox_bottom_left = axes[i, 0].get_position().y0
-    #     bbox_bottom_right = axes[i, -1].get_position().y0
-        
-    #     # Left tick (first column)
-    #     fig.add_artist(mlines.Line2D([axes[i, 0].get_position().x0 - 0.02, axes[i, 0].get_position().x0], 
-    #                                 [bbox_bottom_left, bbox_bottom_left], 
-    #                                 transform=fig.transFigure, color='black', linewidth=4))
-    #     # Right tick (last column)
-    #     fig.add_artist(mlines.Line2D([axes[i, -1].get_position().x1, axes[i, -1].get_position().x1 + 0.02], 
-    #                                 [bbox_bottom_right, bbox_bottom_right], 
-    #                                 transform=fig.transFigure, color='black', linewidth=4))
-
-    if is_mainEff_or_core2wayEpistasis:
-        # ** LINES BETWEEN INSTANCE/HERITABILITY COMBINATIONS:
-        # --- DRAW DIVIDER LINES THROUGH GAP COLUMNS AND ROWS ---
-        # Use figure coordinates (0–1 range)
+    # ** LINES BETWEEN INSTANCE/HERITABILITY COMBINATIONS:
+    # --- DRAW DIVIDER LINES THROUGH GAP COLUMNS AND ROWS ---
+    # Use figure coordinates (0–1 range)
+    if is_core2wayEpistasis:
+        # Vertical dividers after every column
         for j in range(total_cols - 1):
             # Compute midpoint between the right edge of column j and left edge of next column
             left_bbox = axes[0, j].get_position()
@@ -449,7 +371,6 @@ def main():
             #                     transform=fig.transFigure, color='black', linewidth=2.5)
             fig.add_artist(line)
 
-    if is_mainEff_or_core2wayEpistasis:
         # Horizontal dividers after every heritability block (every 2 rows)
         for i in range(1, len(h_values)):
             # Get bounding boxes for last heatmap in block i-1 and first in block i
