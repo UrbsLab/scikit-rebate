@@ -8,6 +8,7 @@ import numpy as np
 import re
 import matplotlib.lines as mlines
 import matplotlib.gridspec as gridspec
+import time
 
 # Helper to create the percentages_df (copied from old job_process_heatmap)
 def compute_percentages(results_dir):
@@ -61,6 +62,7 @@ def compute_percentages(results_dir):
     return percentages_df.iloc[n_pred-1:]  # same trimming
 
 def main():
+    start_time = time.time()
     parser = argparse.ArgumentParser()
     parser.add_argument("basedir", help="Directory containing multiple Results folders.")
     parser.add_argument("--prefix", default="", help="Prefix for unified PDF filename.")
@@ -99,6 +101,7 @@ def main():
     # is_mainEff_or_core2wayEpistasis = ('mainEff_Datasets' in args.basedir or 'core2wayEpistasis' in args.basedir)
     is_core2wayEpistasis = ('core2wayEpistasis' in args.basedir)
     is_mainEff = ('mainEff_Datasets' in args.basedir)
+    print("Time taken to create is_(thisdatagroup) variables:", time.time() - start_time)
 
     # Build a mapping of (n_instances, heritability, EDMtype) -> percentages_df
     # pattern_n = re.compile(r"s_(\d+)")
@@ -133,6 +136,7 @@ def main():
     print("Data dictionary:", data_dict, "\n")
     print("H values:", h_values, "\n")
     print("N values:", n_values, "\n")
+    print("Time taken to create n_values/h_values/edm_values:", time.time() - start_time)
 
     # fig, axes = plt.subplots(len(h_values)*2, len(n_values), figsize=(4*len(n_values), 3*len(h_values)*2))
     # --- NEW ATTEMPT TO INCREASE SPACING
@@ -148,6 +152,8 @@ def main():
         total_cols = len(h_values) # = 4
     else:
         total_cols = len(n_values)
+
+    print("Time taken to create total_cols and total_rows:", time.time() - start_time)
 
     # Create custom height and width ratios
     # --> every 2 rows, insert an extra gap by slightly enlarging the space below (for mainEff and core2wayEpistasis)
@@ -174,6 +180,8 @@ def main():
                 width_ratios.append(0.05)
             else:
                 width_ratios.append(0.10)
+    
+    print("Time taken to create height/width ratios:", time.time() - start_time)
 
     # Define figure and gridspec with custom spacing
     if is_core2wayEpistasis:
@@ -204,6 +212,8 @@ def main():
         wspace=spacing_value
     )
 
+    print("Time taken to create fig and gs:", time.time() - start_time)
+
     # Build axes array only in the actual plot cells (skip gap cells)
     axes = np.empty((total_rows, total_cols), dtype=object)
     row_ptr, col_ptr = 0, 0
@@ -222,6 +232,8 @@ def main():
             col_ptr += 1
         row_ptr += 1
     # --- END NEW ATTEMPT
+
+    print("Time taken to build axes array:", time.time() - start_time)
 
     if len(h_values)*2 == 1 and len(n_values) == 1:
         axes = np.array([[axes]])  # ensure 2D
@@ -313,6 +325,8 @@ def main():
                     ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=30)
                     ax.yaxis.set_label_position("left")
 
+    print("Time taken to plot heatmaps:", time.time() - start_time)
+
     if is_core2wayEpistasis:
         # Set x-axis labels for Number of Training Instances
         for j, n in enumerate(n_values):
@@ -347,6 +361,8 @@ def main():
                 ax_top.set_ylabel(str(h), rotation=0, fontsize=26)
                 ax_top.yaxis.set_label_coords(-0.2, mid_y - 0.1)
 
+    print("Time taken to place x-axis/y-axis labels:", time.time() - start_time)
+
     # Adjust global labels with extra padding
     if is_mainEff:
         fig.supxlabel("Heritability of Model", fontsize=30, x=0.5, y=0.02)
@@ -359,6 +375,8 @@ def main():
         fig.supylabel("Number of Predictive Features", fontsize=22, x=0.02, y=0.5)
     elif is_core2wayEpistasis:
         fig.supylabel("Heritability of Model", fontsize=22, x=0.02, y=0.5)
+
+    print("Time taken to place super labels:", time.time() - start_time)
     
     # Tight layout with extra spacing
     plt.tight_layout(rect=[0.05, 0.05, 0.95, 0.95])
@@ -425,6 +443,7 @@ def main():
     plt.savefig(save_path, format='pdf', bbox_inches='tight')
     plt.close()
     print(f"Unified heatmap saved to {save_path}")
+    print("Time taken to save output:", time.time() - start_time)
 
 if __name__ == "__main__":
     main()
