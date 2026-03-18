@@ -314,11 +314,11 @@ def main():
                 if i == 0 and edm == '2': # if first column and the EDM = 2 (E) row
                     ax.set_ylabel("E", rotation=0, labelpad=20, fontsize=30)
                     ax.yaxis.set_label_position("left")
-                    ax.yaxis.set_label_coords(-0.2, 0.4)
+                    ax.yaxis.set_label_coords(-0.1, 0.4)
                 elif i == 0 and edm == '1': # if first column and the EDM = 1 (H) row    
                     ax.set_ylabel("H", rotation=0, labelpad=20, fontsize=30)
                     ax.yaxis.set_label_position("left")
-                    ax.yaxis.set_label_coords(-0.2, 0.4)
+                    ax.yaxis.set_label_coords(-0.1, 0.4)
 
     if is_core2wayEpistasis:
         # Set x-axis labels for Number of Training Instances
@@ -333,7 +333,7 @@ def main():
             # Place label centered below the corresponding column (under the last row for that column)
             mid_axs = axes[-1, i] if len(edm_values)*2 > 1 else axes[1, i]
             mid_axs.set_xlabel(str(h), fontsize=30)
-            mid_axs.xaxis.set_label_coords(0.5, -0.2)  # adjust vertical padding
+            mid_axs.xaxis.set_label_coords(0.5, -0.1)  # adjust vertical padding
 
     if is_core2wayEpistasis:
         # Set y-axis labels for Heritability of Model (once per heritability row)
