@@ -48,11 +48,11 @@ def collect_rankings(root_dir, include_subdirs=None):
                 print(f"[ERROR] Could not read {rankings_path}: {e}")
                 continue
 
-        if "a_1000/" in rankings_path:
+        if "a_1000/" in rankings_path or "1-feature_1000_" in rankings_path:
             df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 999
-        elif "a_10000/" in rankings_path:
+        elif "a_10000/" in rankings_path or "1-feature_10000_" in rankings_path:
             df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 9999
-        elif "a_100000/" in rankings_path:
+        elif "a_100000/" in rankings_path or "1-feature_100000_" in rankings_path:
             df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 99999
 
         all_dfs.append(df)
@@ -194,17 +194,26 @@ def main():
         "Simulated_Benchmark_Archive",
         "GAMETES_2.2_dev_peter_2wayEpiFeatures_Datasets_Loc_2_Qnt_2_Pop_100000"
     )
+    include_subdirs_largerfeature = ["a_1000", "a_10000", "a_100000"]
+
+    # now adding larger feature set (main effect) directory
+    largerfeature_mainEff_dir = os.path.join(
+        parent_dir,
+        "mainEff_largerfeatures_data"
+    )
 
     if ranking_type == "precise":
         combined_df = collect_rankings(root_dir, include_subdirs)
         if combined_df is None:
             return
         
-        # getting rankings from a_100, a_1000, a_10000, a_100000 (all subdirs of largerfeature_dir)
-        largerfeature_df = collect_rankings(largerfeature_dir)
+        # getting rankings from a_1000, a_10000, a_100000 (subdirs of largerfeature_dir)
+        largerfeature_df = collect_rankings(largerfeature_dir, include_subdirs_largerfeature)
+
+        largerfeature_mainEff_df = collect_rankings(largerfeature_mainEff_dir) # rankings for larger feature mainEff data
 
         # all rankings from all tested datasets with >= 100 features
-        final_combined_df = pd.concat([combined_df, largerfeature_df], ignore_index=True)
+        final_combined_df = pd.concat([combined_df, largerfeature_df, largerfeature_mainEff_df], ignore_index=True)
 
         # --- Save global concatenated rankings_list.csv ---
         global_rankings_path = os.path.join(parent_dir, 'global_rankings_list.csv')
@@ -221,11 +230,13 @@ def main():
         if combined_df is None:
             return
         
-        # getting rankings from a_100, a_1000, a_10000, a_100000 (all subdirs of largerfeature_dir)
-        largerfeature_df = collect_relative_order(largerfeature_dir)
+        # getting rankings from a_1000, a_10000, a_100000 (subdirs of largerfeature_dir)
+        largerfeature_df = collect_relative_order(largerfeature_dir, include_subdirs_largerfeature)
+
+        largerfeature_mainEff_df = collect_relative_order(largerfeature_mainEff_dir) # rankings for larger feature mainEff data
 
         # all rankings from all tested datasets with >= 100 features
-        final_combined_df = pd.concat([combined_df, largerfeature_df], ignore_index=True)
+        final_combined_df = pd.concat([combined_df, largerfeature_df, largerfeature_mainEff_df], ignore_index=True)
 
         # --- Save global concatenated rankings_list.csv ---
         global_rankings_path = os.path.join(parent_dir, 'global_rankings_list_relorder.csv')
