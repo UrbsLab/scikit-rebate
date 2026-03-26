@@ -162,8 +162,8 @@ def process_results_dir(results_dir, prefix=""):
 
     plt.figure(figsize=(12, 7))
     print(percentages_df_ordered)
-    heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, cbar_kws={'label': 'Power (Frequency of Success)'})
-    # heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, cbar=False) # if no color bar legend is desired
+    # heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, cbar_kws={'label': 'Power (Frequency of Success)'})
+    heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, cbar=False) # if no color bar legend is desired
     for i in range(percentages_df_ordered.shape[0] - 1):
         heatmap.axhline(i + 1, color='black', linewidth=1.5)
 
@@ -172,14 +172,14 @@ def process_results_dir(results_dir, prefix=""):
         spine.set_linewidth(1.5)
         spine.set_edgecolor("black")
 
-    cbar = heatmap.collections[0].colorbar
-    cbar.outline.set_linewidth(1.5)
-    cbar.outline.set_edgecolor("black")
-    # NEW: increasing font size for color bar label and tick values
-    # Increase label font size
-    cbar.set_label('Power (Frequency of Success)', fontsize=16)
-    # Increase tick label size
-    cbar.ax.tick_params(labelsize=14)
+    # cbar = heatmap.collections[0].colorbar
+    # cbar.outline.set_linewidth(1.5)
+    # cbar.outline.set_edgecolor("black")
+    # # NEW: increasing font size for color bar label and tick values
+    # # Increase label font size
+    # cbar.set_label('Power (Frequency of Success)', fontsize=16)
+    # # Increase tick label size
+    # cbar.ax.tick_params(labelsize=14)
 
     dataset_id = os.path.basename(os.path.dirname(results_dir))
     # heatmap.set_title(prefix + dataset_id, fontsize=16)
