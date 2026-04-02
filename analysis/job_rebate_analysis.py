@@ -20,9 +20,11 @@ def ensure_dir(directory):
         os.makedirs(directory, exist_ok=True)
 
 def process_and_save_results(file_path, fs, method_name):
-    df = pd.read_csv(file_path, sep='\t')
+    # df = pd.read_csv(file_path, sep='\t')
+    df = pd.read_csv(file_path)
     # features, labels = df.drop('Class', axis=1).values, df['Class'].values
-    X, y = df.drop('Class', axis=1).values, df['Class'].values
+    # X, y = df.drop('Class', axis=1).values, df['Class'].values
+    X, y = df.drop('y', axis=1).values, df['y'].values
     # X_train, _, y_train, _ = train_test_split(features, labels)
 
     # to keep track of runtime for large feature datasets
@@ -35,7 +37,8 @@ def process_and_save_results(file_path, fs, method_name):
     end_time = time.time()
 
     temp_list = []
-    for feature_name, feature_score in zip(df.drop('Class', axis=1).columns, fs.feature_importances_):
+    # for feature_name, feature_score in zip(df.drop('Class', axis=1).columns, fs.feature_importances_):
+    for feature_name, feature_score in zip(df.drop('y', axis=1).columns, fs.feature_importances_):
         temp_list.append([feature_name, feature_score])
     
     Results = pd.DataFrame(temp_list, columns=['Feature', 'Feature_Importance'])
