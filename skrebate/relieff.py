@@ -214,7 +214,7 @@ class ReliefF(BaseEstimator):
         #--------------------------------------------------------------------------------------------------------------------
 
         # Compute the distance array between all data points ----------------------------------------------------------------
-        # For downstream efficiency, separate features in dataset by type (i.e. categorical/continuous)
+        # For downstream efficiency, separate features in dataset by type (i.e. categorical/continuous); categorical = didx (discrete)
         diffs, cidx, didx = self._dtype_array()
         cdiffs = diffs[cidx]  # max/min continuous value difference for continuous features.
 
@@ -431,7 +431,7 @@ class ReliefF(BaseEstimator):
         """Distance array calculation for data with missing values"""
         cindices = []
         dindices = []
-        # Get Boolean mask locating missing values for continuous and categorical features separately. These correspond to xc and xd respectively.
+        # Get Boolean mask locating missing values for continuous and categorical (discrete) features separately. These correspond to xc and xd respectively.
         for i in range(self._datalen):
             cindices.append(np.where(np.isnan(xc[i]))[0])
             dindices.append(np.where(np.isnan(xd[i]))[0])
@@ -490,7 +490,7 @@ class ReliefF(BaseEstimator):
         """Distance array calculation for data with missing values"""
         cindices = []
         dindices = []
-        # Get Boolean mask locating missing values for continuous and categorical features separately. These correspond to xc and xd respectively.
+        # Get Boolean mask locating missing values for continuous and categorical (discrete) features separately. These correspond to xc and xd respectively.
         for i in range(self._datalen):
             cindices.append(np.where(np.isnan(xc[i]))[0])
             dindices.append(np.where(np.isnan(xd[i]))[0])
