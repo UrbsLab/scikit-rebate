@@ -19,7 +19,7 @@ These algorithms offer a computationally efficient way to perform feature select
 
 <!-- Certain algorithms require user specified run parameters (e.g. ReliefF requires the user to specify some 'k' number of nearest neighbors).  -->
 
-Certain algorithms have run parameters that the user can specify, or if not specified, default to preset values (e.g. ReliefF’s parameter for ‘k’ number of nearest neighbors)
+Certain algorithms have run parameters that the user can specify, or if not specified, default to preset values (e.g. ReliefF’s parameter for ‘k’ number of nearest neighbors).
 
 Relief algorithms are commonly applied to genetic analyses, where epistasis (i.e., feature interactions) is common. However, the algorithms implemented in this package can be applied to almost any supervised, structured data set and supports:
 
