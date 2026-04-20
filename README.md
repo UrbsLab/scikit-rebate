@@ -35,7 +35,7 @@ Relief-based algorithms are commonly applied to genetic analyses, where epistasi
 
 Built into this code is a strategy to 'automatically' detect these relevant characteristics from the loaded data.
 
-Of our two initial ReBATE software releases, this scikit-learn compatible version primarily focuses on ease of incorporation into a scikit learn analysis pipeline.
+Of our two initial ReBATE software releases, this scikit-learn compatible version primarily focuses on ease of incorporation into a scikit-learn analysis pipeline.
 This code is most appropriate for scikit-learn users, Windows operating system users, beginners, or those looking for the most recent ReBATE developments.
 
 An alternative 'stand-alone' version of [ReBATE](https://github.com/EpistasisLab/ReBATE) is also available that focuses on improving run-time with the use of Cython for optimization. This implementation also outputs feature names and associated feature scores as a text file by default.
