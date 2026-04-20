@@ -13,7 +13,7 @@ Package information: ![Python 2.7](https://img.shields.io/badge/python-2.7-blue.
 
 # scikit-rebate
 
-This package includes a scikit-learn-compatible Python implementation of ReBATE, a suite of [Relief-based feature selection algorithms](<https://en.wikipedia.org/wiki/Relief_(feature_selection)>) for Machine Learning. These Relief-Based algorithms (RBAs) are designed for feature weighting/selection as part of a machine learning pipeline (supervised learning). Presently this includes the following core RBAs: ReliefF, SURF, SURF\*, MultiSURF\*, MultiSURF, SWRF\*, SWRF, MultiSWRF\*, MultiSWRF, MultiSWRFDB\*, MultiSWRFDB, and μ-Relief. Additionally, an implementation of the iterative TuRF mechanism and VLSRelief is included. **It is still under active development** and we encourage you to check back on this repository regularly for updates.
+This package includes a scikit-learn-compatible Python implementation of ReBATE, a suite of [Relief-based feature selection algorithms](<https://en.wikipedia.org/wiki/Relief_(feature_selection)>) for Machine Learning. These Relief-based algorithms (RBAs) are designed for feature weighting/selection as part of a machine learning pipeline (supervised learning). Presently this includes the following core RBAs: ReliefF, SURF, SURF\*, MultiSURF\*, MultiSURF, SWRF\*, SWRF, MultiSWRF\*, MultiSWRF, MultiSWRFDB\*, MultiSWRFDB, and μ-Relief. Additionally, an implementation of the iterative TuRF mechanism and VLSRelief is included. **It is still under active development** and we encourage you to check back on this repository regularly for updates.
 
 These algorithms offer a computationally efficient way to perform feature selection that is sensitive to feature interactions as well as simple univariate associations, unlike most currently available filter-based feature selection methods. The main benefit of Relief algorithms is that they identify feature interactions without having to exhaustively check every pairwise interaction, thus taking significantly less time than exhaustive pairwise search.
 
@@ -123,7 +123,7 @@ fs.summary(feature_name=feature_name)
 
 ### Using as End-to-end Pipeline
 
-We have designed the Relief-based algorithms to be integrated directly into scikit-learn machine learning workflows. For example, the ReliefF algorithm can be used as a feature selection step in a scikit-learn pipeline as follows.
+We have designed the Relief-based algorithms to be integrated directly into scikit-learn machine learning workflows. For example, the ReliefF algorithm can be used as a feature selection step in a scikit-learn pipeline as follows:
 
 ```Python
 # Import necessary packages
