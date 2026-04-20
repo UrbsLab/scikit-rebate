@@ -12,30 +12,33 @@ Package information: ![Python 2.7](https://img.shields.io/badge/python-2.7-blue.
 [![PyPI version](https://badge.fury.io/py/skrebate.svg)](https://badge.fury.io/py/skrebate)
 
 # scikit-rebate
-This package includes a scikit-learn-compatible Python implementation of ReBATE, a suite of [Relief-based feature selection algorithms](https://en.wikipedia.org/wiki/Relief_(feature_selection)) for Machine Learning. These Relief-Based algorithms (RBAs) are designed for feature weighting/selection as part of a machine learning pipeline (supervised learning). Presently this includes the following core RBAs: ReliefF, SURF, SURF\*, MultiSURF\*, MultiSURF, SWRF\*, SWRF, MultiSWRF\*, MultiSWRF, MultiSWRFDB\*, MultiSWRFDB, and μ-Relief. Additionally, an implementation of the iterative TuRF mechanism and VLSRelief is included. **It is still under active development** and we encourage you to check back on this repository regularly for updates.
+
+This package includes a scikit-learn-compatible Python implementation of ReBATE, a suite of [Relief-based feature selection algorithms](<https://en.wikipedia.org/wiki/Relief_(feature_selection)>) for Machine Learning. These Relief-Based algorithms (RBAs) are designed for feature weighting/selection as part of a machine learning pipeline (supervised learning). Presently this includes the following core RBAs: ReliefF, SURF, SURF\*, MultiSURF\*, MultiSURF, SWRF\*, SWRF, MultiSWRF\*, MultiSWRF, MultiSWRFDB\*, MultiSWRFDB, and μ-Relief. Additionally, an implementation of the iterative TuRF mechanism and VLSRelief is included. **It is still under active development** and we encourage you to check back on this repository regularly for updates.
 
 These algorithms offer a computationally efficient way to perform feature selection that is sensitive to feature interactions as well as simple univariate associations, unlike most currently available filter-based feature selection methods. The main benefit of Relief algorithms is that they identify feature interactions without having to exhaustively check every pairwise interaction, thus taking significantly less time than exhaustive pairwise search.
 
-Certain algorithms require user specified run parameters (e.g. ReliefF requires the user to specify some 'k' number of nearest neighbors). 
+<!-- Certain algorithms require user specified run parameters (e.g. ReliefF requires the user to specify some 'k' number of nearest neighbors).  -->
 
-Relief algorithms are commonly applied to genetic analyses, where epistasis (i.e., feature interactions) is common. However, the algorithms implemented in this package can be applied to almost any supervised classification data set and supports:
+Certain algorithms have run parameters that the user can specify, or if not specified, default to preset values (e.g. ReliefF’s parameter for ‘k’ number of nearest neighbors)
 
-* Feature sets that are discrete/categorical, continuous-valued or a mix of both
+Relief algorithms are commonly applied to genetic analyses, where epistasis (i.e., feature interactions) is common. However, the algorithms implemented in this package can be applied to almost any supervised, structured data set and supports:
 
-* Data with missing values
+- Feature sets that are discrete/categorical, continuous-valued or a mix of both
 
-* Binary endpoints (i.e., classification)
+- Data with missing values
 
-* Multi-class endpoints (i.e., classification)
+- Binary endpoints (i.e., classification)
 
-* Continuous endpoints (i.e., regression)
+- Multi-class endpoints (i.e., classification)
 
-Built into this code, is a strategy to 'automatically' detect from the loaded data, these relevant characteristics.
+- Continuous endpoints (i.e., regression)
 
-Of our two initial ReBATE software releases, this scikit-learn compatible version primarily focuses on ease of incorporation into a scikit learn analysis pipeline. 
+Built into this code is a strategy to 'automatically' detect these relevant characteristics from the loaded data.
+
+Of our two initial ReBATE software releases, this scikit-learn compatible version primarily focuses on ease of incorporation into a scikit learn analysis pipeline.
 This code is most appropriate for scikit-learn users, Windows operating system users, beginners, or those looking for the most recent ReBATE developments.
 
-An alternative 'stand-alone' version of [ReBATE](https://github.com/EpistasisLab/ReBATE) is also available that focuses on improving run-time with the use of Cython for optimization. This implementation also outputs feature names and associated feature scores as a text file by default. 
+An alternative 'stand-alone' version of [ReBATE](https://github.com/EpistasisLab/ReBATE) is also available that focuses on improving run-time with the use of Cython for optimization. This implementation also outputs feature names and associated feature scores as a text file by default.
 
 ## License
 
@@ -47,11 +50,11 @@ Generally, we have licensed scikit-rebate to make it as widely usable as possibl
 
 scikit-rebate is built on top of the following existing Python packages:
 
-* NumPy
+- NumPy
 
-* SciPy
+- SciPy
 
-* scikit-learn
+- scikit-learn
 
 All of the necessary Python packages can be installed via the [Anaconda Python distribution](https://www.continuum.io/downloads), which we strongly recommend that you use. We also strongly recommend that you use Python 3 over Python 2 if you're given the choice.
 
@@ -72,7 +75,8 @@ Please [file a new issue](https://github.com/EpistasisLab/scikit-rebate/issues/n
 ## Usage
 
 ### Basic Usage
-To use rebate as a feature selection.
+
+To use an algorithm from ReBATE as a feature selection method:
 
 ```Python
 # Import necessary packages
@@ -94,32 +98,32 @@ fs.fit(features, labels)
 feature_name = genetic_data.drop('class', axis=1).columns
 fs.summary(feature_name=feature_name)
 
->>> Feature name   Feature importances    Feature rank   
->>> P2             0.12330000             1              
->>> P1             0.11892500             2              
->>> N0             -0.00018125            3              
->>> N10            -0.00075625            4              
->>> N13            -0.00320625            5              
->>> N14            -0.00402500            6              
->>> N4             -0.00582500            7              
->>> N1             -0.00595000            8              
->>> N8             -0.00653750            9              
->>> N12            -0.00696250            10              
->>> N16            -0.00705000            11              
->>> N17            -0.00740625            12              
->>> N5             -0.00788750            13              
->>> N11            -0.00822500            14              
->>> N9             -0.00826250            15              
->>> N2             -0.00871875            16              
->>> N3             -0.00872500            17              
->>> N7             -0.00991875            18              
->>> N6             -0.01038750            19              
->>> N15            -0.01044375            20          
+>>> Feature name   Feature importances    Feature rank
+>>> P2             0.12330000             1
+>>> P1             0.11892500             2
+>>> N0             -0.00018125            3
+>>> N10            -0.00075625            4
+>>> N13            -0.00320625            5
+>>> N14            -0.00402500            6
+>>> N4             -0.00582500            7
+>>> N1             -0.00595000            8
+>>> N8             -0.00653750            9
+>>> N12            -0.00696250            10
+>>> N16            -0.00705000            11
+>>> N17            -0.00740625            12
+>>> N5             -0.00788750            13
+>>> N11            -0.00822500            14
+>>> N9             -0.00826250            15
+>>> N2             -0.00871875            16
+>>> N3             -0.00872500            17
+>>> N7             -0.00991875            18
+>>> N6             -0.01038750            19
+>>> N15            -0.01044375            20
 ```
 
-
 ### Using as End-to-end Pipeline
-We have designed the Relief algorithms to be integrated directly into scikit-learn machine learning workflows. For example, the ReliefF algorithm can be used as a feature selection step in a scikit-learn pipeline as follows.
+
+We have designed the Relief-based algorithms to be integrated directly into scikit-learn machine learning workflows. For example, the ReliefF algorithm can be used as a feature selection step in a scikit-learn pipeline as follows.
 
 ```Python
 # Import necessary packages
@@ -155,9 +159,12 @@ accuracy = accuracy_score(y_test, y_pred)
 print(f"Accuracy: {accuracy:.3f}")
 >>> Accuracy: 0.781
 ```
-For more information on the Relief algorithms available in this package and how to use them, please refer to our [usage documentation](https://EpistasisLab.github.io/scikit-rebate/using/).
 
-For updated documentation in this forked repository, please refer to this [updated usage documentation](https://urbslab.github.io/scikit-rebate/using/)
+<!-- For more information on the Relief-based algorithms available in this package and how to use them, please refer to our [usage documentation](https://EpistasisLab.github.io/scikit-rebate/using/).
+
+For updated documentation in this forked repository, please refer to this [updated usage documentation](https://urbslab.github.io/scikit-rebate/using/) -->
+
+For more information on the Relief-based algorithms available in this package and how to use them, please refer to our [usage documentation](https://urbslab.github.io/scikit-rebate/using/).
 
 ## Contributing to scikit-rebate
 
@@ -165,12 +172,11 @@ We welcome you to [check the existing issues](https://github.com/EpistasisLab/sc
 
 Please refer to our [contribution guidelines](https://EpistasisLab.github.io/scikit-rebate/contributing/) prior to working on a new feature or bug fix.
 
-
 ## Citing scikit-rebate
 
 If you use scikit-rebate in a scientific publication, please consider citing the following paper:
 
-Ryan J. Urbanowicz, Randal S. Olson, Peter Schmitt, Melissa Meeker, Jason H. Moore (2018). Benchmarking Relief-Based Feature Selection Methods for Bioinformatics Data Mining. *Journal of Biomedical Informatics*, 85, 168-188. DOI: [10.1016/j.jbi.2018.07.015](https://doi.org/10.1016/j.jbi.2018.07.015)
+Ryan J. Urbanowicz, Randal S. Olson, Peter Schmitt, Melissa Meeker, Jason H. Moore (2018). Benchmarking Relief-Based Feature Selection Methods for Bioinformatics Data Mining. _Journal of Biomedical Informatics_, 85, 168-188. DOI: [10.1016/j.jbi.2018.07.015](https://doi.org/10.1016/j.jbi.2018.07.015)
 
 ### BibTeX entry:
 
@@ -185,3 +191,4 @@ Ryan J. Urbanowicz, Randal S. Olson, Peter Schmitt, Melissa Meeker, Jason H. Moo
   doi       = {10.1016/j.jbi.2018.07.015},
   url       = {https://doi.org/10.1016/j.jbi.2018.07.015}
 }
+```
