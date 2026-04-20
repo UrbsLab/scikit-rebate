@@ -91,7 +91,7 @@ genetic_data = pd.read_csv(
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
 # Apply the ReliefF algorithm for feature selection
-fs = ReliefF(discrete_threshold=10)
+fs = ReliefF()
 fs.fit(features, labels)
 
 # Print out the results
@@ -146,7 +146,7 @@ X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=
 
 # Make pipeline
 clf = make_pipeline(
-    ReliefF(n_features_to_select=2, discrete_threshold=10),
+    ReliefF(n_features_to_select=2),
     RandomForestClassifier(n_estimators=100)
 )
 

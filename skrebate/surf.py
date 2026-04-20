@@ -38,7 +38,7 @@ class SURF(ReliefF):
     """
 
     def __init__(self, n_features_to_select=10, categorical_features=None, 
-                 discrete_threshold=10, multiclass_threshold=10, verbose=False, n_jobs=1, weight_final_scores=False,
+                 categorical_threshold=10, multiclass_threshold=10, verbose=False, n_jobs=1, weight_final_scores=False,
                  rank_absolute=False, label_type=None):
         """Sets up ReliefF to perform feature selection.
         Parameters
@@ -49,11 +49,11 @@ class SURF(ReliefF):
         categorical_features: list (default: None)
             list of index columns indicating features to be treated as categorical.
             Any features not explicitly listed will be treated as quantitative by default.
-        discrete_threshold: int (default: 10)
+        categorical_threshold: int (default: 10)
             # TODO: delete this part since we are not using threshold anymore
-            Value used to determine if a feature is discrete or continuous.
-            If the number of unique levels in a feature is > discrete_threshold, then it is
-            considered continuous, or discrete otherwise.
+            Value used to determine if a feature is categorical or continuous.
+            If the number of unique values in a feature is > categorical_threshold, then it is
+            considered continuous, or categorical otherwise.
         verbose: bool (default: False)
             If True, output timing of distance array and scoring
         n_jobs: int (default: 1)
@@ -68,7 +68,7 @@ class SURF(ReliefF):
         self.n_features_to_select = n_features_to_select
         self.categorical_features = categorical_features
         # TODO: delete this
-        self.discrete_threshold = discrete_threshold
+        self.categorical_threshold = categorical_threshold
         self.multiclass_threshold = multiclass_threshold
         self.verbose = verbose
         self.n_jobs = n_jobs

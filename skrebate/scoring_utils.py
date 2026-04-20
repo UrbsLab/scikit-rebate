@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import numpy as np
 
 
-# (Subset of continuous-valued feature data, Subset of discrete-valued feature data, max/min difference, instance index, boolean mask for continuous, boolean mask for discrete)
+# (Subset of continuous-valued feature data, Subset of discrete-valued (categorical) feature data, max/min difference, instance index, boolean mask for continuous, boolean mask for discrete)
 def get_row_missing(xc, xd, cdiffs, index, cindices, dindices):
     """ Calculate distance between index instance and all other instances. """
     # row = np.empty(0, dtype=np.double)  # initialize empty row

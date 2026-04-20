@@ -50,11 +50,11 @@ def ramp_function(data_type, attr, fname, xinstfeature, xNNifeature):
 
 class SWRFstar(ReliefF):
     def __init__(self, n_features_to_select=10, categorical_features=None,
-                 discrete_threshold=10, multiclass_threshold=10, verbose=False, n_jobs=1,
+                 categorical_threshold=10, multiclass_threshold=10, verbose=False, n_jobs=1,
                  weight_final_scores=False, rank_absolute=False, label_type=None):
         self.n_features_to_select = n_features_to_select
         self.categorical_features = categorical_features
-        self.discrete_threshold = discrete_threshold
+        self.categorical_threshold = categorical_threshold
         self.multiclass_threshold = multiclass_threshold
         self.verbose = verbose
         self.n_jobs = n_jobs
