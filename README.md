@@ -21,7 +21,7 @@ These algorithms offer a computationally efficient way to perform feature select
 
 Certain algorithms have run parameters that the user can specify, or if not specified, default to preset values (e.g. ReliefF’s parameter for ‘k’ number of nearest neighbors).
 
-Relief-based algorithms are commonly applied to genetic analyses, where epistasis (i.e., feature interactions) is common. However, the algorithms implemented in this package can be applied to almost any supervised, structured data set and supports:
+Relief-based algorithms are commonly applied to genetic analyses, where epistasis (i.e., feature interactions) is common. However, the algorithms implemented in this package can be applied to almost any supervised, structured data set and support:
 
 - Feature sets that are discrete/categorical, continuous-valued or a mix of both
 
