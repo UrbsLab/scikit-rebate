@@ -27,7 +27,7 @@ To cite the **original MultiSURF\*** paper:
 
 *Granizo-Mackenzie, Delaney, and Jason H. Moore. "Multiple threshold spatially uniform relieff for the genetic analysis of complex human diseases." In European Conference on Evolutionary Computation, Machine Learning and Data Mining in Bioinformatics, pp. 1-10. Springer, Berlin, Heidelberg, 2013.*
 
-<!-- Add citations for SWRF* and Mu-Relief below -->
+<!-- Add citations for SWRF* and μ-Relief below -->
 
 To cite the **original TuRF** paper: 
 
