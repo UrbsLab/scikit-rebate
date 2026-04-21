@@ -33,8 +33,7 @@ from .multisurfstar import MultiSURFstar
 from .turf import TURF
 from .vls import VLS
 from .iter import Iter
-from .swrfstar import SWRFstar
-from .baseswrf import SWRFstar2
+from .baseswrf import SWRFstar
 from .baseswrf import SWRF
 from .baseswrf import MultiSWRFstar
 from .baseswrf import MultiSWRF

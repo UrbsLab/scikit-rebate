@@ -1,3 +1,4 @@
+<!-- when new paper is published, add that paper and say "if you use SWRF, MultiSWRF/MultiSWRF*, or MultiSWRFDB/MultiSWRFDB*, cite the following paper" -->
 If you use **scikit-rebate** or the **MultiSURF** algorithm in a scientific publication, please consider citing the following paper (currently available as a pre-print in arXiv):
 
 *Urbanowicz, Ryan J., Randal S. Olson, Peter Schmitt, Melissa Meeker, and Jason H. Moore. "Benchmarking relief-based feature selection methods." arXiv preprint arXiv:1711.08477 (2017).*
@@ -25,6 +26,8 @@ To cite the **original SURF\*** paper:
 To cite the **original MultiSURF\*** paper:
 
 *Granizo-Mackenzie, Delaney, and Jason H. Moore. "Multiple threshold spatially uniform relieff for the genetic analysis of complex human diseases." In European Conference on Evolutionary Computation, Machine Learning and Data Mining in Bioinformatics, pp. 1-10. Springer, Berlin, Heidelberg, 2013.*
+
+<!-- Add citations for SWRF* and Mu-Relief below -->
 
 To cite the **original TuRF** paper: 
 

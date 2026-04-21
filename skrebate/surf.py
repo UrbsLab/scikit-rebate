@@ -40,22 +40,26 @@ class SURF(ReliefF):
     def __init__(self, n_features_to_select=10, categorical_features=None, 
                  categorical_threshold=10, multiclass_threshold=10, verbose=False, n_jobs=1, weight_final_scores=False,
                  rank_absolute=False, label_type=None):
-        """Sets up ReliefF to perform feature selection.
+        """Sets up SURF to perform feature selection.
         Parameters
         ----------
         n_features_to_select: int (default: 10)
-            the number of top features (according to the relieff score) to
+            the number of top features (according to the feature importance score) to
             retain after feature selection is applied.
         categorical_features: list (default: None)
             list of index columns indicating features to be treated as categorical.
             Any features not explicitly listed will be treated as quantitative by default.
         categorical_threshold: int (default: 10)
             # TODO: delete this part since we are not using threshold anymore
-            Value used to determine if a feature is categorical or continuous.
+            Value used to determine if a feature is categorical/discrete or continuous.
             If the number of unique values in a feature is > categorical_threshold, then it is
             considered continuous, or categorical otherwise.
+        multiclass_threshold: int (default: 10)
+            Value used to determine if a target is multiclass or continuous.
+            If the number of unique values in the target variable is > multiclass_threshold, then it is
+            considered continuous. If it is <= multiclass_threshold and > 2, it is considered multiclass.
         verbose: bool (default: False)
-            If True, output timing of distance array and scoring
+            If True, output the time taken for the distance array computation and scoring.
         n_jobs: int (default: 1)
             The number of cores to dedicate to computing the scores with joblib.
             Assigning this parameter to -1 will dedicate as many cores as are available on your system.
@@ -63,7 +67,11 @@ class SURF(ReliefF):
         weight_final_scores: bool (default: False)
             Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given.
         rank_absolute: bool (default: False)
-            Whether to give top features as by ranking features by absolute value.
+            Whether to rank features according to the absolute value of their feature importance score.
+        label_type: str (default: None)
+            The default value is None, in which case the function automatically infers the label type
+            based on the number of unique labels: 2 for 'binary', 3-10 for 'multiclass', and >10 for 'continuous'.
+            Alternatively, you can specify one of the following strings: 'binary', 'multiclass', or 'continuous'.
         """
         self.n_features_to_select = n_features_to_select
         self.categorical_features = categorical_features

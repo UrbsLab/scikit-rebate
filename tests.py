@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import pytest
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF, SWRFstar, SWRFstar2, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, TURF, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -28,7 +28,6 @@ selectors = [
     # (TURF, {'relief_object': ReliefF(n_features_to_select=5, n_neighbors=10), 'pct': 0.5, 'num_scores_to_return': 5}),
     # New algorithms
     (SWRFstar, {'n_features_to_select': 5}),
-    (SWRFstar2, {'n_features_to_select': 5}),
     (SWRF, {'n_features_to_select': 5}),
     (MultiSWRFstar, {'n_features_to_select': 5}),
     (MultiSWRF, {'n_features_to_select': 5}),

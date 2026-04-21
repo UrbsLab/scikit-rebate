@@ -1799,7 +1799,7 @@ class BaseSWRF(ReliefF):
 
 
 
-class SWRFstar2(BaseSWRF):
+class SWRFstar(BaseSWRF):
     def __init__(self, **kwargs):
         super().__init__('SWRF*', swrf_weight, ignore_far=False, **kwargs)
 

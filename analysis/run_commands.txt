@@ -4,7 +4,7 @@ python run_process_heatmap.py --basedir ./core2wayEpistasis/ --prefix=core2wayEp
 zip -r core2wayEpistasis.zip core2wayEpistasis/ -i "*.pdf"
 
 # Complete Analysis with all datasets and algorithms
-python run_rebate_analysis.py --datadir=BenchmarkData4/ --algorithms multiswrf multiswrfstar multiswrfdb multiswrfdbstar swrf swrfstar2
+python run_rebate_analysis.py --datadir=BenchmarkData4/ --algorithms multiswrf multiswrfstar multiswrfdb multiswrfdbstar swrf swrfstar
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_XOR --prefix=XOR_00_
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_phil_XOR_01 --prefix=XOR_01_
 python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_phil_XOR_02 --prefix=XOR_02_
@@ -27,4 +27,4 @@ python run_process_heatmap.py --basedir=BenchmarkData3/GAMETES_2.2_dev_peter_2wa
 
 # Scrathpad
 python run_rebate_analysis.py --datadir=BasicXOR3
-python run_rebate_analysis.py --datadir=BasicXOR2_2/ --algorithms multiswrf multiswrfstar multiswrfdb multiswrfdbstar swrf swrfstar2
+python run_rebate_analysis.py --datadir=BasicXOR2_2/ --algorithms multiswrf multiswrfstar multiswrfdb multiswrfdbstar swrf swrfstar

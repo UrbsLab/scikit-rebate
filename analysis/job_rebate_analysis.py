@@ -12,7 +12,7 @@ from functools import partial
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRFstar2, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MultiSWRFDBlinearstar, MultiSWRFDBlinear, MultiSWRFDBexponentialstar, MultiSWRFDBexponential, MultiSWRFDBlinear3SDstar, MultiSWRFDBlinear3SD, MultiSWRFDBexponential3SDstar, MultiSWRFDBexponential3SD, MuRelief
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MultiSWRFDBlinearstar, MultiSWRFDBlinear, MultiSWRFDBexponentialstar, MultiSWRFDBexponential, MultiSWRFDBlinear3SDstar, MultiSWRFDBlinear3SD, MultiSWRFDBexponential3SDstar, MultiSWRFDBexponential3SD, MuRelief
 
 # NEW: added exist_ok=True
 def ensure_dir(directory):
@@ -65,7 +65,7 @@ def process_and_save_results(file_path, fs, method_name):
     runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime_postnanhandling.csv"), index=False)
 
     # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
-    # if method_name in ["SWRFstar2", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
+    # if method_name in ["SWRFstar", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
     #     fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
     #     # fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), save_file=os.path.join(method_dir, f"{base_name}_stdweightlog.txt"), show_expected=True)
 
@@ -174,10 +174,6 @@ def process_swrfstar(file_path):
     fs = SWRFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRFstar")
 
-def process_swrfstar2(file_path):
-    fs = SWRFstar2(n_jobs=16)
-    process_and_save_results(file_path, fs, "SWRFstar2")
-
 def process_swrf(file_path):
     fs = SWRF(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRF")
@@ -256,7 +252,6 @@ def main():
         'multisurf': process_multisurf,
         'multisurfstar': process_multisurfstar,
         'swrfstar': process_swrfstar,
-        'swrfstar2': process_swrfstar2,
         'swrf': process_swrf,
         'multiswrfstar': process_multiswrfstar,
         'multiswrf': process_multiswrf,

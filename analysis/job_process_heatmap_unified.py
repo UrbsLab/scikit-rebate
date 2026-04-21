@@ -73,13 +73,13 @@ def main():
 
     # rba_order = [
     #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',
-    #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar2','MultiSWRF','MultiSWRFstar','MultiSWRFDB','MultiSWRFDBstar',
+    #     'MultiSURF','MultiSURFstar','SWRF','SWRFstar','MultiSWRF','MultiSWRFstar','MultiSWRFDB','MultiSWRFDBstar',
     #     'MuRelief10','MuRelief100'
     # ]
     # MAIN:
     rba_order = [
         'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
-        'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar2','MultiSWRFstar','MultiSWRFDBstar'
+        'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar','MultiSWRFstar','MultiSWRFDBstar'
     ]
     # rba_order = [
     #     'RandomShuffle', 'MutualInfo', 'MultiSWRFDB', 'MultiSWRFDBstar', 'MultiSWRFDBlinear', 'MultiSWRFDBlinear3SD', 'MultiSWRFDBlinearstar', 'MultiSWRFDBlinear3SDstar', 'MultiSWRFDBexponential', 'MultiSWRFDBexponential3SD', 'MultiSWRFDBexponentialstar', 'MultiSWRFDBexponential3SDstar'

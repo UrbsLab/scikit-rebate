@@ -1,23 +1,27 @@
 # Using skrebate
-We have designed the Relief algorithms to be integrated directly into scikit-learn machine learning workflows. Below, we provide code samples showing how the various Relief algorithms can be used as feature selection methods in scikit-learn pipelines.
+We have designed the Relief-based algorithms to be integrated directly into scikit-learn machine learning workflows. Below, we provide code samples showing how the various Relief-based algorithms can be used as feature selection methods in scikit-learn pipelines.
 
-For details on the algorithmic differences between the various Relief algorithms, please refer to [this research paper](https://arxiv.org/abs/1711.08477).
+For details on the algorithmic differences between the various Relief-based algorithms, please refer to [this research paper](https://arxiv.org/abs/1711.08477).
 
 
 ## Using the Core Algorithms
 
 ### ReliefF
 
-ReliefF is the most basic of the Relief-based feature selection algorithms, and it requires you to specify the number of nearest neighbors to consider in the scoring algorithm. The parameters for the ReliefF algorithm are as follows:
+ReliefF is the most basic of the Relief-based feature selection algorithms, and the implementation allows you to specify the number of nearest neighbors to consider in the scoring algorithm. The parameters for the ReliefF algorithm are as follows:
 
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
-| `n_neighbors`         | Any positive integer               | 100     | The number of neighbors to consider when assigning feature importance scores. If a float number is provided, that percentage of training samples is used as the number of neighbors. More neighbors result in more accurate scores, but takes longer. |
-| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
-| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_neighbors`         | Any positive integer               | 100     | The number of neighbors to consider when assigning feature importance scores. If a float number is provided, that percentage of training samples is used as the number of neighbors. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
 | `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
-| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
 
 Basic usage:
 ```Python
@@ -33,7 +37,7 @@ genetic_data = pd.read_csv(
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
 # Apply the ReliefF algorithm for feature selection
-fs = ReliefF(discrete_threshold=10)
+fs = ReliefF()
 fs.fit(features, labels)
 
 # Print out the results
@@ -64,17 +68,21 @@ fs.summary(feature_name=feature_name)
 ```
 ---
 
-SURF, SURF\*, MultiSURF, and MultiSURF\* are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features.
+SURF, SURF\*, MultiSURF, MultiSURF\*, SWRF, SWRF\*, MultiSWRF, MultiSWRF\*, MultiSWRFDB, and MultiSWRFDB\* are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features. Note that all of these algorithms utilize the same group of hyperparameters, which are the same hyperparameters as ReliefF excluding `n_neighbors`.
 
 ### SURF
 
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
-| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
-| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
-| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SURF scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
 | `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
-| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
 
 
 ```python
@@ -90,7 +98,7 @@ genetic_data = pd.read_csv(
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
 # Apply the algorithm for feature selection
-fs = SURF(discrete_threshold=10)
+fs = SURF()
 fs.fit(features, labels)
 
 # Print out the results
@@ -124,11 +132,15 @@ fs.summary(feature_name=feature_name)
 
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
-| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
-| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
-| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SURF\* scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
 | `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
-| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
 
 
 ```python
@@ -144,7 +156,7 @@ genetic_data = pd.read_csv(
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
 # Apply the algorithm for feature selection
-fs = SURFstar(discrete_threshold=10)
+fs = SURFstar()
 fs.fit(features, labels)
 
 # Print out the results
@@ -177,11 +189,15 @@ fs.summary(feature_name=feature_name)
 ### MultiSURF
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
-| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
-| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
-| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSURF scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
 | `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
-| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
 
 ```python
 # Import necessary packages
@@ -196,7 +212,7 @@ genetic_data = pd.read_csv(
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
 # Apply the algorithm for feature selection
-fs = MultiSURF(discrete_threshold=10)
+fs = MultiSURF()
 fs.fit(features, labels)
 
 # Print out the results
@@ -229,11 +245,15 @@ fs.summary(feature_name=feature_name)
 ### MultiSURF*
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
-| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the ReliefF scoring process. |
-| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `discrete_threshold` below. |
-| `discrete_threshold`  | Any positive integer               | 2       | Value used to determine if a feature is discrete or continuous. If the number of unique levels in a feature is > `discrete_threshold`, then it is considered continuous; otherwise, it is discrete. |
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSURF\* scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
 | `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
-| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
 
 ```python
 # Import necessary packages
@@ -248,7 +268,349 @@ genetic_data = pd.read_csv(
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
 # Apply the algorithm for feature selection
-fs = MultiSURFstar(discrete_threshold=10)
+fs = MultiSURFstar()
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.17498272             1              
+>>> P1             0.17344628             2              
+>>> N10            -0.00179863            3              
+>>> N0             -0.00181761            4              
+>>> N13            -0.00553229            5              
+>>> N14            -0.01039264            6              
+>>> N8             -0.01294620            7              
+>>> N12            -0.01297249            8              
+>>> N5             -0.01327019            9              
+>>> N1             -0.01362589            10             
+>>> N16            -0.01397024            11             
+>>> N9             -0.01406904            12             
+>>> N11            -0.01442700            13             
+>>> N7             -0.01500246            14             
+>>> N4             -0.01541660            15             
+>>> N15            -0.01603204            16             
+>>> N2             -0.01606567            17             
+>>> N3             -0.01765580            18             
+>>> N17            -0.01826211            19             
+>>> N6             -0.01848672            20             
+```
+
+### SWRF
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SWRF scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import SWRF
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the algorithm for feature selection
+fs = SWRF()
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.17498272             1              
+>>> P1             0.17344628             2              
+>>> N10            -0.00179863            3              
+>>> N0             -0.00181761            4              
+>>> N13            -0.00553229            5              
+>>> N14            -0.01039264            6              
+>>> N8             -0.01294620            7              
+>>> N12            -0.01297249            8              
+>>> N5             -0.01327019            9              
+>>> N1             -0.01362589            10             
+>>> N16            -0.01397024            11             
+>>> N9             -0.01406904            12             
+>>> N11            -0.01442700            13             
+>>> N7             -0.01500246            14             
+>>> N4             -0.01541660            15             
+>>> N15            -0.01603204            16             
+>>> N2             -0.01606567            17             
+>>> N3             -0.01765580            18             
+>>> N17            -0.01826211            19             
+>>> N6             -0.01848672            20             
+```
+
+### SWRF*
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SWRF\* scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import SWRFstar
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the algorithm for feature selection
+fs = SWRFstar()
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.17498272             1              
+>>> P1             0.17344628             2              
+>>> N10            -0.00179863            3              
+>>> N0             -0.00181761            4              
+>>> N13            -0.00553229            5              
+>>> N14            -0.01039264            6              
+>>> N8             -0.01294620            7              
+>>> N12            -0.01297249            8              
+>>> N5             -0.01327019            9              
+>>> N1             -0.01362589            10             
+>>> N16            -0.01397024            11             
+>>> N9             -0.01406904            12             
+>>> N11            -0.01442700            13             
+>>> N7             -0.01500246            14             
+>>> N4             -0.01541660            15             
+>>> N15            -0.01603204            16             
+>>> N2             -0.01606567            17             
+>>> N3             -0.01765580            18             
+>>> N17            -0.01826211            19             
+>>> N6             -0.01848672            20             
+```
+
+### MultiSWRF
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSWRF scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import MultiSWRF
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the algorithm for feature selection
+fs = MultiSWRF()
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.17498272             1              
+>>> P1             0.17344628             2              
+>>> N10            -0.00179863            3              
+>>> N0             -0.00181761            4              
+>>> N13            -0.00553229            5              
+>>> N14            -0.01039264            6              
+>>> N8             -0.01294620            7              
+>>> N12            -0.01297249            8              
+>>> N5             -0.01327019            9              
+>>> N1             -0.01362589            10             
+>>> N16            -0.01397024            11             
+>>> N9             -0.01406904            12             
+>>> N11            -0.01442700            13             
+>>> N7             -0.01500246            14             
+>>> N4             -0.01541660            15             
+>>> N15            -0.01603204            16             
+>>> N2             -0.01606567            17             
+>>> N3             -0.01765580            18             
+>>> N17            -0.01826211            19             
+>>> N6             -0.01848672            20             
+```
+
+### MultiSWRF*
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSWRF\* scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import MultiSWRFstar
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the algorithm for feature selection
+fs = MultiSWRFstar()
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.17498272             1              
+>>> P1             0.17344628             2              
+>>> N10            -0.00179863            3              
+>>> N0             -0.00181761            4              
+>>> N13            -0.00553229            5              
+>>> N14            -0.01039264            6              
+>>> N8             -0.01294620            7              
+>>> N12            -0.01297249            8              
+>>> N5             -0.01327019            9              
+>>> N1             -0.01362589            10             
+>>> N16            -0.01397024            11             
+>>> N9             -0.01406904            12             
+>>> N11            -0.01442700            13             
+>>> N7             -0.01500246            14             
+>>> N4             -0.01541660            15             
+>>> N15            -0.01603204            16             
+>>> N2             -0.01606567            17             
+>>> N3             -0.01765580            18             
+>>> N17            -0.01826211            19             
+>>> N6             -0.01848672            20             
+```
+
+### MultiSWRFDB
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSWRFDB scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import MultiSWRFDB
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the algorithm for feature selection
+fs = MultiSWRFDB()
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.17498272             1              
+>>> P1             0.17344628             2              
+>>> N10            -0.00179863            3              
+>>> N0             -0.00181761            4              
+>>> N13            -0.00553229            5              
+>>> N14            -0.01039264            6              
+>>> N8             -0.01294620            7              
+>>> N12            -0.01297249            8              
+>>> N5             -0.01327019            9              
+>>> N1             -0.01362589            10             
+>>> N16            -0.01397024            11             
+>>> N9             -0.01406904            12             
+>>> N11            -0.01442700            13             
+>>> N7             -0.01500246            14             
+>>> N4             -0.01541660            15             
+>>> N15            -0.01603204            16             
+>>> N2             -0.01606567            17             
+>>> N3             -0.01765580            18             
+>>> N17            -0.01826211            19             
+>>> N6             -0.01848672            20             
+```
+
+### MultiSWRFDB*
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSWRFDB\* scoring process. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+```python
+# Import necessary packages
+import pandas as pd
+from skrebate import MultiSWRFDBstar
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the algorithm for feature selection
+fs = MultiSWRFDBstar()
 fs.fit(features, labels)
 
 # Print out the results
@@ -278,8 +640,70 @@ fs.summary(feature_name=feature_name)
 >>> N6             -0.01848672            20             
 ```
 ---
+
+μ-Relief, like ReliefF, utilizes the `n_neighbors` hyperparameter. It shares the same hyperparameter group as ReliefF.
+
+### μ-Relief
+
+| Parameter | Valid values | Default value | Effect |
+|-----------|--------------|---------------|--------|
+| `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the μ-Relief scoring process. |
+| `n_neighbors`         | Any positive integer               | 100     | The number of neighbors to consider when assigning feature importance scores. If a float number is provided, that percentage of training samples is used as the number of neighbors. |
+| `categorical_features`| A list of integers                 | `None`    | List of index columns indicating features to be treated as categorical. If set to None, the features will be automatically classified based on the `categorical_threshold` below. |
+| `categorical_threshold`  | Any positive integer               | 10       | Value used to determine if a feature is categorical/discrete or continuous. If the number of unique values in a feature is > `categorical_threshold`, then it is considered continuous; otherwise, it is categorical. |
+| `multiclass_threshold`  | Any positive integer               | 10       | Value used to determine if a target is multiclass or continuous. If the number of unique values in the target variable is > `multiclass_threshold`, then it is considered continuous. If it is <= `multiclass_threshold` and > 2, it is considered multiclass. |
+| `verbose`              | True or False         | False       | If True, output the time taken for the distance array computation and scoring.                                      |
+| `n_jobs`              | Any positive integer or -1         | 1       | The number cores to dedicate to running the algorithm in parallel with joblib. Set to -1 to use all available cores.                                      |
+| `weight_final_scores` | True or False         | False       | Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given. |
+| `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
+| `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
+
+Basic usage:
+```Python
+# Import necessary packages
+import pandas as pd
+from skrebate import MuRelief
+
+# Load the example dataset
+genetic_data = pd.read_csv(
+    './data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv')
+
+# Separate the features and labels from the dataset
+features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+
+# Apply the ReliefF algorithm for feature selection
+fs = MuRelief()
+fs.fit(features, labels)
+
+# Print out the results
+feature_name = genetic_data.drop('class', axis=1).columns
+fs.summary(feature_name=feature_name)
+
+>>> Feature name   Feature importances    Feature rank   
+>>> P2             0.12330000             1              
+>>> P1             0.11892500             2              
+>>> N0             -0.00018125            3              
+>>> N10            -0.00075625            4              
+>>> N13            -0.00320625            5              
+>>> N14            -0.00402500            6              
+>>> N4             -0.00582500            7              
+>>> N1             -0.00595000            8              
+>>> N8             -0.00653750            9              
+>>> N12            -0.00696250            10              
+>>> N16            -0.00705000            11              
+>>> N17            -0.00740625            12              
+>>> N5             -0.00788750            13              
+>>> N11            -0.00822500            14              
+>>> N9             -0.00826250            15              
+>>> N2             -0.00871875            16              
+>>> N3             -0.00872500            17              
+>>> N7             -0.00991875            18              
+>>> N6             -0.01038750            19              
+>>> N15            -0.01044375            20          
+```
+---
 ## Using as End-to-end Pipeline
-The Relief algorithms can be seamlessly integrated into scikit-learn workflows as part of the feature selection process. This allows you to streamline the feature filtering step and combine it effortlessly with other machine learning models for end-to-end training and evaluation. Below, we provide examples demonstrating how to use Relief algorithms to construct scikit-learn pipelines, perform single train/test splits, and implement cross-validation.
+The Relief-based algorithms can be seamlessly integrated into scikit-learn workflows as part of the feature selection process. This allows you to streamline the feature filtering step and combine it effortlessly with other machine learning models for end-to-end training and evaluation. Below, we provide examples demonstrating how to use Relief-based algorithms to construct scikit-learn pipelines, perform single train/test splits, and implement cross-validation.
 
 ### Example of a single train/test split
 ```Python
@@ -303,7 +727,7 @@ X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=
 
 # Make pipeline
 clf = make_pipeline(
-    ReliefF(n_features_to_select=2, discrete_threshold=10),
+    ReliefF(n_features_to_select=2),
     RandomForestClassifier(n_estimators=100)
 )
 
@@ -337,7 +761,7 @@ features, labels = genetic_data.drop('class', axis=1).values, genetic_data['clas
 
 # Make pipeline
 clf = make_pipeline(
-    ReliefF(n_features_to_select=2, discrete_threshold=10),
+    ReliefF(n_features_to_select=2),
     RandomForestClassifier(n_estimators=100)
 )
 
@@ -347,11 +771,12 @@ print(f"Mean accuracy: {np.mean(cross_val_score(clf, features, labels)):.3f}")
 ```
 
 ## Specifying Feature Type
-The algorithms in scikit-rebate allow you to specify how features are treated as **categorical** or **continuous** during the feature selection process. This can be done either automatically by setting a `discrete_threshold` or manually by specifying a list of categorical feature indices using `categorical_features`. Below are two examples demonstrating these methods. 
+The algorithms in scikit-rebate allow you to specify how features are treated (either as **categorical** or **continuous**) during the feature selection process. This can either be done automatically by setting a `categorical_threshold` or manually by specifying a list of categorical feature indices using `categorical_features`. Below are two examples demonstrating these methods. 
 
 **Automatic threshold configuration** 
 
-By setting the `discrete_threshold` parameter, features are automatically classified as discrete or continuous based on the number of unique values in each features. If the number of unique levels in a feature is greater than the threshold, it is treated as continuous; otherwise, it is considered discrete. The default setting is using the automatic configuration with `discrete_threshold=2`. That is, only treated the binary features as discrete otherwise continuous.
+By setting the `categorical_threshold` parameter, features are automatically classified as categorical or continuous based on the number of unique values in the feature. If the number of unique values in a feature is greater than the threshold, it is treated as continuous; otherwise, it is considered categorical. The default setting is `categorical_threshold=10`. 
+<!-- That is, only treat the binary features as categorical and treat all other features as continuous. -->
 
 Example: 
 ```Python
@@ -367,7 +792,7 @@ genetic_data = pd.read_csv(
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
 
 # Apply the ReliefF algorithm for feature selection
-fs = ReliefF(discrete_threshold=10)
+fs = ReliefF(categorical_threshold=10)
 fs.fit(features, labels)
 
 # Print out the results
@@ -399,11 +824,11 @@ fs.summary(sort=False, feature_name=feature_name, show_feature_type=True)
 
 In this example:
 
-- `discrete_threshold=10` means features with more than 10 unique levels are considered continuous.
+- `categorical_threshold=10` means features with more than 10 unique values are considered continuous.
 
 **Manual feature type selection**
 
-Alternatively, you can manually specify which features should be treated as categorical by providing their column indices using the `categorical_features` parameter. Note that if the `categorical_features` is provided, the `discrete_threshold` parameter would be ignored.
+Alternatively, you can manually specify which features should be treated as categorical by providing their column indices using the `categorical_features` hyperparameter. Note that if `categorical_features` is provided, the `categorical_threshold` hyperparameter is ignored.
 
 Example:
 ```Python
@@ -451,16 +876,16 @@ fs.summary(sort=False, feature_name=feature_name, show_feature_type=True)
 
 In this example:
 
-- The `categorical_features` parameter specifies that features at indices `[0, 1, 2, 3, 7, 8, 9, 11, 13, 14, 16, 17]` are treated as categorical.
+- The `categorical_features` hyperparameter specifies that features at indices `[0, 1, 2, 3, 7, 8, 9, 11, 13, 14, 16, 17]` are treated as categorical.
 - Other features will be treated as continuous.
 
 
 ## TuRF Wrapper for Larger Feature Set
-TURF advances the feature selection process from a single round to a multi-round process, and can be used in conjunction with any of the Relief-based algorithms. TURF begins with all of the features in the first round, scores them using one of the Relief-based algorithms, then eliminates a portion of them that have the worst scores. With this reduced feature set, TURF again scores the remaining features and eliminates a portion of the worst-scoring features. This process is repeated until a predefined number of features remain or some maximum number of iterations have completed. Presently, there are two ways to run the 'TuRF' iterative feature selection wrapper around any of the given core Relief-based algorithm in scikit-rebate. First, there is a custom TuRF implementation, hard coded into scikit-rebate designed to operate in the same way as specified in the original TuRF paper.  The second, uses the [Recursive Feature Elimination](http://scikit-learn.org/stable/modules/feature_selection.html#recursive-feature-elimination), as [implemented](http://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html) in scikit-learn. These approaches are similar but not equivalent. We recommend using built in scikit-rebate TuRF. Examples for running TuRF using either approach are given below.
+TURF advances the feature selection process from a single round to a multi-round process, and can be used in conjunction with any of the Relief-based algorithms. TURF begins with all of the features in the first round, scores them using one of the Relief-based algorithms, then eliminates a portion of them that have the worst scores. With this reduced feature set, TURF again scores the remaining features and eliminates a portion of the worst-scoring features. This process is repeated until a predefined number of features remain or some maximum number of iterations have completed. Presently, there are two ways to run the 'TuRF' iterative feature selection wrapper around any of the given core Relief-based algorithms in scikit-rebate. First, there is a custom TuRF implementation, hard coded into scikit-rebate designed to operate in the same way as specified in the original TuRF paper.  The second, uses the [Recursive Feature Elimination](http://scikit-learn.org/stable/modules/feature_selection.html#recursive-feature-elimination), as [implemented](http://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html) in scikit-learn. These approaches are similar but not equivalent. We recommend using built-in scikit-rebate TuRF. Examples for running TuRF using either approach are given below.
 
 
 ### TuRF implemented in scikit-rebate
-With this TuRF implementation, the (pct) parameter inversely determines the number of TuRF scoring iterations (i.e 1/pct), and pct also determines the percent of features eliminated from scoring each iteration. The n\_features\_to\_select parameter simply determines the number of top scoring features to pass onto the pipeline. This TuRF approach should be used to most closely follow the original TuRF description, as well as to be able to obtain individual feature scores following the completion of TuRF. This method also keeps information about when features were dropped from consideration during progressive TuRF iterations. It does this by assigning 'removed' features a token score that simply indicates which iteration the feature was removed from scoring. All features removed from scoring during TuRF will be assigned a score lower than the lowest feature score in the final feature set.  All features removed at the same time are assigned the same discounted token feature score. This is particularly important when accessing the feature scores as described later. For an example of how to use scikit-rebate TuRF in a scikit learn pipeline see below.
+With this TuRF implementation, the (pct) parameter inversely determines the number of TuRF scoring iterations (i.e. 1/pct), and pct also determines the percent of features eliminated from scoring each iteration. The n\_features\_to\_select parameter simply determines the number of top scoring features to pass onto the pipeline. This TuRF approach should be used to most closely follow the original TuRF description, as well as to be able to obtain individual feature scores following the completion of TuRF. This method also keeps information about when features were dropped from consideration during progressive TuRF iterations. It does this by assigning 'removed' features a token score that simply indicates which iteration the feature was removed from scoring. All features removed from scoring during TuRF will be assigned a score lower than the lowest feature score in the final feature set.  All features removed at the same time are assigned the same discounted token feature score. This is particularly important when accessing the feature scores as described later. For an example of how to use scikit-rebate TuRF in a scikit-learn pipeline, see below.
 ```python
 import pandas as pd
 import numpy as np
@@ -484,7 +909,7 @@ print(np.mean(cross_val_score(clf, features, labels, fit_params={'turf__headers'
 ```
 
 ### TuRF via RFE
-With this strategy for running TuRF the main difference is that the number of TuRF iterations is not controlled by the pct parameter, rather, iterations run until the specified number of n\_features\_to\_select have been reached. Each iteration, the 'step' parameter controls the number of features removed, either as a percent between 0 and 1 or an integer count of features to remove each iteration. One critical shortcoming of this approach is that there is no way to obtain the individual feature scores when using RFE to do 'TuRF' scoring. See [Recursive Feature Elimination](http://scikit-learn.org/stable/modules/feature_selection.html#recursive-feature-elimination), for more details.
+With this strategy for running TuRF, the main difference is that the number of TuRF iterations is not controlled by the pct parameter. Rather, iterations run until the specified number of n\_features\_to\_select have been reached. Each iteration, the 'step' parameter controls the number of features removed, either as a percent between 0 and 1 or an integer count of features to remove each iteration. One critical shortcoming of this approach is that there is no way to obtain the individual feature scores when using RFE to do 'TuRF' scoring. See [Recursive Feature Elimination](http://scikit-learn.org/stable/modules/feature_selection.html#recursive-feature-elimination), for more details.
 
 ```python
 import pandas as pd
@@ -510,7 +935,8 @@ print(np.mean(cross_val_score(clf, features, labels)))
 
 ## Acquiring Feature Importance Scores
 
-In many cases, it may be useful to compute feature importance scores without actually performing feature selection. We have made it possible to access all Relief-based algorithm's scores via the `feature_importances_` attribute. Below are code examples showing how to access the scores from the any core Relief-based algorithm as well as from TuRF in combination with a Relief-based algorithm. The first example illustrates how scores may be obtained from ReliefF, adding a split of the loaded data into training and testing since we are not running ReliefF as part of a scikit pipeline like above.  
+In many cases, it may be useful to compute feature importance scores without actually performing feature selection. We have made it possible to access all Relief-based algorithms' scores via the `feature_importances_` attribute. Below are code examples showing how to access the scores from any core Relief-based algorithm as well as from TuRF in combination with a Relief-based algorithm. The first example illustrates how scores may be obtained from ReliefF.
+<!-- , adding a split of the loaded data into training and testing since we are not running ReliefF as part of a scikit pipeline like above.   -->
 
 ```python
 import pandas as pd
@@ -599,7 +1025,7 @@ for feature_name, feature_score in zip(genetic_data.drop('class', axis=1).column
 >>>P2 	 0.17374375
 ```
 
-To retrieve an np.array of feature importance scores in the original dataset ordering then add the following... (this also works with any core algorithm)
+To retrieve an np.array of feature importance scores in the original order of features in the dataset, add the following... (this also works with any core algorithm)
 ```
 print(fs.feature\_importances\_)
 >>>[-0.00103125 -0.01075156 -0.01289062 -0.01289062 -0.01289062 -0.01289062
@@ -608,14 +1034,14 @@ print(fs.feature\_importances\_)
   0.20529375  0.17374375]
 ```
 
-To retrieve a list of indices for the top scoring features ranked by increasing score, then add the following... (this also works with any core algorithm)
+To retrieve a list of indices for the top scoring features (ranked in descending order), add the following... (this also works with any core algorithm)
 
 ```
 print(fs.top\_features_)
 >>>[13, 0, 10, 19, 18]
 ```
 
-To sort features by decreasing score along with their names, and simultaneously indicate which features have been assigned a token TuRF feature score (since they were removed from consideration at some point) then add the following...
+To sort features by feature importance score (descending order), list their names, and simultaneously indicate which features have been assigned a token TuRF feature score (since they were removed from consideration during some iteration), add the following...
 
 ```
 scored\_features = len(fs.top\_features_)
@@ -678,9 +1104,9 @@ This ordered list and text output can be achieved similarly for any core Relief-
 
 ## General Usage Guidelines
 
-1.) When performing feature selection, there is no universally best way to determine where to draw the cuttoff for including features. When using original Relief or ReliefF it has been suggested that features yielding a negative value score, can be confidently filtered out. This guideline is believed to be extendable to SURF, SURF\*, MultiSURF\*, and MultiSURF, however please note that features with a negative score are not necessarily irrelevant, and those with a positive score are not necessarily relevant. Instead, scores are most effectively interpreted as the relative evidence that a given feature is predictive of outcome. Thus, while it may be reasonable to only filter out features with a negative score, in practice it may be more useful to select some 'top' number of features to pass onto modeling. 
+1.) When performing feature selection, there is no universally best way to determine where to draw the cutoff for including features. When using original Relief or ReliefF it has been suggested that features yielding a negative value score, can be confidently filtered out. This guideline is believed to be extendable to SURF, SURF\*, MultiSURF\*, MultiSURF, and the other core Relief-based algorithms; however please note that features with a negative score are not necessarily irrelevant, and those with a positive score are not necessarily relevant. Instead, scores are most effectively interpreted as the relative evidence that a given feature is predictive of outcome. Thus, while it may be reasonable to only filter out features with a negative score, in practice it may be more useful to select some 'top' number of features to pass onto modeling. 
 
-2.) In very large feature spaces users can expect core Relief-based algorithm scores to become less reliable when run on their own. This is because as the feature space becomes very large, the determination of nearest neighbors becomes more random.  As a result, in very large feature spaces (e.g. > 10,000 features), users should consider combining a core Relief-based algorithm with an iterative approach such as TuRF (implemented here) or VLSRelieF, or Iterative Relief. 
+2.) In very large feature spaces users can expect core Relief-based algorithm scores to become less reliable when run on their own. This is because as the feature space becomes very large, the determination of nearest neighbors becomes more random.  As a result, in very large feature spaces (e.g. > 10,000 features), users should consider combining a core Relief-based algorithm with an iterative approach such as TuRF (implemented here), VLSRelieF, or Iterative Relief. 
 
-3.) When scaling up to big data problems, keep in mind that the data aspect that slows down ReBATE methods the most is the number of training instances, since Relief algorithms scale linearly with the number of features, but quadratically with the number of training instances. This is is the result of Relief-based methods needing to calculate a distance array (i.e. all pairwise distances between instances in the training dataset).  If you have a very large number of training instances available, consider utilizing a class balanced random sampling of that dataset when running any ReBATE methods to save on memory and computational time. 
+3.) When scaling up to big data problems, keep in mind that the data aspect that slows down ReBATE methods the most is the number of training instances, since Relief-based algorithms scale linearly with the number of features, but quadratically with the number of training instances. This is the result of Relief-based methods needing to calculate a distance array (i.e. all pairwise distances between instances in the training dataset). If you have a very large number of training instances available, consider utilizing a class balanced random sampling of that dataset when running any ReBATE method to save on memory and computation time.
 

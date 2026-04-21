@@ -74,8 +74,7 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFDB',
         'SURFstar',
         'MultiSURFstar',
-        # 'SWRFstar',
-        'SWRFstar2',
+        'SWRFstar',
         'MultiSWRFstar',
         'MultiSWRFDBstar',
     ]
@@ -121,8 +120,7 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFDB': 'MultiSWRFDB',
         'SURFstar': 'SURF*',
         'MultiSURFstar': 'MultiSURF*',
-        # 'SWRFstar': 'SWRF*',
-        'SWRFstar2': 'SWRF*',
+        'SWRFstar': 'SWRF*',
         'MultiSWRFstar': 'MultiSWRF*',
         'MultiSWRFDBstar': 'MultiSWRFDB*',
     }

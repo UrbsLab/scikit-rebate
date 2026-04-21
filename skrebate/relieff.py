@@ -57,26 +57,25 @@ class ReliefF(BaseEstimator):
         Parameters
         ----------
         n_features_to_select: int (default: 10)
-            The number of top features (according to the relieff score) to
+            The number of top features (according to the feature importance score) to
             retain after feature selection is applied.
         n_neighbors: int or float (default: 100)
             The number of neighbors to consider when assigning feature
             importance scores. If a float number is provided, that percentage of
             training samples is used as the number of neighbors.
-            More neighbors results in more accurate scores, but takes longer.
         categorical_features: list (default: None)
             List of index columns indicating features to be treated as categorical.
             If set to None, the features will be automatically classified based on the categorical_threshold below.
         categorical_threshold: int (default: 10)
-            Value used to determine if a feature is categorical or continuous.
+            Value used to determine if a feature is categorical/discrete or continuous.
             If the number of unique values in a feature is > categorical_threshold, then it is
             considered continuous, or categorical otherwise.
         multiclass_threshold: int (default: 10)
             Value used to determine if a target is multiclass or continuous.
-            If the number of unique targets in a feature is > multiclass_threshold, then it is
-            considered continuous, or multiclass otherwise.
+            If the number of unique values in the target variable is > multiclass_threshold, then it is
+            considered continuous. If it is <= multiclass_threshold and > 2, it is considered multiclass.
         verbose: bool (default: False)
-            If True, output timing of distance array and scoring
+            If True, output the time taken for the distance array computation and scoring.
         n_jobs: int (default: 1)
             The number of cores to dedicate to computing the scores with joblib.
             Assigning this parameter to -1 will dedicate as many cores as are available on your system.
@@ -84,8 +83,8 @@ class ReliefF(BaseEstimator):
         weight_final_scores: bool (default: False)
             Whether to multiply given weights (in fit) to final scores. Only applicable if weights are given.
         rank_absolute: bool (default: False)
-            Whether to give top features as by ranking features by absolute value.
-        lable_type: str (default: None)
+            Whether to rank features according to the absolute value of their feature importance score.
+        label_type: str (default: None)
             The default value is None, in which case the function automatically infers the label type
             based on the number of unique labels: 2 for 'binary', 3-10 for 'multiclass', and >10 for 'continuous'.
             Alternatively, you can specify one of the following strings: 'binary', 'multiclass', or 'continuous'.

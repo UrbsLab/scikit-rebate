@@ -1,3 +1,19 @@
+# scikit-rebate 0.7
+
+* Added new core Relief-based algorithms to scikit-rebate: SWRF, SWRF\*, MultiSWRF, MultiSWRF\*, MultiSWRFDB, MultiSWRFDB\*, and μ-Relief
+
+* Refactored code to speed up runtime by 10-35x, improving the efficiency of the feature scoring process
+
+* Added the 'categorical_features' hyperparameter, which allows users to manually specify which features should be treated as categorical
+
+* Added the 'label_type' hyperparameter, which allows users to manually specify whether the target variable (label) is binary, multiclass, or continuous
+
+* Added the 'multiclass_threshold' hyperparameter, which allows users to specify the maximum number of unique values a target variable can have before it is considered continuous (e.g. multiclass_threshold=10 means a target variable with > 10 unique values is considered continuous)
+
+* Changed the name of the 'discrete_threshold' hyperparameter to 'categorical_threshold'
+
+* Now utilize np.nanmean instead of np.mean when the amount of missing data is substantial enough to derail computation
+
 # scikit-rebate 0.6
 
 * Fixed internal TuRF implementation so that it outputs scores for all features. Those that make it to the last iteration get true core algorithm scoring, while those that were removed along the way are assigned token scores (lower than the lowest true scoring feature) that indicate when the respective feature(s) were removed. This also alows for greater flexibility in the user specifying the number for features to return. 
