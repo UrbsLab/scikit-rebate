@@ -641,7 +641,7 @@ fs.summary(feature_name=feature_name)
 ```
 ---
 
-μ-Relief, like ReliefF, utilizes the `n_neighbors` hyperparameter. It shares the same hyperparameter group as ReliefF.
+μ-Relief, like ReliefF, utilizes the `n_neighbors` hyperparameter. It has the same hyperparameters as ReliefF.
 
 ### μ-Relief
 
@@ -658,7 +658,6 @@ fs.summary(feature_name=feature_name)
 | `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
 | `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
 
-Basic usage:
 ```Python
 # Import necessary packages
 import pandas as pd
