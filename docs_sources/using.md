@@ -6,9 +6,19 @@ For details on the algorithmic differences between the various Relief-based algo
 
 ## Using the Core Algorithms
 
+Core Relief-based algorithms are Relief-based algorithms designed to be run for a single iteration (single round) on the training data. 
+
+ReliefF was the original, most widely-known core Relief-based algorithm and it allows you to specify the number of nearest neighbors to consider during feature scoring.
+
+SURF, SURF\*, MultiSURF, MultiSURF\*, SWRF, SWRF\*, MultiSWRF, MultiSWRF\*, MultiSWRFDB, and MultiSWRFDB\* are all extensions to the ReliefF algorithm that automatically determine the number of neighbors to consider when scoring the features. μ-Relief is an extension that, like ReliefF, requires a preset number of neighbors, but determines neighborhood membership differently than ReliefF.
+
+The hyperparameter settings and usage examples for each of these algorithms are provided below. 
+
 ### ReliefF
 
-ReliefF is the most basic of the Relief-based feature selection algorithms, and the implementation allows you to specify the number of nearest neighbors to consider in the scoring algorithm. The parameters for the ReliefF algorithm are as follows:
+<!-- ReliefF is the most basic of the Relief-based feature selection algorithms, and the implementation allows you to specify the number of nearest neighbors to consider in the scoring algorithm. The parameters for the ReliefF algorithm are as follows: -->
+Determines neighborhood membership based on k-nearest neighbors (`n_neighbors`).
+<!-- Includes k nearest instances as neighbors (`n_neighbors`). -->
 
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
@@ -23,7 +33,7 @@ ReliefF is the most basic of the Relief-based feature selection algorithms, and 
 | `rank_absolute` | True or False         | False       | Whether to rank features according to the absolute value of their feature importance score. |
 | `label_type`          | Choose from `None`, `'binary'`, `'multiclass'`, `'continuous'` | `None` | With default value as `None`, the function automatically infers the label (target) type based on the number of unique labels: 2 for `'binary'`, 3-10 for `'multiclass'`, and >10 for `'continuous'`.
 
-Basic usage:
+<!-- Basic usage: -->
 ```Python
 # Import necessary packages
 import pandas as pd
@@ -35,9 +45,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the ReliefF algorithm for feature selection
-fs = ReliefF()
+fs = ReliefF(n_neighbors=100, categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -66,11 +77,15 @@ fs.summary(feature_name=feature_name)
 >>> N6             -0.01038750            19              
 >>> N15            -0.01044375            20          
 ```
----
+<!-- ---
 
-SURF, SURF\*, MultiSURF, MultiSURF\*, SWRF, SWRF\*, MultiSWRF, MultiSWRF\*, MultiSWRFDB, and MultiSWRFDB\* are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features. Note that all of these algorithms utilize the same group of hyperparameters, which are the same hyperparameters as ReliefF excluding `n_neighbors`.
+SURF, SURF\*, MultiSURF, MultiSURF\*, SWRF, SWRF\*, MultiSWRF, MultiSWRF\*, MultiSWRFDB, and MultiSWRFDB\* are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features. Note that all of these algorithms utilize the same group of hyperparameters, which are the same hyperparameters as ReliefF excluding `n_neighbors`. -->
 
 ### SURF
+
+Includes instances closer than the global mean distance as near neighbors.
+
+The global mean distance is the mean of all pairwise distances in the dataset.
 
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
@@ -96,9 +111,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = SURF()
+fs = SURF(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -130,6 +146,10 @@ fs.summary(feature_name=feature_name)
 
 ### SURF*
 
+Includes instances closer than the global mean distance as near neighbors and instances farther than the global mean distance as far neighbors.
+
+The global mean distance is the mean of all pairwise distances in the dataset.
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SURF\* scoring process. |
@@ -154,9 +174,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = SURFstar()
+fs = SURFstar(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -187,6 +208,11 @@ fs.summary(feature_name=feature_name)
 ```
 
 ### MultiSURF
+
+Includes instances closer than `μ-σ/2` as near neighbors.
+
+Recomputes the mean distance and standard deviation per target instance (i.e. mean distance to the target instance and standard deviation of these distances).
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSURF scoring process. |
@@ -210,9 +236,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = MultiSURF()
+fs = MultiSURF(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -243,6 +270,11 @@ fs.summary(feature_name=feature_name)
 ```
 
 ### MultiSURF*
+
+Includes instances closer than `μ-σ/2` as near neighbors and instances farther than `μ+σ/2` as far neighbors. Instances within half a standard deviation of the mean distance are excluded from the neighborhood (are in the "deadband zone").
+
+Recomputes the mean distance and standard deviation per target instance (i.e. mean distance to the target instance and standard deviation of these distances).
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSURF\* scoring process. |
@@ -266,9 +298,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = MultiSURFstar()
+fs = MultiSURFstar(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -300,6 +333,10 @@ fs.summary(feature_name=feature_name)
 
 ### SWRF
 
+Adjusts weights given to neighbors through a sigmoidal gradient function. Weights decrease as distance to the target instance increases, and all instances farther than the global mean distance are excluded from the neighborhood.
+
+The global mean distance is the mean of all pairwise distances in the dataset and the global standard deviation, used in the gradient function, is the standard deviation of these distances.
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SWRF scoring process. |
@@ -323,9 +360,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = SWRF()
+fs = SWRF(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -357,6 +395,10 @@ fs.summary(feature_name=feature_name)
 
 ### SWRF*
 
+Adjusts weights given to neighbors through a sigmoidal gradient function. Weights decrease as distance to the target instance increases, and all instances are included in the neighborhood (instances farther than the global mean distance are added as far neighbors).
+
+The global mean distance is the mean of all pairwise distances in the dataset and the global standard deviation, used in the gradient function, is the standard deviation of these distances.
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the SWRF\* scoring process. |
@@ -380,9 +422,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = SWRFstar()
+fs = SWRFstar(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -414,6 +457,10 @@ fs.summary(feature_name=feature_name)
 
 ### MultiSWRF
 
+Adjusts weights given to neighbors through a sigmoidal gradient function. Weights decrease as distance to the target instance increases, and all instances farther than the mean distance are excluded from the neighborhood.
+
+Recomputes the mean distance and standard deviation, used in the gradient function, per target instance (i.e. mean distance to the target instance and standard deviation of these distances).
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSWRF scoring process. |
@@ -437,9 +484,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = MultiSWRF()
+fs = MultiSWRF(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -471,6 +519,10 @@ fs.summary(feature_name=feature_name)
 
 ### MultiSWRF*
 
+Adjusts weights given to neighbors through a sigmoidal gradient function. Weights decrease as distance to the target instance increases, and all instances are included in the neighborhood (instances farther than the mean distance are added as far neighbors).
+
+Recomputes the mean distance and standard deviation, used in the gradient function, per target instance (i.e. mean distance to the target instance and standard deviation of these distances).
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSWRF\* scoring process. |
@@ -494,9 +546,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = MultiSWRFstar()
+fs = MultiSWRFstar(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -528,6 +581,10 @@ fs.summary(feature_name=feature_name)
 
 ### MultiSWRFDB
 
+Adjusts weights given to neighbors through a sigmoidal gradient function. Weights decrease as distance to the target instance increases, and all instances farther than `μ-σ/2` are excluded from the neighborhood.
+
+Recomputes the mean distance and standard deviation, used in the gradient function, per target instance (i.e. mean distance to the target instance and standard deviation of these distances).
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSWRFDB scoring process. |
@@ -551,9 +608,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = MultiSWRFDB()
+fs = MultiSWRFDB(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -585,6 +643,10 @@ fs.summary(feature_name=feature_name)
 
 ### MultiSWRFDB*
 
+Adjusts weights given to neighbors through a sigmoidal gradient function. Weights decrease as distance to the target instance increases; instances closer than `μ-σ/2` are added as near neighbors, instances farther than `μ+σ/2` are added as far neighbors, and instances within half a standard deviation of the mean distance are excluded from the neighborhood (are in the "deadband zone").
+
+Recomputes the mean distance and standard deviation, used in the gradient function, per target instance (i.e. mean distance to the target instance and standard deviation of these distances).
+
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
 | `n_features_to_select`| Any positive integer or float       | 10      | The number of best features to retain after the feature selection process. The "best" features are the highest-scored features according to the MultiSWRFDB\* scoring process. |
@@ -608,9 +670,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the algorithm for feature selection
-fs = MultiSWRFDBstar()
+fs = MultiSWRFDBstar(categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -639,11 +702,13 @@ fs.summary(feature_name=feature_name)
 >>> N17            -0.01826211            19             
 >>> N6             -0.01848672            20             
 ```
----
+<!-- ---
 
-μ-Relief, like ReliefF, utilizes the `n_neighbors` hyperparameter. It has the same hyperparameters as ReliefF.
+μ-Relief, like ReliefF, utilizes the `n_neighbors` hyperparameter. It has the same hyperparameters as ReliefF. -->
 
 ### μ-Relief
+
+Includes as neighbors: the k (`n_neighbors`) instances whose absolute difference between 1) their distance from the target instance and 2) the mean distance among their class from the target instance is the greatest. 
 
 | Parameter | Valid values | Default value | Effect |
 |-----------|--------------|---------------|--------|
@@ -669,9 +734,10 @@ genetic_data = pd.read_csv(
 
 # Separate the features and labels from the dataset
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
+cat_feat_indexes = list(range(features.shape[1])) # all features are categorical
 
 # Apply the ReliefF algorithm for feature selection
-fs = MuRelief()
+fs = MuRelief(n_neighbors=100, categorical_features=cat_feat_indexes)
 fs.fit(features, labels)
 
 # Print out the results
@@ -884,7 +950,7 @@ TURF advances the feature selection process from a single round to a multi-round
 
 
 ### TuRF implemented in scikit-rebate
-With this TuRF implementation, the (pct) parameter inversely determines the number of TuRF scoring iterations (i.e. 1/pct), and pct also determines the percent of features eliminated from scoring each iteration. The n\_features\_to\_select parameter simply determines the number of top scoring features to pass onto the pipeline. This TuRF approach should be used to most closely follow the original TuRF description, as well as to be able to obtain individual feature scores following the completion of TuRF. This method also keeps information about when features were dropped from consideration during progressive TuRF iterations. It does this by assigning 'removed' features a token score that simply indicates which iteration the feature was removed from scoring. All features removed from scoring during TuRF will be assigned a score lower than the lowest feature score in the final feature set.  All features removed at the same time are assigned the same discounted token feature score. This is particularly important when accessing the feature scores as described later. For an example of how to use scikit-rebate TuRF in a scikit-learn pipeline, see below.
+With this TuRF implementation, the (pct) parameter inversely determines the number of TuRF scoring iterations (i.e. 1/pct), and pct also determines the percent of features eliminated from scoring each iteration. The n\_features\_to\_select parameter within the core Relief-based algorithm object simply determines the number of top scoring features to pass onto the next step of the pipeline. This TuRF approach should be used to most closely follow the original TuRF description, as well as to be able to obtain individual feature scores following the completion of TuRF. This method also keeps information about when features were dropped from consideration during progressive TuRF iterations. It does this by assigning 'removed' features a token score that simply indicates which iteration the feature was removed from scoring. All features removed from scoring during TuRF will be assigned a score lower than the lowest feature score in the final feature set.  All features removed at the same time are assigned the same discounted token feature score. This is particularly important when accessing the feature scores as described later. For an example of how to use scikit-rebate TuRF in a scikit-learn pipeline, see below.
 ```python
 import pandas as pd
 import numpy as np
@@ -898,12 +964,11 @@ genetic_data = pd.read_csv('https://github.com/EpistasisLab/scikit-rebate/raw/ma
                            sep='\t', compression='gzip')
 
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
-headers = list(genetic_data.drop("class", axis=1))
 
-clf = make_pipeline(TuRF(core_algorithm="ReliefF", n_features_to_select=2, pct=0.5),
+clf = make_pipeline(TuRF(relief_object=ReliefF(n_features_to_select=2), pct=0.5),
                     RandomForestClassifier(n_estimators=100))
 
-print(np.mean(cross_val_score(clf, features, labels, fit_params={'turf__headers': headers})))
+print(np.mean(cross_val_score(clf, features, labels)))
 >>> 0.795
 ```
 
@@ -982,7 +1047,8 @@ for feature_name, feature_score in zip(genetic_data.drop('class', axis=1).column
 >>>P2 	 0.111
 ```
 
-In this second example we show how to obtain scores when using ReliefF in combination with TuRF (some slight differences). In this example we differently assume that the loaded dataset is the training dataset and we do not need to split the data into training and testing prior to running ReliefF. The main difference here is that when using TuRF, fs.fit also requires 'headers' as an argument.  
+In this second example we show how to obtain scores when using ReliefF in combination with TuRF (some slight differences). In this example we assume that the loaded dataset is the training dataset and we do not need to split the data into training and testing prior to running ReliefF. 
+<!-- The main difference here is that when using TuRF, fs.fit also requires 'headers' as an argument.   -->
 ```
 import pandas as pd
 import numpy as np
@@ -996,9 +1062,10 @@ genetic_data = pd.read_csv('https://github.com/EpistasisLab/scikit-rebate/raw/ma
                            sep='\t', compression='gzip')
 
 features, labels = genetic_data.drop('class', axis=1).values, genetic_data['class'].values
-headers = list(genetic_data.drop("class", axis=1))
-fs = TuRF(core_algorithm="ReliefF", n_features_to_select=2, pct=0.5,verbose=True)
-fs.fit(features, labels, headers)
+
+fs = TuRF(relief_object=ReliefF(n_features_to_select=2), pct=0.5)
+fs.fit(features, labels)
+
 for feature_name, feature_score in zip(genetic_data.drop('class', axis=1).columns, fs.feature_importances_):
     print(feature_name, '\t', feature_score)
     
@@ -1075,7 +1142,7 @@ for k in sorted\_names:
 >>>N6 	 -0.012890625 	 *
 ```
 
-Lastly, to output these scores to a text file in a format similar to how it is done in our alternative implementation of stand alone [ReBATE](https://github.com/EpistasisLab/ReBATE), add something like the following...
+Lastly, to output these scores to a text file in a format similar to how it is done in our alternative implementation of standalone [ReBATE](https://github.com/EpistasisLab/ReBATE), add something like the following...
 
 ```
 algorithm = 'TuRF_ReliefF'
@@ -1105,7 +1172,7 @@ This ordered list and text output can be achieved similarly for any core Relief-
 
 1.) When performing feature selection, there is no universally best way to determine where to draw the cutoff for including features. When using original Relief or ReliefF it has been suggested that features yielding a negative value score, can be confidently filtered out. This guideline is believed to be extendable to SURF, SURF\*, MultiSURF\*, MultiSURF, and the other core Relief-based algorithms; however please note that features with a negative score are not necessarily irrelevant, and those with a positive score are not necessarily relevant. Instead, scores are most effectively interpreted as the relative evidence that a given feature is predictive of outcome. Thus, while it may be reasonable to only filter out features with a negative score, in practice it may be more useful to select some 'top' number of features to pass onto modeling. 
 
-2.) In very large feature spaces users can expect core Relief-based algorithm scores to become less reliable when run on their own. This is because as the feature space becomes very large, the determination of nearest neighbors becomes more random.  As a result, in very large feature spaces (e.g. > 10,000 features), users should consider combining a core Relief-based algorithm with an iterative approach such as TuRF (implemented here), VLSRelieF, or Iterative Relief. 
+2.) In very large feature spaces users can expect core Relief-based algorithm scores to become less reliable when run on their own. This is because as the feature space becomes very large, the determination of nearest neighbors becomes more random.  As a result, in very large feature spaces (e.g. > 10,000 features), users should consider combining a core Relief-based algorithm with an iterative approach such as TuRF (implemented here), VLSRelief, or Iterative Relief. 
 
 3.) When scaling up to big data problems, keep in mind that the data aspect that slows down ReBATE methods the most is the number of training instances, since Relief-based algorithms scale linearly with the number of features, but quadratically with the number of training instances. This is the result of Relief-based methods needing to calculate a distance array (i.e. all pairwise distances between instances in the training dataset). If you have a very large number of training instances available, consider utilizing a class balanced random sampling of that dataset when running any ReBATE method to save on memory and computation time.
 
