@@ -1,7 +1,8 @@
 <!-- when new paper is published, add that paper and say "if you use SWRF, MultiSWRF/MultiSWRF*, or MultiSWRFDB/MultiSWRFDB*, cite the following paper" -->
 If you use **scikit-rebate** or the **MultiSURF** algorithm in a scientific publication, please consider citing the following paper (currently available as a pre-print in arXiv):
 
-*Urbanowicz, Ryan J., Randal S. Olson, Peter Schmitt, Melissa Meeker, and Jason H. Moore. "Benchmarking relief-based feature selection methods." arXiv preprint arXiv:1711.08477 (2017).*
+<!-- *Urbanowicz, Ryan J., Randal S. Olson, Peter Schmitt, Melissa Meeker, and Jason H. Moore. "Benchmarking relief-based feature selection methods." arXiv preprint arXiv:1711.08477 (2017).* -->
+*Urbanowicz, Ryan J., Randal S. Olson, Peter Schmitt, Melissa Meeker, and Jason H. Moore. "Benchmarking relief-based feature selection methods for bioinformatics data mining." Journal of Biomedical Informatics, 85:168–188, 2018.*
 
 Alternatively a complete **review of Relief-based algorithms** is available at:
 

@@ -6,7 +6,7 @@ For details on the algorithmic differences between the various Relief-based algo
 
 ## Using the Core Algorithms
 
-Core Relief-based algorithms are Relief-based algorithms designed to be run for a single iteration (single round) on the training data. 
+Core Relief-based algorithms are Relief-based algorithms that perform a single pass over the training data (i.e. each target instance is used one time). 
 
 ReliefF was the original, most widely-known core Relief-based algorithm and it allows you to specify the number of nearest neighbors to consider during feature scoring.
 
@@ -14,7 +14,7 @@ SURF, SURF\*, MultiSURF, MultiSURF\*, SWRF, SWRF\*, MultiSWRF, MultiSWRF\*, Mult
 
 The hyperparameter settings and usage examples for each of these algorithms are provided below. 
 
-### ReliefF
+### ReliefF[^1]
 
 <!-- ReliefF is the most basic of the Relief-based feature selection algorithms, and the implementation allows you to specify the number of nearest neighbors to consider in the scoring algorithm. The parameters for the ReliefF algorithm are as follows: -->
 Determines neighborhood membership based on k-nearest neighbors (`n_neighbors`).
@@ -81,7 +81,7 @@ fs.summary(feature_name=feature_name)
 
 SURF, SURF\*, MultiSURF, MultiSURF\*, SWRF, SWRF\*, MultiSWRF, MultiSWRF\*, MultiSWRFDB, and MultiSWRFDB\* are all extensions to the ReliefF algorithm that automatically determine the ideal number of neighbors to consider when scoring the features. Note that all of these algorithms utilize the same group of hyperparameters, which are the same hyperparameters as ReliefF excluding `n_neighbors`. -->
 
-### SURF
+### SURF[^2]
 
 Includes instances closer than the global mean distance as near neighbors.
 
@@ -144,7 +144,7 @@ fs.summary(feature_name=feature_name)
 >>> N3             -0.00634880            20       
 ```
 
-### SURF*
+### SURF*[^3]
 
 Includes instances closer than the global mean distance as near neighbors and instances farther than the global mean distance as far neighbors.
 
@@ -207,7 +207,7 @@ fs.summary(feature_name=feature_name)
 >>> N3             -0.01225238            20      
 ```
 
-### MultiSURF
+### MultiSURF[^4]
 
 Includes instances closer than `μ-σ/2` as near neighbors.
 
@@ -269,7 +269,7 @@ fs.summary(feature_name=feature_name)
 >>> N17            -0.00978209            20         
 ```
 
-### MultiSURF*
+### MultiSURF*[^5]
 
 Includes instances closer than `μ-σ/2` as near neighbors and instances farther than `μ+σ/2` as far neighbors. Instances within half a standard deviation of the mean distance are excluded from the neighborhood (are in the "deadband zone").
 
@@ -393,7 +393,7 @@ fs.summary(feature_name=feature_name)
 >>> N6             -0.01848672            20             
 ```
 
-### SWRF*
+### SWRF*[^6]
 
 Adjusts weights given to neighbors through a sigmoidal gradient function. Weights decrease as distance to the target instance increases, and all instances are included in the neighborhood (instances farther than the global mean distance are added as far neighbors).
 
@@ -706,7 +706,7 @@ fs.summary(feature_name=feature_name)
 
 μ-Relief, like ReliefF, utilizes the `n_neighbors` hyperparameter. It has the same hyperparameters as ReliefF. -->
 
-### μ-Relief
+### μ-Relief[^7]
 
 Includes as neighbors: the k (`n_neighbors`) instances whose absolute difference between 1) their distance from the target instance and 2) the mean distance among their class from the target instance is the greatest. 
 
@@ -1175,4 +1175,15 @@ This ordered list and text output can be achieved similarly for any core Relief-
 2.) In very large feature spaces users can expect core Relief-based algorithm scores to become less reliable when run on their own. This is because as the feature space becomes very large, the determination of nearest neighbors becomes more random.  As a result, in very large feature spaces (e.g. > 10,000 features), users should consider combining a core Relief-based algorithm with an iterative approach such as TuRF (implemented here), VLSRelief, or Iterative Relief. 
 
 3.) When scaling up to big data problems, keep in mind that the data aspect that slows down ReBATE methods the most is the number of training instances, since Relief-based algorithms scale linearly with the number of features, but quadratically with the number of training instances. This is the result of Relief-based methods needing to calculate a distance array (i.e. all pairwise distances between instances in the training dataset). If you have a very large number of training instances available, consider utilizing a class balanced random sampling of that dataset when running any ReBATE method to save on memory and computation time.
+
+<!-- References -->
+[^1]: *Kononenko, Igor. "Estimating attributes: analysis and extensions of RELIEF." In European conference on machine learning, pp. 171-182. Springer, Berlin, Heidelberg, 1994.*
+[^2]: *Greene, Casey S., Nadia M. Penrod, Jeff Kiralis, and Jason H. Moore. "Spatially uniform relieff (SURF) for computationally-efficient filtering of gene-gene interactions." BioData mining 2, no. 1 (2009): 5.*
+[^3]: *Greene, Casey S., Daniel S. Himmelstein, Jeff Kiralis, and Jason H. Moore. "The informative extremes: using both nearest and farthest individuals can improve relief algorithms in the domain of human genetics." In European Conference on Evolutionary Computation, Machine Learning and Data Mining in Bioinformatics, pp. 182-193. Springer, Berlin, Heidelberg, 2010.*
+<!-- [^4]: *Urbanowicz, Ryan J., Randal S. Olson, Peter Schmitt, Melissa Meeker, and Jason H. Moore. "Benchmarking relief-based feature selection methods." arXiv preprint arXiv:1711.08477 (2017).* -->
+[^4]: *Urbanowicz, Ryan J., Randal S. Olson, Peter Schmitt, Melissa Meeker, and Jason H. Moore. "Benchmarking relief-based feature selection methods for bioinformatics data mining." Journal of Biomedical Informatics, 85:168–188, 2018.*
+[^5]: *Granizo-Mackenzie, Delaney, and Jason H. Moore. "Multiple threshold spatially uniform relieff for the genetic analysis of complex human diseases." In European Conference on Evolutionary Computation, Machine Learning and Data Mining in Bioinformatics, pp. 1-10. Springer, Berlin, Heidelberg, 2013.*
+[^6]: *Stokes, Matthew E., and Shyam Visweswaran. "Application of a spatially-weighted relief algorithm for ranking genetic predictors of disease." BioData Mining, 5:20, 2012.*
+[^7]: Aggarwal, Nitisha, Unmesh Shukla, G. J. Saxena, et al. Mean based relief: An improved feature selection method based on relieff. Applied Intelligence, 53:23004–23028, 2023. doi: 10.1007/s10489-023-04662-w.
+
 

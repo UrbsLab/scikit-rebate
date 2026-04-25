@@ -12,6 +12,7 @@ theme: readthedocs
 markdown_extensions:
   - tables
   - fenced_code
+  - footnotes
 
 extra_css:
   - assets/styles/custom.css
