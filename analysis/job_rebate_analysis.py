@@ -54,15 +54,15 @@ def process_and_save_results(file_path, fs, method_name):
     base_name = os.path.splitext(os.path.basename(file_path))[0]
     Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
     ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
-    # Save runtime CSV
-    runtime = end_time - start_time
-    runtime_df = pd.DataFrame([{
-        "Dataset": base_name,
-        "Algorithm": method_name,
-        "Runtime (sec)": round(runtime, 4),
-        "Runtime (min)": round(runtime / 60, 4)
-    }])
-    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime_postnanhandling.csv"), index=False)
+    # # Save runtime CSV
+    # runtime = end_time - start_time
+    # runtime_df = pd.DataFrame([{
+    #     "Dataset": base_name,
+    #     "Algorithm": method_name,
+    #     "Runtime (sec)": round(runtime, 4),
+    #     "Runtime (min)": round(runtime / 60, 4)
+    # }])
+    # runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime_postnanhandling.csv"), index=False)
 
     # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
     # if method_name in ["SWRFstar", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
@@ -147,7 +147,7 @@ def process_mutual_info(file_path):
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_relieff10(file_path):
-    fs = ReliefF(n_features_to_select=2,n_neighbors=10,n_jobs=16)
+    fs = ReliefF(n_features_to_select=2,n_neighbors=10,n_jobs=1)
     process_and_save_results(file_path, fs, "ReliefF10")
 
 def process_relieff100(file_path):
@@ -155,7 +155,7 @@ def process_relieff100(file_path):
     process_and_save_results(file_path, fs, "ReliefF100")
 
 def process_surf(file_path):
-    fs = SURF(n_jobs=16)
+    fs = SURF(n_jobs=1)
     process_and_save_results(file_path, fs, "SURF")
 
 def process_surfstar(file_path):
@@ -171,7 +171,7 @@ def process_multisurfstar(file_path):
     process_and_save_results(file_path, fs, "MultiSURFstar")
 
 def process_swrfstar(file_path):
-    fs = SWRFstar(n_jobs=16)
+    fs = SWRFstar(n_jobs=1)
     process_and_save_results(file_path, fs, "SWRFstar")
 
 def process_swrf(file_path):
