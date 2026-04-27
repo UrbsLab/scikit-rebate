@@ -7,8 +7,7 @@ If you use **scikit-rebate** or the **MultiSURF** algorithm in a scientific publ
 Alternatively a complete **review of Relief-based algorithms** is available at:
 
 <!-- *Urbanowicz, Ryan J., Melissa Meeker, William LaCava, Randal S. Olson, and Jason H. Moore. "Relief-based feature selection: introduction and review." arXiv preprint arXiv:1711.08421 (2017).* -->
-*Urbanowicz, Ryan J., Melissa Meeker, William LaCava, Randal S. Olson, and Jason H. Moore. "Relief-based feature selection: introduction and review." Journal of Biomedical
-Informatics, 85:189–203, 2018.*
+*Urbanowicz, Ryan J., Melissa Meeker, William LaCava, Randal S. Olson, and Jason H. Moore. "Relief-based feature selection: introduction and review." Journal of Biomedical Informatics, 85:189–203, 2018.*
 
 To cite the **original Relief** paper:
 
