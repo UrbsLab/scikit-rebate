@@ -12,7 +12,7 @@ from functools import partial
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MultiSWRFDBlinearstar, MultiSWRFDBlinear, MultiSWRFDBexponentialstar, MultiSWRFDBexponential, MultiSWRFDBlinear3SDstar, MultiSWRFDBlinear3SD, MultiSWRFDBexponential3SDstar, MultiSWRFDBexponential3SD, MuRelief
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MultiSWRFDBlinearstar, MultiSWRFDBlinear, MultiSWRFDBexponentialstar, MultiSWRFDBexponential, MultiSWRFDBlinear3SDstar, MultiSWRFDBlinear3SD, MultiSWRFDBexponential3SDstar, MultiSWRFDBexponential3SD, MuRelief, TURF, VLS, Iter
 
 # NEW: added exist_ok=True
 def ensure_dir(directory):
@@ -54,15 +54,15 @@ def process_and_save_results(file_path, fs, method_name):
     base_name = os.path.splitext(os.path.basename(file_path))[0]
     Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
     ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
-    # # Save runtime CSV
-    # runtime = end_time - start_time
-    # runtime_df = pd.DataFrame([{
-    #     "Dataset": base_name,
-    #     "Algorithm": method_name,
-    #     "Runtime (sec)": round(runtime, 4),
-    #     "Runtime (min)": round(runtime / 60, 4)
-    # }])
-    # runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime_postnanhandling.csv"), index=False)
+    # Save runtime CSV
+    runtime = end_time - start_time
+    runtime_df = pd.DataFrame([{
+        "Dataset": base_name,
+        "Algorithm": method_name,
+        "Runtime (sec)": round(runtime, 4),
+        "Runtime (min)": round(runtime / 60, 4)
+    }])
+    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime.csv"), index=False)
 
     # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
     # if method_name in ["SWRFstar", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
@@ -235,6 +235,15 @@ def process_murelief100(file_path):
     fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=16)
     process_and_save_results(file_path, fs, "MuRelief100")
 
+# wrapper algorithms
+def process_turf(file_path):
+    fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), pct=0.10)
+    process_and_save_results(file_path, fs, "TURF_MultiSWRFDB")
+
+def process_vls(file_path):
+    fs = VLS(relief_object=MultiSWRFDB(n_jobs=16), num_feature_subset=400, size_feature_subset=10000, random_state=42)
+    process_and_save_results(file_path, fs, "VLS_MultiSWRFDB")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -267,6 +276,8 @@ def main():
         'multiswrfdbexponential3sd': process_multiswrfdbexponential3SD,
         'murelief10': process_murelief10,
         'murelief100': process_murelief100,
+        'turf': process_turf,
+        'vls': process_vls,
     }
 
     if args.algorithm not in alg_map:
