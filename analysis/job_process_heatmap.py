@@ -60,24 +60,24 @@ def process_results_dir(results_dir, prefix=""):
     # Plot heatmap
     custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
     # Define your preferred order of the RBAs as a list
-    rba_order = [
-        'RandomShuffle',
-        'MutualInfo',
-        'ReliefF10',
-        'ReliefF100',
-        'MuRelief10',
-        'MuRelief100',
-        'SURF',
-        'MultiSURF',
-        'SWRF',
-        'MultiSWRF',
-        'MultiSWRFDB',
-        'SURFstar',
-        'MultiSURFstar',
-        'SWRFstar',
-        'MultiSWRFstar',
-        'MultiSWRFDBstar',
-    ]
+    # rba_order = [
+    #     'RandomShuffle',
+    #     'MutualInfo',
+    #     'ReliefF10',
+    #     'ReliefF100',
+    #     'MuRelief10',
+    #     'MuRelief100',
+    #     'SURF',
+    #     'MultiSURF',
+    #     'SWRF',
+    #     'MultiSWRF',
+    #     'MultiSWRFDB',
+    #     'SURFstar',
+    #     'MultiSURFstar',
+    #     'SWRFstar',
+    #     'MultiSWRFstar',
+    #     'MultiSWRFDBstar',
+    # ]
     # rba_order = [
     #     'RandomShuffle', 
     #     'MutualInfo', 
@@ -104,26 +104,45 @@ def process_results_dir(results_dir, prefix=""):
     #     'ABS_MultiSURF',
     #     'ABS_MultiSURFstar',
     # ]
+    rba_order = [
+        'RandomShuffle',
+        'MutualInfo',
+        'ReliefF10',
+        'ReliefF100',
+        'MuRelief10',
+        'MuRelief100',
+        'SURF',
+        'MultiSURF',
+        'SWRF',
+        'MultiSWRF',
+        'MultiSWRFDB',
+        'SURFstar',
+        'MultiSURFstar',
+        'SWRFstar',
+        'MultiSWRFstar',
+        'MultiSWRFDBstar',
+        'TURF_MultiSWRFDB', # adding wrapper algorithms to heatmap now
+    ]
 
     # Define a mapping from your RBA order to new descriptive names
-    rba_descriptive_names = {
-        'RandomShuffle': 'Random Shuffle',
-        'MutualInfo': 'Mutual Info',
-        'ReliefF10': 'ReliefF 10NN',
-        'ReliefF100': 'ReliefF 100NN',
-        'MuRelief10': 'Mu-Relief 10N',
-        'MuRelief100': 'Mu-Relief 100N',
-        'SURF': 'SURF',
-        'MultiSURF': 'MultiSURF',
-        'SWRF': 'SWRF',
-        'MultiSWRF': 'MultiSWRF',
-        'MultiSWRFDB': 'MultiSWRFDB',
-        'SURFstar': 'SURF*',
-        'MultiSURFstar': 'MultiSURF*',
-        'SWRFstar': 'SWRF*',
-        'MultiSWRFstar': 'MultiSWRF*',
-        'MultiSWRFDBstar': 'MultiSWRFDB*',
-    }
+    # rba_descriptive_names = {
+    #     'RandomShuffle': 'Random Shuffle',
+    #     'MutualInfo': 'Mutual Info',
+    #     'ReliefF10': 'ReliefF 10NN',
+    #     'ReliefF100': 'ReliefF 100NN',
+    #     'MuRelief10': 'Mu-Relief 10N',
+    #     'MuRelief100': 'Mu-Relief 100N',
+    #     'SURF': 'SURF',
+    #     'MultiSURF': 'MultiSURF',
+    #     'SWRF': 'SWRF',
+    #     'MultiSWRF': 'MultiSWRF',
+    #     'MultiSWRFDB': 'MultiSWRFDB',
+    #     'SURFstar': 'SURF*',
+    #     'MultiSURFstar': 'MultiSURF*',
+    #     'SWRFstar': 'SWRF*',
+    #     'MultiSWRFstar': 'MultiSWRF*',
+    #     'MultiSWRFDBstar': 'MultiSWRFDB*',
+    # }
     # rba_descriptive_names = {
     #     'RandomShuffle': 'Random Shuffle',
     #     'MutualInfo': 'Mutual Info',
@@ -150,6 +169,25 @@ def process_results_dir(results_dir, prefix=""):
     #     'ABS_MultiSURF': 'MultiSURF (ABS)',
     #     'ABS_MultiSURFstar': 'MultiSURF* (ABS)',
     # }
+    rba_descriptive_names = {
+        'RandomShuffle': 'Random Shuffle',
+        'MutualInfo': 'Mutual Info',
+        'ReliefF10': 'ReliefF 10NN',
+        'ReliefF100': 'ReliefF 100NN',
+        'MuRelief10': 'Mu-Relief 10N',
+        'MuRelief100': 'Mu-Relief 100N',
+        'SURF': 'SURF',
+        'MultiSURF': 'MultiSURF',
+        'SWRF': 'SWRF',
+        'MultiSWRF': 'MultiSWRF',
+        'MultiSWRFDB': 'MultiSWRFDB',
+        'SURFstar': 'SURF*',
+        'MultiSURFstar': 'MultiSURF*',
+        'SWRFstar': 'SWRF*',
+        'MultiSWRFstar': 'MultiSWRF*',
+        'MultiSWRFDBstar': 'MultiSWRFDB*',
+        'TURF_MultiSWRFDB': 'TuRF (MultiSWRFDB)',
+    }
 
     n_pred = all_rankings_df['Feature'].nunique()
     percentages_df = percentages_df.iloc[n_pred-1:]
