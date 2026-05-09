@@ -121,6 +121,7 @@ def process_results_dir(results_dir, prefix=""):
         'SWRFstar',
         'MultiSWRFstar',
         'MultiSWRFDBstar',
+        'VLS_MultiSWRFDB',
         'TURF_MultiSWRFDB', # adding wrapper algorithms to heatmap now
     ]
 
@@ -186,6 +187,7 @@ def process_results_dir(results_dir, prefix=""):
         'SWRFstar': 'SWRF*',
         'MultiSWRFstar': 'MultiSWRF*',
         'MultiSWRFDBstar': 'MultiSWRFDB*',
+        'VLS_MultiSWRFDB': 'VLS (MultiSWRFDB)',
         'TURF_MultiSWRFDB': 'TuRF (MultiSWRFDB)',
     }
 
