@@ -3,23 +3,24 @@ import copy
 import numpy as np
 
 class TURF(BaseEstimator):
-    def __init__(self, relief_object, n_iterations=10, num_scores_to_return=10000):
+    def __init__(self, relief_object, pct=0.5, num_scores_to_return=100):
         '''
         :param relief_object:           Must be an object that implements the standard sklearn fit function, and after fit, has attributes feature_importances_
                                         and top_features_ that can be accessed. Scores must be a 1D np.ndarray of length # of features.
-        :param n_iterations:            Number of iterations to remove features for. The number of features removed each iteration
-                                        is determined by (a - num_scores_to_return) / (n_iterations), with a equal to the total number
-                                        of features in the dataset.    
-        :param num_scores_to_return:    Number of nonzero scores to return after training. Default = min(num_features, 10000)
+        :param pct:                     % of features to remove from removing features each iteration (if float). Or # of features to remove each iteration (if int)
+        :param num_scores_to_return:    Number of nonzero scores to return after training. Default = min(num_features, 100)
         '''
-        if not self.check_is_int(num_scores_to_return) or num_scores_to_return <= 0 or num_scores_to_return > 10000:
-            raise Exception('num_scores_to_return must be a positive integer <= 10,000')
+        if not self.check_is_int(num_scores_to_return) or num_scores_to_return < 0:
+            raise Exception('num_scores_to_return must be a nonnegative integer')
 
-        if not self.check_is_int(n_iterations) or n_iterations <= 0:
-            raise Exception('n_iterations must be a positive integer')
+        if (not self.check_is_int(pct) and not self.check_is_float(pct)) or pct < 0:
+            raise Exception('pct must be a nonnegative integer/float')
+
+        if (not self.check_is_int(pct) and self.check_is_float(pct)) and (pct < 0 or pct > 1):
+            raise Exception('if pct is a float, it must be from [0,1]')
 
         self.relief_object = relief_object
-        self.n_iterations = n_iterations
+        self.pct = pct
         self.num_scores_to_return = num_scores_to_return
         self.rank_absolute = self.relief_object.rank_absolute
 
@@ -37,30 +38,30 @@ class TURF(BaseEstimator):
         num_features = X.shape[1]
         self.num_scores_to_return = min(self.num_scores_to_return,num_features)
 
-        # Number of features to eliminate each iteration
-        num_features_to_eliminate = np.floor((num_features - self.num_scores_to_return) / self.n_iterations)
+        if self.num_scores_to_return != num_features and self.pct == 1:
+            raise Exception('num_scores_to_return != num_features and pct == 1. TURF will never reach your intended destination.')
 
         #Find out out how many features to use in each iteration
         current_features = list(range(num_features))
         eliminated_tiers = []
 
-        if self.num_scores_to_return != num_features: # if num_scores_to_return == num_features, no removal of features and move onto final fit iteration
-            for i in range(self.n_iterations):
-                X_subset = X[:, current_features]
-                relief = copy.deepcopy(self.relief_object)
-                relief.fit(X_subset, y)
+        N = int(1 / float(self.pct)) if self.check_is_float(self.pct) else num_features // self.pct
+        for i in range(N):
+            X_subset = X[:, current_features]
+            relief = copy.deepcopy(self.relief_object)
+            relief.fit(X_subset, y)
 
-                importances = relief.feature_importances_
-                ranks = np.argsort(importances)[::-1]
-                if i == (self.n_iterations - 1): # if it's the last iteration, ensure exactly num_scores_to_return features are kept
-                    keep_count = self.num_scores_to_return
-                else:
-                    keep_count = int(len(current_features) - num_features_to_eliminate)
-                keep_indices = sorted(ranks[:keep_count])
-                eliminate_indices = [j for j in range(len(current_features)) if j not in keep_indices]
+            importances = relief.feature_importances_
+            ranks = np.argsort(importances)[::-1]
+            keep_count = int(np.ceil(len(current_features) * (1 - self.pct)))
+            keep_indices = sorted(ranks[:keep_count])
+            eliminate_indices = [j for j in range(len(current_features)) if j not in keep_indices]
 
-                eliminated_tiers.append([current_features[j] for j in eliminate_indices])
-                current_features = [current_features[j] for j in keep_indices]
+            eliminated_tiers.append([current_features[j] for j in eliminate_indices])
+            current_features = [current_features[j] for j in keep_indices]
+
+            if len(current_features) <= self.num_scores_to_return:
+                break
 
         # Final round on the reduced set
         X_final = X[:, current_features]
