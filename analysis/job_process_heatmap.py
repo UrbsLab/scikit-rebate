@@ -4,6 +4,7 @@ import argparse
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 import numpy as np
 
 def process_results_dir(results_dir, prefix=""):
@@ -58,7 +59,13 @@ def process_results_dir(results_dir, prefix=""):
     percentages_df.to_csv(perc_path, index_label='Ranking Position')
 
     # Plot heatmap
-    custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
+    # custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
+    # ** Heatmap tweaked so that 100% is a distinct purple shade
+    colors = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
+    colors = np.array(colors) # converting to mutable array
+    colors[-1] = [0.5, 0.0, 0.5] # replacing the highest value color with purple (for 100% on the heatmap)
+    custom_cmap = ListedColormap(colors)
+
     # Define your preferred order of the RBAs as a list
     # rba_order = [
     #     'RandomShuffle',
@@ -200,7 +207,8 @@ def process_results_dir(results_dir, prefix=""):
 
     plt.figure(figsize=(12, 7))
     print(percentages_df_ordered)
-    heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, cbar_kws={'label': 'Power (Frequency of Success)'})
+    # heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, cbar_kws={'label': 'Power (Frequency of Success)'})
+    heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, vmin=0, vmax=100, cbar_kws={'label': 'Power (Frequency of Success)'}) # explicit 0% and 100% for min and max values that heatmap colorscheme corresponds to
     # heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, cbar=False) # if no color bar legend is desired
     for i in range(percentages_df_ordered.shape[0] - 1):
         heatmap.axhline(i + 1, color='black', linewidth=1.5)
@@ -236,8 +244,11 @@ def process_results_dir(results_dir, prefix=""):
     plt.rcParams['pdf.fonttype'] = 42
     plt.tight_layout()
 
+    heatmap.collections[0].set_rasterized(True) # rasterizing the heatmap to improve rendering of PDF with high feature counts
+
     save_path = os.path.join(results_dir, prefix + dataset_id + '.pdf')
-    plt.savefig(save_path, format='pdf', bbox_inches='tight')
+    # plt.savefig(save_path, format='pdf', bbox_inches='tight')
+    plt.savefig(save_path, format='pdf', dpi=600, bbox_inches='tight') # high dpi for higher resolution/quality rasterized heatmap
     plt.close()
 
     print(f"Completed processing for: {results_dir}")

@@ -241,7 +241,7 @@ def process_turf(file_path):
     process_and_save_results(file_path, fs, "TURF_MultiSWRFDB")
 
 def process_vls(file_path):
-    fs = VLS(relief_object=MultiSWRFDB(n_jobs=16), num_feature_subset=400, size_feature_subset=10000, random_state=42)
+    fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDB")
 
 

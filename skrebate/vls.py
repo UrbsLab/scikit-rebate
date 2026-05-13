@@ -2,10 +2,12 @@ from sklearn.base import BaseEstimator
 import copy
 import random
 import numpy as np
+from joblib import Parallel, delayed
+import time
 
 class VLS(BaseEstimator):
 
-    def __init__(self,relief_object,num_feature_subset=40,size_feature_subset=5,random_state = None):
+    def __init__(self,relief_object,num_feature_subset=40,size_feature_subset=5,random_state = None,n_jobs=1):
         '''
         :param relief_object:           Must be an object that implements the standard sklearn fit function, and after fit, has attribute feature_importances_
                                         that can be accessed. Scores must be a 1D np.ndarray of length # of features. The fit function must also be able to
@@ -13,6 +15,9 @@ class VLS(BaseEstimator):
         :param num_feature_subset:      Number of feature subsets generated at random
         :param size_feature_subset:     Number of features in each subset. Cannot exceed number of features.
         :param random_state:            random seed
+        :param n_jobs:                  The number of cores to dedicate to completing operations with joblib. Assigning this 
+                                        parameter to -1 will dedicate as many cores as are available on your system. We recommend 
+                                        setting this parameter to -1 to speed up the algorithm as much as possible.
         '''
 
         if not self.check_is_int(num_feature_subset) or num_feature_subset <= 0:
@@ -28,6 +33,7 @@ class VLS(BaseEstimator):
         self.num_feature_subset = num_feature_subset
         self.size_feature_subset = size_feature_subset
         self.random_state = random_state
+        self.n_jobs = n_jobs
         self.rank_absolute = self.relief_object.rank_absolute
 
     def fit(self, X, y,weights=None):
@@ -48,46 +54,72 @@ class VLS(BaseEstimator):
         #Make subsets with all the features
         num_features = X.shape[1]
         self.size_feature_subset = min(self.size_feature_subset,num_features)
+        start_time = time.time()
         subsets = self.make_subsets(list(range(num_features)),self.num_feature_subset,self.size_feature_subset)
+        print("Time taken to generate subsets:", time.time() - start_time, " sec")
 
-        #Fit each subset
-        scores = []
-        for subset in subsets:
-            new_X = self.custom_transform(X,subset)
-            copy_relief_object = copy.deepcopy(self.relief_object)
-            if not isinstance(weights,np.ndarray):
-                copy_relief_object.fit(new_X,y)
-            else:
-                copy_relief_object.fit(new_X,y,weights=weights[subset])
-            raw_score = copy_relief_object.feature_importances_
-            score = np.empty(num_features)
-            if self.rank_absolute:
-                score.fill(0)
-            else:
-                score.fill(-np.inf)
-            counter = 0
-            for index in subset:
-                score[index] = raw_score[counter]
-                counter+=1
-            scores.append(score)
+        # # UPDATE 5/11: making subsets in parallel
+        # if self.num_feature_subset * self.size_feature_subset < num_features:
+        #     raise Exception('num_feature_subset * size_feature_subset must be >= number of total features')
 
-            #DEBUGGING
-            #print(score)
+        # if self.size_feature_subset > num_features:
+        #     raise Exception('size_feature_subset cannot be > number of total features')
+        
+        # possible_indices = list(range(num_features)) # indices of features able to be included in subsets
+    
+        # start_time = time.time()
+        # subsets = list(Parallel(n_jobs=self.n_jobs)
+        #                (delayed(self.make_subset)(possible_indices, self.size_feature_subset) for _ in range(self.num_feature_subset)))
+        # print("Time taken to generate subsets:", time.time() - start_time, " sec")
+        # start_time = time.time()
+        # # END UPDATE 5/11
 
-        scores = np.array(scores)
+        # #Fit each subset
+        # scores = []
+        # for subset in subsets:
+        #     new_X = self.custom_transform(X,subset)
+        #     copy_relief_object = copy.deepcopy(self.relief_object)
+        #     if not isinstance(weights,np.ndarray):
+        #         copy_relief_object.fit(new_X,y)
+        #     else:
+        #         copy_relief_object.fit(new_X,y,weights=weights[subset])
+        #     raw_score = copy_relief_object.feature_importances_
+        #     score = np.empty(num_features)
+        #     if self.rank_absolute:
+        #         score.fill(0)
+        #     else:
+        #         score.fill(-np.inf)
+        #     counter = 0
+        #     for index in subset:
+        #         score[index] = raw_score[counter]
+        #         counter+=1
+        #     scores.append(score)
 
-        #Merge results by selecting largest found weight for each feature
-        max_scores = []
-        for score in scores.T:
-            if self.rank_absolute:
-                max = np.max(np.absolute(score))
-                if max in score:
-                    max_scores.append(max)
-                else:
-                    max_scores.append(-max)
-            else:
-                max_scores.append(np.max(score))
-        max_scores = np.array(max_scores)
+        #     #DEBUGGING
+        #     #print(score)
+
+        # scores = np.array(scores)
+
+        # #Merge results by selecting largest found weight for each feature
+        # max_scores = []
+        # for score in scores.T:
+        #     if self.rank_absolute:
+        #         max = np.max(np.absolute(score))
+        #         if max in score:
+        #             max_scores.append(max)
+        #         else:
+        #             max_scores.append(-max)
+        #     else:
+        #         max_scores.append(np.max(score))
+        # max_scores = np.array(max_scores)
+        
+        # UPDATE 5/11: Fitting on subsets in parallel, extracting max score for each feature across all subsets
+        # print("Time taken between subset generation and scoring of subsets:", time.time() - start_time, " sec")
+        start_time = time.time()
+        max_scores = np.max(Parallel(n_jobs=self.n_jobs)
+                            (delayed(self.score_subset)(X, y, weights, num_features, subset) for subset in subsets), axis=0)
+        print("Time taken to score subsets:", time.time() - start_time, " sec")
+        # # END UPDATE 5/11
 
         #Save FI as feature_importances_
         self.feature_importances_ = max_scores
@@ -136,6 +168,34 @@ class VLS(BaseEstimator):
             subsets.append(random.sample(possible_indices,size_feature_subset))
 
         return subsets
+    # def make_subset(self, possible_indices, size_feature_subset): # new version that makes one subset, called num_feature_subset times
+    #     random.shuffle(possible_indices)
+
+    #     subset = random.sample(possible_indices, size_feature_subset) # randomly generating a subset with size_feature_subset elements
+
+    #     return subset
+
+    def score_subset(self, X, y, weights, num_features, subset):
+        new_X = self.custom_transform(X,subset)
+        copy_relief_object = copy.deepcopy(self.relief_object)
+        if not isinstance(weights,np.ndarray):
+            copy_relief_object.fit(new_X,y)
+        else:
+            copy_relief_object.fit(new_X,y,weights=weights[subset])
+        raw_score = copy_relief_object.feature_importances_
+        score = np.empty(num_features)
+        if self.rank_absolute:
+            score.fill(0)
+        else:
+            score.fill(-np.inf)
+        counter = 0
+        for index in subset:
+            score[index] = raw_score[counter]
+            counter+=1
+        
+        return score
+
+        
 
     def check_is_int(self, num):
         try:
