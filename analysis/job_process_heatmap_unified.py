@@ -8,6 +8,7 @@ import numpy as np
 import re
 import matplotlib.lines as mlines
 import matplotlib.gridspec as gridspec
+from matplotlib.colors import ListedColormap
 import time
 
 # Helper to create the percentages_df (copied from old job_process_heatmap)
@@ -68,8 +69,13 @@ def main():
     args = parser.parse_args()
 
     # custom colormap & ordering
-    custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
-    # custom_cmap = sns.color_palette("Blues", as_cmap=True)
+    # custom_cmap = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
+    # ** Heatmap tweaked so that 100% is a distinct purple shade and 0% is a distinct white
+    colors = sns.color_palette('Oranges', n_colors=1000)[:800] + sns.color_palette('Blues', n_colors=1000)[800:]
+    colors = np.array(colors) # converting to mutable array
+    colors[0] = [1.0, 1.0, 1.0] # replacing the lowest value color with white (for 0% on the heatmap)
+    colors[-1] = [0.5, 0.0, 0.5] # replacing the highest value color with purple (for 100% on the heatmap)
+    custom_cmap = ListedColormap(colors)
 
     # rba_order = [
     #     'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','SURF','SURFstar',

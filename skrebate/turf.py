@@ -40,7 +40,7 @@ class TURF(BaseEstimator):
         # Number of features to eliminate each iteration
         num_features_to_eliminate = np.floor((num_features - self.num_scores_to_return) / self.n_iterations)
 
-        #Find out out how many features to use in each iteration
+        #Find out how many features to use in each iteration
         current_features = list(range(num_features))
         eliminated_tiers = []
 
