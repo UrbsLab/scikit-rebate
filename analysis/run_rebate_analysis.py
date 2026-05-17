@@ -86,7 +86,8 @@ def find_dataset_files(root_dir):
     for dirpath, _, filenames in os.walk(root_dir):
         if "EDM" in os.path.basename(dirpath) or os.path.basename(dirpath) == "3Class_Datasets_Loc_2" or os.path.basename(dirpath) == "9Class_Datasets_Loc_2":
             for filename in filenames:
-                if filename.endswith(".txt"):
+                # if filename.endswith(".txt"):
+                if filename.endswith(".csv"):
                     dataset_files.append(os.path.join(dirpath, filename))
     return dataset_files
 

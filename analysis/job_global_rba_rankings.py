@@ -21,29 +21,34 @@ def collect_rankings(root_dir, include_subdirs=None):
 
         if sub == "GAMETES_2.2_dev_peter_XOR": # for XOR, will only use the xor-2 and xor-3 configurations (excluding 4 and 5-way)
             # get path to xor-2 and xor-3 rankings_list.csv only (rankings_path1 & rankings_path2), turn it into df1 and df2, then combine them into df
-            # rankings_path_xor2 = sub_path + "xor_2/a_100/s_1600/xor_2_a_100s_1600_EDM-1/Results/rankings_list.csv"
-            # rankings_path_xor3 = sub_path + "xor_3/a_100/s_1600/xor_3_a_100s_1600_EDM-1/Results/rankings_list.csv"
             rankings_path_xor2 = os.path.join(sub_path, "xor_2", "a_100", "s_1600", "xor_2_a_100s_1600_EDM-1", "Results", "rankings_list.csv")
             rankings_path_xor3 = os.path.join(sub_path, "xor_3", "a_100", "s_1600", "xor_3_a_100s_1600_EDM-1", "Results", "rankings_list.csv")
+
             if not os.path.exists(rankings_path_xor2) or not os.path.exists(rankings_path_xor3):
                 print(f"[WARN] rankings_list.csv not found in {sub_path} for xor-2 or xor-3, skipping.")
                 continue
 
             try:
                 df_xor2 = pd.read_csv(rankings_path_xor2, comment='#')  # ignore comment line with title
+                df_xor2['subdir'] = "xor_2"
+
                 df_xor3 = pd.read_csv(rankings_path_xor3, comment='#')  # ignore comment line with title
+                df_xor3['subdir'] = "xor_3"
+
                 df = pd.concat([df_xor2, df_xor3], ignore_index=True) # combining xor-2 and xor-3 into one df
             except Exception as e:
                 print(f"[ERROR] Could not read {rankings_path_xor2} or {rankings_path_xor3}: {e}")
                 continue
         else:
             rankings_path = os.path.join(sub_path, 'rankings_list.csv')
+
             if not os.path.exists(rankings_path):
                 print(f"[WARN] rankings_list.csv not found in {sub_path}, skipping.")
                 continue
 
             try:
                 df = pd.read_csv(rankings_path, comment='#')  # ignore comment line with title
+                df['subdir'] = sub
             except Exception as e:
                 print(f"[ERROR] Could not read {rankings_path}: {e}")
                 continue
@@ -62,72 +67,6 @@ def collect_rankings(root_dir, include_subdirs=None):
         print("[ERROR] No valid rankings_list.csv files found.")
         return None
 
-    combined_df = pd.concat(all_dfs, ignore_index=True)
-    return combined_df
-
-def collect_relative_order(root_dir, include_subdirs=None):
-    """
-    Go through rba_rankings.csv files from subdirectories under root_dir, collect the relative order ranking of RBAs from each file.
-    Optionally filter which subdirectories to include.
-    """
-    all_dfs = []
-    
-    for sub in os.listdir(root_dir):
-        sub_path = os.path.join(root_dir, sub)
-        if not os.path.isdir(sub_path):
-            continue
-
-        # If --include is specified, skip subdirs not in the list
-        if include_subdirs and sub not in include_subdirs:
-            continue
-
-        if sub == "GAMETES_2.2_dev_peter_XOR": # for XOR, will only use the xor-2 and xor-3 configurations (excluding 4 and 5-way)
-            rankings_path_xor2 = os.path.join(sub_path, "xor_2", "a_100", "s_1600", "xor_2_a_100s_1600_EDM-1", "Results", "rba_rankings.csv")
-            rankings_path_xor3 = os.path.join(sub_path, "xor_3", "a_100", "s_1600", "xor_3_a_100s_1600_EDM-1", "Results", "rba_rankings.csv")
-            if not os.path.exists(rankings_path_xor2) or not os.path.exists(rankings_path_xor3):
-                print(f"[WARN] rba_rankings.csv not found in {sub_path} for xor-2 or xor-3, skipping.")
-                continue
-
-            try:
-                df_xor2 = pd.read_csv(rankings_path_xor2, comment='#')  # ignore comment line with title
-                # Sort by Mean, then Median
-                df_xor2 = df_xor2.sort_values(by=["Mean", "Median"])
-                # Assign rank (same Mean + Median -> same rank)
-                df_xor2["Rank"] = (df_xor2.groupby(["Mean", "Median"], sort=False).ngroup() + 1)
-
-                df_xor3 = pd.read_csv(rankings_path_xor3, comment='#')  # ignore comment line with title
-                # Sort by Mean, then Median
-                df_xor3 = df_xor3.sort_values(by=["Mean", "Median"])
-                # Assign rank (same Mean + Median -> same rank)
-                df_xor3["Rank"] = (df_xor3.groupby(["Mean", "Median"], sort=False).ngroup() + 1)
-
-                df = pd.concat([df_xor2, df_xor3], ignore_index=True) # combining xor-2 and xor-3 into one df
-            except Exception as e:
-                print(f"[ERROR] Could not read {rankings_path_xor2} or {rankings_path_xor3}: {e}")
-                continue
-        else:
-            rankings_path = os.path.join(sub_path, 'rba_rankings.csv')
-            if not os.path.exists(rankings_path):
-                print(f"[WARN] rba_rankings.csv not found in {sub_path}, skipping.")
-                continue
-
-            try:
-                df = pd.read_csv(rankings_path, comment='#')  # ignore comment line with title
-                # Sort by Mean, then Median
-                df = df.sort_values(by=["Mean", "Median"])
-                # Assign rank (same Mean + Median -> same rank)
-                df["Rank"] = (df.groupby(["Mean", "Median"], sort=False).ngroup() + 1)
-            except Exception as e:
-                print(f"[ERROR] Could not read {rankings_path}: {e}")
-                continue
-
-        all_dfs.append(df)
-        print(f"[INFO] Loaded rba_rankings.csv from {sub}")
-
-    if not all_dfs:
-        print("[ERROR] No valid rba_rankings.csv files found.")
-        return None
-    
     combined_df = pd.concat(all_dfs, ignore_index=True)
     return combined_df
 
@@ -150,12 +89,9 @@ def main():
     parser.add_argument("root_dir", help="Top-level directory containing dataset subdirectories.")
     parser.add_argument("--include", nargs="+", default=None,
                         help="Optional list of subdirectories to include (default: all).")
-    parser.add_argument("--ranking_type", choices=["precise", "relative_order"], default="precise", help="Type of final global ranking to produce.")
 
     args = parser.parse_args()
     root_dir = args.root_dir
-    ranking_type = args.ranking_type
-    print(f"[INFO] Using ranking_type = {ranking_type}")
 
     # short names -> actual subdirectory names
     SHORT_TO_FULL_SUBDIR = {
@@ -202,52 +138,117 @@ def main():
         "mainEff_largerfeatures_data"
     )
 
-    if ranking_type == "precise":
-        combined_df = collect_rankings(root_dir, include_subdirs)
-        if combined_df is None:
-            return
+    combined_df = collect_rankings(root_dir, include_subdirs)
+    if combined_df is None:
+        return
         
-        # getting rankings from a_1000, a_10000, a_100000 (subdirs of largerfeature_dir)
-        largerfeature_df = collect_rankings(largerfeature_dir, include_subdirs_largerfeature)
+    # getting rankings from a_1000, a_10000, a_100000 (subdirs of largerfeature_dir)
+    largerfeature_df = collect_rankings(largerfeature_dir, include_subdirs_largerfeature)
 
-        largerfeature_mainEff_df = collect_rankings(largerfeature_mainEff_dir) # rankings for larger feature mainEff data
+    largerfeature_mainEff_df = collect_rankings(largerfeature_mainEff_dir) # rankings for larger feature mainEff data
 
-        # all rankings from all tested datasets with >= 100 features
-        final_combined_df = pd.concat([combined_df, largerfeature_df, largerfeature_mainEff_df], ignore_index=True)
+    # all rankings from all tested datasets with >= 100 features
+    final_combined_df = pd.concat([combined_df, largerfeature_df, largerfeature_mainEff_df], ignore_index=True)
 
-        # --- Save global concatenated rankings_list.csv ---
-        global_rankings_path = os.path.join(parent_dir, 'global_rankings_list.csv')
-        final_combined_df.to_csv(global_rankings_path, index=False)
-        print(f"[INFO] Saved global rankings list: {global_rankings_path}")
+    # all univariate effect data
+    univariate_df = final_combined_df[
+        final_combined_df['subdir'].isin(["GAMETES_2.2_dev_peter_mainEff_Datasets_Loc_1_Qnt_2_Pop_100000", # 1-Feature Main Effect
+                                          "GAMETES_2.2_dev_peter_mainEff_additive_2_Datasets_2Het_Loc_1_Qnt_2_Pop_100000", # 2-Feature Additive Effect
+                                          "GAMETES_2.2_dev_peter_mainEff_additive_4_Datasets_2Het_Loc_1_Qnt_2_Pop_100000", # 4-Feature Additive Effect
+                                          "1-feature_1000_Feature_H_0.4_MAF_0.2_EDM-2", # 1,000 total features, main effect
+                                          "1-feature_10000_Feature_H_0.4_MAF_0.2_EDM-2", # 10,000 total features, main effect
+                                          "1-feature_100000_Feature_H_0.4_MAF_0.2_EDM-2" # 100,000 total features, main effect
+                                          ])
+    ].reset_index(drop=True)
 
-        # --- Compute and save global RBA rankings ---
-        global_summary_df = compute_global_summary(final_combined_df)
-        global_summary_path = os.path.join(parent_dir, 'global_rba_rankings.csv')
-        global_summary_df.to_csv(global_summary_path, index=False)
-        print(f"[INFO] Saved global RBA rankings: {global_summary_path}")
-    else: # use relative order for final ranking
-        combined_df = collect_relative_order(root_dir, include_subdirs)
-        if combined_df is None:
-            return
-        
-        # getting rankings from a_1000, a_10000, a_100000 (subdirs of largerfeature_dir)
-        largerfeature_df = collect_relative_order(largerfeature_dir, include_subdirs_largerfeature)
+    # all 2-way interaction data
+    twoway_df = final_combined_df[
+        final_combined_df['subdir'].isin(["GAMETES_2.2_dev_peter_core2wayEpistasis_Datasets_Loc_2_Qnt_2_Pop_100000", # 2-way Pure Epistasis
+                                          "xor_2", # 2-way XOR
+                                          "GAMETES_2.2_dev_peter_2wayEpiHeterogeneity_Datasets_2Het_Loc_2_Qnt_2_Pop_100000", # 2-way Epi Heterogeneity
+                                          "a_1000", # 1,000 total features, 2-way interaction effect
+                                          "a_10000", # 10,000 total features, 2-way interaction effect
+                                          "a_100000" # 100,000 total features, 2-way interaction effect
+                                          ])
+    ].reset_index(drop=True)
 
-        largerfeature_mainEff_df = collect_relative_order(largerfeature_mainEff_dir) # rankings for larger feature mainEff data
+    # all 3-way interaction data
+    threeway_df = final_combined_df[
+        final_combined_df['subdir'].isin(["GAMETES_2.2_dev_peter_epi_order_Datasets_Loc_3_Qnt_2_Pop_100000", # 3-way Pure Epistasis
+                                          "xor_3" # 3-way XOR
+                                          ])
+    ].reset_index(drop=True)
 
-        # all rankings from all tested datasets with >= 100 features
-        final_combined_df = pd.concat([combined_df, largerfeature_df, largerfeature_mainEff_df], ignore_index=True)
+    # mean and median metrics for each algorithm within each effect type (univariate, 2-way, 3-way)
+    univariate_summary_df = compute_global_summary(univariate_df)
+    twoway_summary_df = compute_global_summary(twoway_df)
+    threeway_summary_df = compute_global_summary(threeway_df)
 
-        # --- Save global concatenated rankings_list.csv ---
-        global_rankings_path = os.path.join(parent_dir, 'global_rankings_list_relorder.csv')
-        final_combined_df.to_csv(global_rankings_path, index=False)
-        print(f"[INFO] Saved global rankings list: {global_rankings_path}")
+    # *** Creating global metrics: 2-way only, univariate + 2-way, univariate + 2-way + 3-way
+    # creating a combined dataframe with univariate and 2-way metrics
+    merged_uni_twoway_df = univariate_summary_df.merge(
+        twoway_summary_df,
+        on='RBA',
+        suffixes=('_uni', '_two')
+    )
 
-        # --- Compute and save global RBA rankings ---
-        global_summary_df = compute_global_summary(final_combined_df)
-        global_summary_path = os.path.join(parent_dir, 'global_rba_rankings_relorder.csv')
-        global_summary_df.to_csv(global_summary_path, index=False)
-        print(f"[INFO] Saved global RBA rankings: {global_summary_path}")
+    # creating the final weighted (univariate, 2-way) global metrics
+    univariate_twoway_final_df = pd.DataFrame({
+        'RBA': merged_uni_twoway_df['RBA'],
+        'Weighted_Mean': (
+            merged_uni_twoway_df['Mean_uni'] * 0.5 +
+            merged_uni_twoway_df['Mean_two'] * 0.5
+        ),
+        'Weighted_Median': (
+            merged_uni_twoway_df['Median_uni'] * 0.5 +
+            merged_uni_twoway_df['Median_two'] * 0.5
+        )
+    })
+
+    # creating a combined dataframe with univariate, 2-way, and 3-way metrics
+    merged_uni_twoway_threeway_df = merged_uni_twoway_df.merge(
+        threeway_summary_df,
+        on='RBA'
+    )
+
+    # creating the final weighted (univariate, 2-way, 3-way) global metrics
+    univariate_twoway_threeway_final_df = pd.DataFrame({
+        'RBA': merged_uni_twoway_threeway_df['RBA'],
+        'Weighted_Mean': (
+            merged_uni_twoway_threeway_df['Mean_uni'] * 0.4 +
+            merged_uni_twoway_threeway_df['Mean_two'] * 0.4 +
+            merged_uni_twoway_threeway_df['Mean'] * 0.2 # 3-way mean
+        ),
+        'Weighted_Median': (
+            merged_uni_twoway_threeway_df['Median_uni'] * 0.4 +
+            merged_uni_twoway_threeway_df['Median_two'] * 0.4 +
+            merged_uni_twoway_threeway_df['Median'] * 0.2 # 3-way median
+        )
+    })
+
+    # --- Save final .csv's with metrics for (2-way only), (univariate + 2-way), (univariate + 2-way + 3-way) ---
+    twoway_path = os.path.join(parent_dir, 'global_rba_rankings_2wayonly.csv')
+    univariate_twoway_path = os.path.join(parent_dir, 'global_rba_rankings_uni2way.csv')
+    univariate_twoway_threeway_path = os.path.join(parent_dir, 'global_rba_rankings_uni2way3way.csv')
+
+    twoway_summary_df.to_csv(twoway_path, index=False)
+    univariate_twoway_final_df.to_csv(univariate_twoway_path, index=False)
+    univariate_twoway_threeway_final_df.to_csv(univariate_twoway_threeway_path, index=False)
+
+    print(f"[INFO] Saved (2-way only) rankings to {twoway_path}")
+    print(f"[INFO] Saved (univariate + 2-way) rankings to {univariate_twoway_path}")
+    print(f"[INFO] Saved (univariate + 2-way + 3-way) rankings to {univariate_twoway_threeway_path}")
+
+    # # --- Save global concatenated rankings_list.csv ---
+    # global_rankings_path = os.path.join(parent_dir, 'global_rankings_list.csv')
+    # final_combined_df.to_csv(global_rankings_path, index=False)
+    # print(f"[INFO] Saved global rankings list: {global_rankings_path}")
+
+    # # --- Compute and save global RBA rankings ---
+    # global_summary_df = compute_global_summary(final_combined_df)
+    # global_summary_path = os.path.join(parent_dir, 'global_rba_rankings.csv')
+    # global_summary_df.to_csv(global_summary_path, index=False)
+    # print(f"[INFO] Saved global RBA rankings: {global_summary_path}")
         
 
 

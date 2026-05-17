@@ -3,7 +3,7 @@ import os
 import argparse
 import time
 
-def generate_job_script(scheduler, python_script, root_dir, job_name, job_dir, log_dir, include_subdirs=None):
+def generate_job_script(scheduler, python_script, root_dir, job_name, job_dir, log_dir, ranking_type, include_subdirs=None):
     job_script_path = os.path.join(job_dir, f"{job_name}.sh")
     include_arg = ''
     if include_subdirs:
@@ -20,7 +20,7 @@ def generate_job_script(scheduler, python_script, root_dir, job_name, job_dir, l
 #BSUB -W 02:00
 #BSUB -q i2c2_normal
 
-python {python_script} "{root_dir}" {include_arg}
+python {python_script} "{root_dir}" {include_arg} --ranking_type {ranking_type}
 """
         submit_cmd = f"bsub < {job_script_path}"
 
@@ -34,7 +34,7 @@ python {python_script} "{root_dir}" {include_arg}
 #SBATCH --time=02:00:00
 #SBATCH --partition=defq
 
-python {python_script} "{root_dir}" {include_arg}
+python {python_script} "{root_dir}" {include_arg} --ranking_type {ranking_type}
 """
         submit_cmd = f"sbatch {job_script_path}"
 
@@ -56,13 +56,14 @@ def main():
     parser.add_argument('--jobdir', default='jobs', help='Directory to store job scripts.')
     parser.add_argument('--logdir', default='logs', help='Directory to store logs.')
     parser.add_argument('--include', nargs='+', default=None, help='Optional list of subdirectories to include (short names).')
+    parser.add_argument('--ranking_type', choices=['precise', 'relative_order'], default='precise', help='Type of final global ranking to produce.')
     args = parser.parse_args()
 
     os.makedirs(args.jobdir, exist_ok=True)
     os.makedirs(args.logdir, exist_ok=True)
 
     job_name = f"global_rba_{int(time.time())}"
-    generate_job_script(args.hpctype, args.script, args.rootdir, job_name, args.jobdir, args.logdir, args.include)
+    generate_job_script(args.hpctype, args.script, args.rootdir, job_name, args.jobdir, args.logdir, args.ranking_type, args.include)
 
 
 if __name__ == "__main__":
