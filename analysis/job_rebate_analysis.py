@@ -247,6 +247,14 @@ def process_vls(file_path):
     fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDB")
 
+def process_vlsmultiswrfdbstar(file_path):
+    fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar")
+
+def process_vlsmultisurfstar(file_path):
+    fs = VLS(relief_object=MultiSURFstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_MultiSURFstar")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -281,6 +289,8 @@ def main():
         'murelief100': process_murelief100,
         'turf': process_turf,
         'vls': process_vls,
+        'vls_multiswrfdbstar': process_vlsmultiswrfdbstar,
+        'vls_multisurfstar': process_vlsmultisurfstar,
     }
 
     if args.algorithm not in alg_map:
