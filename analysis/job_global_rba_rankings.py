@@ -57,6 +57,10 @@ def collect_rankings(root_dir, include_subdirs=None):
             df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 999
         elif "a_10000/" in rankings_path or "1-feature_10000_" in rankings_path:
             df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 9999
+        elif "a_20000/" in rankings_path:
+            df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 19999
+        elif "a_50000/" in rankings_path:
+            df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 49999
         elif "a_100000/" in rankings_path or "1-feature_100000_" in rankings_path:
             df['Rank'] = 1 + (df['Rank'] - 1) * 99 / 99999
 
@@ -123,14 +127,14 @@ def main():
 
     # NEW: going back up to data directory from AbsVal_Benchmark_Data to then enter Sanity_Check_Data
     parent_dir = os.path.dirname(root_dir)
-    largerfeature_dir = os.path.join(
+    largerfeature_2way_dir = os.path.join(
         parent_dir,
         "Sanity_Check_Data",
         "benchmark-data",
         "Simulated_Benchmark_Archive",
         "GAMETES_2.2_dev_peter_2wayEpiFeatures_Datasets_Loc_2_Qnt_2_Pop_100000"
     )
-    include_subdirs_largerfeature = ["a_1000", "a_10000", "a_100000"]
+    include_subdirs_largerfeature_2way = ["a_1000", "a_10000", "a_20000", "a_50000", "a_100000"]
 
     # now adding larger feature set (main effect) directory
     largerfeature_mainEff_dir = os.path.join(
@@ -142,13 +146,13 @@ def main():
     if combined_df is None:
         return
         
-    # getting rankings from a_1000, a_10000, a_100000 (subdirs of largerfeature_dir)
-    largerfeature_df = collect_rankings(largerfeature_dir, include_subdirs_largerfeature)
+    # getting rankings from a_1000, a_10000, a_20000, a_50000, a_100000 (subdirs of largerfeature_2way_dir)
+    largerfeature_2way_df = collect_rankings(largerfeature_2way_dir, include_subdirs_largerfeature_2way)
 
     largerfeature_mainEff_df = collect_rankings(largerfeature_mainEff_dir) # rankings for larger feature mainEff data
 
     # all rankings from all tested datasets with >= 100 features
-    final_combined_df = pd.concat([combined_df, largerfeature_df, largerfeature_mainEff_df], ignore_index=True)
+    final_combined_df = pd.concat([combined_df, largerfeature_2way_df, largerfeature_mainEff_df], ignore_index=True)
 
     # all univariate effect data
     univariate_df = final_combined_df[
@@ -168,6 +172,8 @@ def main():
                                           "GAMETES_2.2_dev_peter_2wayEpiHeterogeneity_Datasets_2Het_Loc_2_Qnt_2_Pop_100000", # 2-way Epi Heterogeneity
                                           "a_1000", # 1,000 total features, 2-way interaction effect
                                           "a_10000", # 10,000 total features, 2-way interaction effect
+                                          "a_20000", # 20,000 total features, 2-way interaction effect
+                                          "a_50000", # 50,000 total features, 2-way interaction effect
                                           "a_100000" # 100,000 total features, 2-way interaction effect
                                           ])
     ].reset_index(drop=True)
@@ -185,6 +191,7 @@ def main():
     threeway_summary_df = compute_global_summary(threeway_df)
 
     # *** Creating global metrics: 2-way only, univariate + 2-way, univariate + 2-way + 3-way
+
     # creating a combined dataframe with univariate and 2-way metrics
     merged_uni_twoway_df = univariate_summary_df.merge(
         twoway_summary_df,
@@ -195,13 +202,11 @@ def main():
     # creating the final weighted (univariate, 2-way) global metrics
     univariate_twoway_final_df = pd.DataFrame({
         'RBA': merged_uni_twoway_df['RBA'],
-        'Weighted_Mean': (
-            merged_uni_twoway_df['Mean_uni'] * 0.5 +
-            merged_uni_twoway_df['Mean_two'] * 0.5
+        'Avg_Mean': (
+            (merged_uni_twoway_df['Mean_uni'] + merged_uni_twoway_df['Mean_two']) / 2
         ),
-        'Weighted_Median': (
-            merged_uni_twoway_df['Median_uni'] * 0.5 +
-            merged_uni_twoway_df['Median_two'] * 0.5
+        'Avg_Median': (
+            (merged_uni_twoway_df['Median_uni'] + merged_uni_twoway_df['Median_two']) / 2
         )
     })
 
@@ -210,19 +215,24 @@ def main():
         threeway_summary_df,
         on='RBA'
     )
+    # for naming clarity
+    merged_uni_twoway_threeway_df = merged_uni_twoway_threeway_df.rename(columns={
+        'Mean': 'Mean_three',
+        'Median': 'Median_three'
+    })
 
     # creating the final weighted (univariate, 2-way, 3-way) global metrics
     univariate_twoway_threeway_final_df = pd.DataFrame({
         'RBA': merged_uni_twoway_threeway_df['RBA'],
-        'Weighted_Mean': (
-            merged_uni_twoway_threeway_df['Mean_uni'] * 0.4 +
-            merged_uni_twoway_threeway_df['Mean_two'] * 0.4 +
-            merged_uni_twoway_threeway_df['Mean'] * 0.2 # 3-way mean
+        'Avg_Mean': (
+            (merged_uni_twoway_threeway_df['Mean_uni'] +
+            merged_uni_twoway_threeway_df['Mean_two'] +
+            merged_uni_twoway_threeway_df['Mean_three']) / 3
         ),
-        'Weighted_Median': (
-            merged_uni_twoway_threeway_df['Median_uni'] * 0.4 +
-            merged_uni_twoway_threeway_df['Median_two'] * 0.4 +
-            merged_uni_twoway_threeway_df['Median'] * 0.2 # 3-way median
+        'Avg_Median': (
+            (merged_uni_twoway_threeway_df['Median_uni'] +
+            merged_uni_twoway_threeway_df['Median_two'] +
+            merged_uni_twoway_threeway_df['Median_three']) / 3
         )
     })
 
