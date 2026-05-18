@@ -209,6 +209,12 @@ def main():
             (merged_uni_twoway_df['Median_uni'] + merged_uni_twoway_df['Median_two']) / 2
         )
     })
+    # sorting this dataframe
+    univariate_twoway_final_df = (
+        univariate_twoway_final_df
+        .sort_values(by=['Avg_Mean', 'Avg_Median'], ascending=[True, True])
+        .reset_index(drop=True)
+    )
 
     # creating a combined dataframe with univariate, 2-way, and 3-way metrics
     merged_uni_twoway_threeway_df = merged_uni_twoway_df.merge(
@@ -235,6 +241,12 @@ def main():
             merged_uni_twoway_threeway_df['Median_three']) / 3
         )
     })
+    # sorting this dataframe
+    univariate_twoway_threeway_final_df = (
+        univariate_twoway_threeway_final_df
+        .sort_values(by=['Avg_Mean', 'Avg_Median'], ascending=[True, True])
+        .reset_index(drop=True)
+    )
 
     # --- Save final .csv's with metrics for (2-way only), (univariate + 2-way), (univariate + 2-way + 3-way) ---
     twoway_path = os.path.join(parent_dir, 'global_rba_rankings_2wayonly.csv')
