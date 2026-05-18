@@ -230,7 +230,7 @@ def process_results_dir(results_dir, prefix=""):
 
     dataset_id = os.path.basename(os.path.dirname(results_dir))
     # heatmap.set_title(prefix + dataset_id, fontsize=16)
-    heatmap.set_xlabel('Predictive features in top % of ranked features', fontsize=16)
+    # heatmap.set_xlabel('Predictive features in top % of ranked features', fontsize=16)
     # heatmap.set_ylabel('Method', fontsize=16)
     heatmap.set_xticks(xtick_positions)
     heatmap.set_xticklabels(xtick_labels, rotation=0, fontsize=16)
