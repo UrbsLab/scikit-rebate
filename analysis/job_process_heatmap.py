@@ -223,7 +223,7 @@ def process_results_dir(results_dir, prefix=""):
     cbar.outline.set_edgecolor("black")
     # NEW: increasing font size for color bar label and tick values
     # Increase label font size
-    cbar.set_label('Power (Frequency of Success)', fontsize=16, labelpad=2)
+    cbar.set_label('Power (Frequency of Success)', fontsize=16, labelpad=-10)
     # Increase tick label size
     cbar.ax.tick_params(labelsize=14)
     # NEW: adding clear labeling of 0% power as white and 100% power as purple
