@@ -226,6 +226,19 @@ def process_results_dir(results_dir, prefix=""):
     cbar.set_label('Power (Frequency of Success)', fontsize=16)
     # Increase tick label size
     cbar.ax.tick_params(labelsize=14)
+    # NEW: adding clear labeling of 0% power as white and 100% power as purple
+    cbar.ax.text(
+        1.8, 0.0,
+        '0% = white',
+        transform=cbar.ax.transAxes,
+        va='center'
+    )
+    cbar.ax.text(
+        1.8, 1.0,
+        '100% = purple',
+        transform=cbar.ax.transAxes,
+        va='center'
+    )
 
     dataset_id = os.path.basename(os.path.dirname(results_dir))
     # heatmap.set_title(prefix + dataset_id, fontsize=16)
