@@ -200,30 +200,30 @@ def main():
     )
 
     # creating the final weighted (univariate, 2-way) global metrics
-    # univariate_twoway_final_df = pd.DataFrame({
-    #     'RBA': merged_uni_twoway_df['RBA'],
-    #     'Avg_Mean': (
-    #         (merged_uni_twoway_df['Mean_uni'] + merged_uni_twoway_df['Mean_two']) / 2
-    #     ),
-    #     'Avg_Median': (
-    #         (merged_uni_twoway_df['Median_uni'] + merged_uni_twoway_df['Median_two']) / 2
-    #     )
-    # })
     univariate_twoway_final_df = pd.DataFrame({
         'RBA': merged_uni_twoway_df['RBA'],
-        'Weighted_Mean': (
-            merged_uni_twoway_df['Mean_uni'] * 0.5 + 
-            merged_uni_twoway_df['Mean_two'] * 0.5
+        'Avg_Mean': (
+            (merged_uni_twoway_df['Mean_uni'] + merged_uni_twoway_df['Mean_two']) / 2
         ),
-        'Weighted_Median': (
-            merged_uni_twoway_df['Median_uni'] * 0.5 + 
-            merged_uni_twoway_df['Median_two'] * 0.5
+        'Avg_Median': (
+            (merged_uni_twoway_df['Median_uni'] + merged_uni_twoway_df['Median_two']) / 2
         )
     })
+    # univariate_twoway_final_df = pd.DataFrame({
+    #     'RBA': merged_uni_twoway_df['RBA'],
+    #     'Weighted_Mean': (
+    #         merged_uni_twoway_df['Mean_uni'] * 0.5 + 
+    #         merged_uni_twoway_df['Mean_two'] * 0.5
+    #     ),
+    #     'Weighted_Median': (
+    #         merged_uni_twoway_df['Median_uni'] * 0.5 + 
+    #         merged_uni_twoway_df['Median_two'] * 0.5
+    #     )
+    # })
     # sorting this dataframe
     univariate_twoway_final_df = (
         univariate_twoway_final_df
-        .sort_values(by=['Weighted_Mean', 'Weighted_Median'], ascending=[True, True])
+        .sort_values(by=['Avg_Mean', 'Avg_Median'], ascending=[True, True])
         .reset_index(drop=True)
     )
 
@@ -239,36 +239,36 @@ def main():
     })
 
     # creating the final weighted (univariate, 2-way, 3-way) global metrics
-    # univariate_twoway_threeway_final_df = pd.DataFrame({
-    #     'RBA': merged_uni_twoway_threeway_df['RBA'],
-    #     'Avg_Mean': (
-    #         (merged_uni_twoway_threeway_df['Mean_uni'] +
-    #         merged_uni_twoway_threeway_df['Mean_two'] +
-    #         merged_uni_twoway_threeway_df['Mean_three']) / 3
-    #     ),
-    #     'Avg_Median': (
-    #         (merged_uni_twoway_threeway_df['Median_uni'] +
-    #         merged_uni_twoway_threeway_df['Median_two'] +
-    #         merged_uni_twoway_threeway_df['Median_three']) / 3
-    #     )
-    # })
     univariate_twoway_threeway_final_df = pd.DataFrame({
         'RBA': merged_uni_twoway_threeway_df['RBA'],
-        'Weighted_Mean': (
-            merged_uni_twoway_threeway_df['Mean_uni'] * 0.4 +
-            merged_uni_twoway_threeway_df['Mean_two'] * 0.4 +
-            merged_uni_twoway_threeway_df['Mean_three'] * 0.2
+        'Avg_Mean': (
+            (merged_uni_twoway_threeway_df['Mean_uni'] +
+            merged_uni_twoway_threeway_df['Mean_two'] +
+            merged_uni_twoway_threeway_df['Mean_three']) / 3
         ),
-        'Weighted_Median': (
-            merged_uni_twoway_threeway_df['Median_uni'] * 0.4 +
-            merged_uni_twoway_threeway_df['Median_two'] * 0.4 +
-            merged_uni_twoway_threeway_df['Median_three'] * 0.2
+        'Avg_Median': (
+            (merged_uni_twoway_threeway_df['Median_uni'] +
+            merged_uni_twoway_threeway_df['Median_two'] +
+            merged_uni_twoway_threeway_df['Median_three']) / 3
         )
     })
+    # univariate_twoway_threeway_final_df = pd.DataFrame({
+    #     'RBA': merged_uni_twoway_threeway_df['RBA'],
+    #     'Weighted_Mean': (
+    #         merged_uni_twoway_threeway_df['Mean_uni'] * 0.4 +
+    #         merged_uni_twoway_threeway_df['Mean_two'] * 0.4 +
+    #         merged_uni_twoway_threeway_df['Mean_three'] * 0.2
+    #     ),
+    #     'Weighted_Median': (
+    #         merged_uni_twoway_threeway_df['Median_uni'] * 0.4 +
+    #         merged_uni_twoway_threeway_df['Median_two'] * 0.4 +
+    #         merged_uni_twoway_threeway_df['Median_three'] * 0.2
+    #     )
+    # })
     # sorting this dataframe
     univariate_twoway_threeway_final_df = (
         univariate_twoway_threeway_final_df
-        .sort_values(by=['Weighted_Mean', 'Weighted_Median'], ascending=[True, True])
+        .sort_values(by=['Avg_Mean', 'Avg_Median'], ascending=[True, True])
         .reset_index(drop=True)
     )
 
