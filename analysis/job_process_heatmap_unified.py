@@ -260,6 +260,11 @@ def main():
                         # ax_top.set_title(f"n={n}, h={h}", fontsize=10)
                         for y in separators:
                             ax_top.axhline(y, color='black', linewidth=1.2)
+                        # outline around each individual heatmap:
+                        for spine in ax_top.spines.values():
+                            spine.set_visible(True)
+                            spine.set_linewidth(0.1)
+                            spine.set_edgecolor("gray")
                     else:
                         ax_top.axis('off')
                     if df1 is not None:
@@ -267,6 +272,11 @@ def main():
                         sns.heatmap(df1, ax=ax_bot, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
                         for y in separators:
                             ax_bot.axhline(y, color='black', linewidth=1.2)
+                        # outline around each individual heatmap:
+                        for spine in ax_bot.spines.values():
+                            spine.set_visible(True)
+                            spine.set_linewidth(0.1)
+                            spine.set_edgecolor("gray")
                     else:
                         ax_bot.axis('off')
 
@@ -296,6 +306,11 @@ def main():
                         sns.heatmap(df, ax=ax, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
                         for y in separators:
                             ax.axhline(y, color='black', linewidth=1.2)
+                        # outline around each individual heatmap:
+                        for spine in ax.spines.values():
+                            spine.set_visible(True)
+                            spine.set_linewidth(0.1)
+                            spine.set_edgecolor("gray")
                     else:
                         ax.axis('off')
     elif is_mainEff:
@@ -314,6 +329,11 @@ def main():
                     sns.heatmap(df, ax=ax, annot=False, cmap=custom_cmap, cbar=False, xticklabels=False, yticklabels=False, vmin=0, vmax=100)
                     for y in separators:
                         ax.axhline(y, color='black', linewidth=1.2)
+                    # outline around each individual heatmap:
+                    for spine in ax.spines.values():
+                        spine.set_visible(True)
+                        spine.set_linewidth(0.1)
+                        spine.set_edgecolor("gray")
                 else:
                     ax.axis('off')
                 
