@@ -1,4 +1,4 @@
-# job_process_wilcoxon.py
+# job_process_mannwhitney.py
 import os
 import argparse
 import pandas as pd
@@ -44,17 +44,17 @@ def process_dir(dir_path, column='rank', exclude_patterns=None):
         x = rba_groups[rba1]
         y = rba_groups[rba2]
         # wilcoxon_res = ranksums(x, y)
-        wilcoxon_res = mannwhitneyu(x, y, alternative="two-sided", method="asymptotic")
+        mannwhitney_res = mannwhitneyu(x, y, alternative="two-sided", method="asymptotic")
         row = {
             'RBA1': rba1,
             'RBA2': rba2,
-            'wilcoxon_statistic': wilcoxon_res.statistic,
-            'wilcoxon_pvalue': wilcoxon_res.pvalue
+            'mannwhitney_statistic': mannwhitney_res.statistic,
+            'mannwhitney_pvalue': mannwhitney_res.pvalue
         }
 
         # Permutation test only for rank
         if column == 'rank':
-            perm_p = permutation_test(x, y, wilcoxon_res.statistic)
+            perm_p = permutation_test(x, y, mannwhitney_res.statistic)
             row['permutation_pvalue'] = perm_p
 
         results.append(row)
@@ -64,18 +64,18 @@ def process_dir(dir_path, column='rank', exclude_patterns=None):
     # Sorting
     if column == 'rank':
         # Benjamini-Hochberg
-        results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='fdr_bh')[1]
+        results_df['mannwhitney_p_adj'] = multipletests(results_df['mannwhitney_pvalue'], method='fdr_bh')[1]
         results_df['permutation_p_adj'] = multipletests(results_df['permutation_pvalue'], method='fdr_bh')[1]
-        # results_df.sort_values(by=['wilcoxon_pvalue', 'permutation_pvalue'], ascending=True, inplace=True)
-        results_df.sort_values(by=['wilcoxon_p_adj', 'permutation_p_adj'], ascending=True, inplace=True)
-        output_file = os.path.join(dir_path, 'wilcoxon_ranks.csv')
+        # results_df.sort_values(by=['mannwhitney_pvalue', 'permutation_pvalue'], ascending=True, inplace=True)
+        results_df.sort_values(by=['mannwhitney_p_adj', 'permutation_p_adj'], ascending=True, inplace=True)
+        output_file = os.path.join(dir_path, 'mannwhitney_ranks.csv')
     else:
         # Benjamini-Hochberg
-        results_df['wilcoxon_p_adj'] = multipletests(results_df['wilcoxon_pvalue'], method='fdr_bh')[1]
-        # results_df.sort_values(by=['wilcoxon_pvalue'], ascending=True, inplace=True)
-        results_df.sort_values(by=['wilcoxon_p_adj'], ascending=True, inplace=True)
-        # output_file = os.path.join(dir_path, 'wilcoxon_feature_importances.csv')
-        output_file = os.path.join(dir_path, 'wilcoxon_normalized_feature_importances.csv')
+        results_df['mannwhitney_p_adj'] = multipletests(results_df['mannwhitney_pvalue'], method='fdr_bh')[1]
+        # results_df.sort_values(by=['mannwhitney_pvalue'], ascending=True, inplace=True)
+        results_df.sort_values(by=['mannwhitney_p_adj'], ascending=True, inplace=True)
+        # output_file = os.path.join(dir_path, 'mannwhitney_feature_importances.csv')
+        output_file = os.path.join(dir_path, 'mannwhitney_normalized_feature_importances.csv')
 
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
