@@ -238,7 +238,7 @@ def process_murelief100(file_path):
     fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=16)
     process_and_save_results(file_path, fs, "MuRelief100")
 
-# wrapper algorithms
+# *** Wrapper Algorithms
 def process_turf(file_path):
     fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), pct=0.10)
     process_and_save_results(file_path, fs, "TURF_MultiSWRFDB")
