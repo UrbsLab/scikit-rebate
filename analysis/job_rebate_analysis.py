@@ -236,8 +236,11 @@ def process_murelief100(file_path):
     process_and_save_results(file_path, fs, "MuRelief100")
 
 # *** Wrapper Algorithms
+# def process_turf(file_path):
+#     fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), pct=0.10)
+#     process_and_save_results(file_path, fs, "TURF_MultiSWRFDB")
 def process_turf(file_path):
-    fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), pct=0.10)
+    fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), n_iterations=10) # by default: num_scores_to_return = 10k
     process_and_save_results(file_path, fs, "TURF_MultiSWRFDB")
 
 def process_vls(file_path):
