@@ -240,7 +240,7 @@ def process_murelief100(file_path):
 #     fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), pct=0.10)
 #     process_and_save_results(file_path, fs, "TURF_MultiSWRFDB")
 def process_turf(file_path):
-    fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), n_iterations=10) # by default: num_scores_to_return = 10k
+    fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), n_iterations=20) # by default: num_scores_to_return = 10k
     process_and_save_results(file_path, fs, "TURF_MultiSWRFDB")
 
 def process_vls(file_path):
@@ -250,10 +250,6 @@ def process_vls(file_path):
 def process_vlsmultiswrfdbstar(file_path):
     fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar")
-
-def process_vlsmultisurfstar(file_path):
-    fs = VLS(relief_object=MultiSURFstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
-    process_and_save_results(file_path, fs, "VLS_MultiSURFstar")
 
 
 def main():
@@ -290,7 +286,6 @@ def main():
         'turf': process_turf,
         'vls': process_vls,
         'vls_multiswrfdbstar': process_vlsmultiswrfdbstar,
-        'vls_multisurfstar': process_vlsmultisurfstar,
     }
 
     if args.algorithm not in alg_map:
