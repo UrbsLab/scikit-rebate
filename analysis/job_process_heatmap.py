@@ -129,8 +129,8 @@ def process_results_dir(results_dir, prefix=""):
         'SWRFstar',
         'MultiSWRFstar',
         'MultiSWRFDBstar',
-        'VLS_MultiSWRFDB',
-        'TURF_MultiSWRFDB', # adding wrapper algorithms to heatmap now
+        'VLS_MultiSWRFDB', # adding wrapper algorithms to heatmap now
+        'TURF_MultiSWRFDB_niter20_return10000',
     ]
 
     # Define a mapping from your RBA order to new descriptive names
@@ -196,7 +196,7 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFstar': 'MultiSWRF*',
         'MultiSWRFDBstar': 'MultiSWRFDB*',
         'VLS_MultiSWRFDB': 'VLS (MultiSWRFDB)',
-        'TURF_MultiSWRFDB': 'TuRF (MultiSWRFDB)',
+        'TURF_MultiSWRFDB_niter20_return10000': 'TuRF (MultiSWRFDB, n=20)',
     }
 
     n_pred = all_rankings_df['Feature'].nunique()
