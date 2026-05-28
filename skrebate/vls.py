@@ -35,6 +35,7 @@ class VLS(BaseEstimator):
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.rank_absolute = self.relief_object.rank_absolute
+        self.n_features_to_select = self.relief_object.n_features_to_select # for integration with TuRF transform method
 
     def fit(self, X, y,weights=None):
         """Scikit-learn required: Computes the feature importance scores from the training data.

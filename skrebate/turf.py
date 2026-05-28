@@ -1,6 +1,7 @@
 from sklearn.base import BaseEstimator
 import copy
 import numpy as np
+from skrebate import VLS
 
 class TURF(BaseEstimator):
     def __init__(self, relief_object, n_iterations=10, num_scores_to_return=10000):
@@ -40,6 +41,11 @@ class TURF(BaseEstimator):
         # Number of features to eliminate each iteration
         num_features_to_eliminate = np.floor((num_features - self.num_scores_to_return) / self.n_iterations)
 
+        # if TuRF is using VLS as its inner algorithm, calculate proportion of total features included in each subset
+        # ... to ensure this remains constant across the iterations
+        if isinstance(self.relief_object, VLS):
+            subset_proportion = self.relief_object.size_feature_subset / num_features
+
         #Find out how many features to use in each iteration
         current_features = list(range(num_features))
         eliminated_tiers = []
@@ -48,6 +54,10 @@ class TURF(BaseEstimator):
             for i in range(self.n_iterations):
                 X_subset = X[:, current_features]
                 relief = copy.deepcopy(self.relief_object)
+
+                if isinstance(relief, VLS) and i != 0: # adjust the number of features in each VLS subset
+                    relief.size_feature_subset = int(np.ceil(subset_proportion * len(current_features)))
+
                 relief.fit(X_subset, y)
 
                 importances = relief.feature_importances_
@@ -65,6 +75,10 @@ class TURF(BaseEstimator):
         # Final round on the reduced set
         X_final = X[:, current_features]
         relief = copy.deepcopy(self.relief_object)
+
+        if isinstance(relief, VLS): # adjust the number of features in each VLS subset
+            relief.size_feature_subset = int(np.ceil(subset_proportion * len(current_features)))
+
         relief.fit(X_final, y)
         final_scores = relief.feature_importances_
 
