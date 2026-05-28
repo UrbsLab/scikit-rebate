@@ -1,7 +1,7 @@
 from sklearn.base import BaseEstimator
 import copy
 import numpy as np
-from skrebate import VLS
+from .vls import VLS
 
 class TURF(BaseEstimator):
     def __init__(self, relief_object, n_iterations=10, num_scores_to_return=10000):
