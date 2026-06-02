@@ -239,6 +239,15 @@ def process_murelief100(file_path):
 
 # FOR 100K FEATURE DATASETS:
 # ***** TuRF implementations:
+# *** ReliefF (k=10)
+def process_turf_relieff10_niter10_return10000(file_path):
+    fs = TURF(relief_object=ReliefF(n_jobs=16, n_neighbors=10), n_iterations=10) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_ReliefF10_niter10_return10000")
+
+def process_turf_relieff10_niter20_return10000(file_path):
+    fs = TURF(relief_object=ReliefF(n_jobs=16, n_neighbors=10), n_iterations=20) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_ReliefF10_niter20_return10000")
+
 # *** MultiSWRFDB
 def process_turf_multiswrfdb_niter10_return10000(file_path):
     fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), n_iterations=10) # by default: num_scores_to_return = 10k
@@ -257,16 +266,12 @@ def process_turf_multiswrfdbstar_niter20_return10000(file_path):
     fs = TURF(relief_object=MultiSWRFDBstar(n_jobs=16), n_iterations=20) # by default: num_scores_to_return = 10k
     process_and_save_results(file_path, fs, "TURF_MultiSWRFDBstar_niter20_return10000")
 
-# *** ReliefF (k=10)
-def process_turf_relieff10_niter10_return10000(file_path):
-    fs = TURF(relief_object=ReliefF(n_jobs=16, n_neighbors=10), n_iterations=10) # by default: num_scores_to_return = 10k
-    process_and_save_results(file_path, fs, "TURF_ReliefF10_niter10_return10000")
-
-def process_turf_relieff10_niter20_return10000(file_path):
-    fs = TURF(relief_object=ReliefF(n_jobs=16, n_neighbors=10), n_iterations=20) # by default: num_scores_to_return = 10k
-    process_and_save_results(file_path, fs, "TURF_ReliefF10_niter20_return10000")
-
 # ***** VLS Implementations:
+# *** ReliefF (k=10)
+def process_vls_relieff10(file_path):
+    fs = VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_ReliefF10")
+    
 # *** MultiSWRFDB
 def process_vls_multiswrfdb(file_path):
     fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
@@ -276,11 +281,6 @@ def process_vls_multiswrfdb(file_path):
 def process_vls_multiswrfdbstar(file_path):
     fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar")
-
-# *** ReliefF (k=10)
-def process_vls_relieff10(file_path):
-    fs = VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
-    process_and_save_results(file_path, fs, "VLS_ReliefF10")
 
 def main():
     parser = argparse.ArgumentParser()
