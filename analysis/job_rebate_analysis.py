@@ -271,16 +271,31 @@ def process_turf_multiswrfdbstar_niter20_return10000(file_path):
 def process_vls_relieff10(file_path):
     fs = VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_ReliefF10")
-    
+
+# *** ReliefF (k=10) w/ ensure_pair_coverage=True
+def process_vls_relieff10_paircoverage(file_path):
+    fs = VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, ensure_pair_coverage=True, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_ReliefF10_paircoverage")
+
 # *** MultiSWRFDB
 def process_vls_multiswrfdb(file_path):
     fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDB")
 
+# *** MultiSWRFDB w/ ensure_pair_coverage=True
+def process_vls_multiswrfdb_paircoverage(file_path):
+    fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, ensure_pair_coverage=True, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_MultiSWRFDB_paircoverage")
+
 # *** MultiSWRFDBstar
 def process_vls_multiswrfdbstar(file_path):
     fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar")
+
+# *** MultiSWRFDBstar w/ ensure_pair_coverage=True
+def process_vls_multiswrfdbstar_paircoverage(file_path):
+    fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, ensure_pair_coverage=True, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar_paircoverage")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -313,15 +328,18 @@ def main():
         'multiswrfdbexponential3sd': process_multiswrfdbexponential3SD,
         'murelief10': process_murelief10,
         'murelief100': process_murelief100,
+        'turf_relieff10_niter10_return10000': process_turf_relieff10_niter10_return10000,
+        'turf_relieff10_niter20_return10000': process_turf_relieff10_niter20_return10000,
         'turf_multiswrfdb_niter10_return10000': process_turf_multiswrfdb_niter10_return10000,
         'turf_multiswrfdb_niter20_return10000': process_turf_multiswrfdb_niter20_return10000,
         'turf_multiswrfdbstar_niter10_return10000': process_turf_multiswrfdbstar_niter10_return10000,
         'turf_multiswrfdbstar_niter20_return10000': process_turf_multiswrfdbstar_niter20_return10000,
-        'turf_relieff10_niter10_return10000': process_turf_relieff10_niter10_return10000,
-        'turf_relieff10_niter20_return10000': process_turf_relieff10_niter20_return10000,
-        'vls_multiswrfdb': process_vls_multiswrfdb,
-        'vls_multiswrfdbstar': process_vls_multiswrfdbstar,
         'vls_relieff10': process_vls_relieff10,
+        'vls_relieff10_paircoverage': process_vls_relieff10_paircoverage,
+        'vls_multiswrfdb': process_vls_multiswrfdb,
+        'vls_multiswrfdb_paircoverage': process_vls_multiswrfdb_paircoverage,
+        'vls_multiswrfdbstar': process_vls_multiswrfdbstar,
+        'vls_multiswrfdbstar_paircoverage': process_vls_multiswrfdbstar_paircoverage,
     }
 
     if args.algorithm not in alg_map:

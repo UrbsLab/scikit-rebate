@@ -147,6 +147,9 @@ def process_results_dir(results_dir, prefix=""):
         'VLS_ReliefF10',
         'VLS_MultiSWRFDB',
         'VLS_MultiSWRFDBstar',
+        'VLS_ReliefF10_paircoverage',
+        'VLS_MultiSWRFDB_paircoverage',
+        'VLS_MultiSWRFDBstar_paircoverage',
     ]
 
     # Define a mapping from your RBA order to new descriptive names
@@ -229,6 +232,9 @@ def process_results_dir(results_dir, prefix=""):
         'VLS_ReliefF10': 'VLS (ReliefF 10NN)',
         'VLS_MultiSWRFDB': 'VLS (MultiSWRFDB)',
         'VLS_MultiSWRFDBstar': 'VLS (MultiSWRFDB*)',
+        'VLS_ReliefF10_paircoverage': 'VLS (ReliefF 10NN), EPC',
+        'VLS_MultiSWRFDB_paircoverage': 'VLS (MultiSWRFDB), EPC',
+        'VLS_MultiSWRFDBstar_paircoverage': 'VLS (MultiSWRFDB*), EPC',
     }
 
     n_pred = all_rankings_df['Feature'].nunique()
