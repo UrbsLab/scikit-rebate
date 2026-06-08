@@ -297,6 +297,22 @@ def process_vls_multiswrfdbstar_paircoverage(file_path):
     fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, ensure_pair_coverage=True, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar_paircoverage")
 
+# ***** TuRF w/ VLS Implementations:
+# *** ReliefF (k=10)
+def process_turf_vls_relieff10_niter2_return10000(file_path):
+    fs = TURF(relief_object=VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_VLS_ReliefF10_niter2_return10000")
+
+# *** MultiSWRFDB
+def process_turf_vls_multiswrfdb_niter2_return10000(file_path):
+    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDB_niter2_return10000")
+
+# *** MultiSWRFDBstar
+def process_turf_vls_multiswrfdbstar_niter2_return10000(file_path):
+    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDBstar_niter2_return10000")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--algorithm', required=True, help='Algorithm to use')
@@ -340,6 +356,9 @@ def main():
         'vls_multiswrfdb_paircoverage': process_vls_multiswrfdb_paircoverage,
         'vls_multiswrfdbstar': process_vls_multiswrfdbstar,
         'vls_multiswrfdbstar_paircoverage': process_vls_multiswrfdbstar_paircoverage,
+        'turf_vls_relieff10_niter2_return10000': process_turf_vls_relieff10_niter2_return10000,
+        'turf_vls_multiswrfdb_niter2_return10000': process_turf_vls_multiswrfdb_niter2_return10000,
+        'turf_vls_multiswrfdbstar_niter2_return10000': process_turf_vls_multiswrfdbstar_niter2_return10000,
     }
 
     if args.algorithm not in alg_map:
