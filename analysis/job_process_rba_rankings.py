@@ -35,6 +35,21 @@ def collect_rba_rankings(root_dir):
         'MultiSWRFDBexponential3SD': 'MultiSWRFDB-E-3SD',
         'MultiSWRFDBexponentialstar': 'MultiSWRFDB-E*',
         'MultiSWRFDBexponential3SDstar': 'MultiSWRFDB-E-3SD*',
+        'TURF_ReliefF10_niter10_return10000': 'TuRF (ReliefF 10NN, n=10)',
+        'TURF_ReliefF10_niter20_return10000': 'TuRF (ReliefF 10NN, n=20)',
+        'TURF_MultiSWRFDB_niter10_return10000': 'TuRF (MultiSWRFDB, n=10)',
+        'TURF_MultiSWRFDB_niter20_return10000': 'TuRF (MultiSWRFDB, n=20)',
+        'TURF_MultiSWRFDBstar_niter10_return10000': 'TuRF (MultiSWRFDB*, n=10)',
+        'TURF_MultiSWRFDBstar_niter20_return10000': 'TuRF (MultiSWRFDB*, n=20)',
+        'VLS_ReliefF10': 'VLS (ReliefF 10NN)',
+        'VLS_MultiSWRFDB': 'VLS (MultiSWRFDB)',
+        'VLS_MultiSWRFDBstar': 'VLS (MultiSWRFDB*)',
+        'VLS_ReliefF10_paircoverage': 'VLS (ReliefF 10NN), EPC',
+        'VLS_MultiSWRFDB_paircoverage': 'VLS (MultiSWRFDB), EPC',
+        'VLS_MultiSWRFDBstar_paircoverage': 'VLS (MultiSWRFDB*), EPC',
+        'TURF_VLS_ReliefF10_niter2_return10000': 'TuRF (VLS (ReliefF 10NN), n=2)',
+        'TURF_VLS_MultiSWRFDB_niter2_return10000': 'TuRF (VLS (MultiSWRFDB), n=2)',
+        'TURF_VLS_MultiSWRFDBstar_niter2_return10000': 'TuRF (VLS (MultiSWRFDB*), n=2)',
     }
 
     for subdir, dirs, _ in os.walk(root_dir):
