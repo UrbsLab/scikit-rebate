@@ -313,6 +313,22 @@ def process_turf_vls_multiswrfdbstar_niter2_return10000(file_path):
     fs = TURF(relief_object=VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
     process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDBstar_niter2_return10000")
 
+# ***** Iter-Relief
+# *** ReliefF (k=10)
+def process_iter_relieff10(file_path):
+    fs = Iter(relief_object=ReliefF(n_jobs=16, n_neighbors=10)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_ReliefF10")
+
+# *** MultiSWRFDB
+def process_iter_multiswrfdb(file_path):
+    fs = Iter(relief_object=MultiSWRFDB(n_jobs=16)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_MultiSWRFDB")
+
+# *** MultiSWRFDBstar
+def process_iter_multiswrfdbstar(file_path):
+    fs = Iter(relief_object=MultiSWRFDBstar(n_jobs=16)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_MultiSWRFDBstar")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--algorithm', required=True, help='Algorithm to use')
@@ -359,6 +375,9 @@ def main():
         'turf_vls_relieff10_niter2_return10000': process_turf_vls_relieff10_niter2_return10000,
         'turf_vls_multiswrfdb_niter2_return10000': process_turf_vls_multiswrfdb_niter2_return10000,
         'turf_vls_multiswrfdbstar_niter2_return10000': process_turf_vls_multiswrfdbstar_niter2_return10000,
+        'iter_relieff10': process_iter_relieff10,
+        'iter_multiswrfdb': process_iter_multiswrfdb,
+        'iter_multiswrfdbstar': process_iter_multiswrfdbstar,
     }
 
     if args.algorithm not in alg_map:
