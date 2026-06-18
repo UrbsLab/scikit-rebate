@@ -1,4 +1,4 @@
-# run_process_wilcoxon.py
+# run_process_mannwhitney.py
 import os
 import time
 import argparse
@@ -44,10 +44,10 @@ python {python_script} "{dir_path}" {column_flag} {exclude_flag}
     os.system(submit_cmd)
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate and submit Wilcoxon test jobs.")
+    parser = argparse.ArgumentParser(description="Generate and submit Mann-Whitney U test jobs.")
     parser.add_argument('--basedir', required=True, help='Base directory to search for rankings_list.csv.')
     parser.add_argument('--hpctype', choices=['lsf', 'slurm'], default='slurm', help='Scheduler type: lsf or slurm.')
-    parser.add_argument('--script', default='job_process_wilcoxon.py', help='Python script to run.')
+    parser.add_argument('--script', default='job_process_mannwhitney.py', help='Python script to run.')
     parser.add_argument('--jobdir', default='jobs', help='Directory to store job scripts.')
     parser.add_argument('--logdir', default='logs', help='Directory to store output and error logs.')
     parser.add_argument('--column', choices=['rank', 'feature_importance'], default='rank', help='Column to use for tests.')
@@ -67,7 +67,7 @@ def main():
     #         job_count += 1
     dir_path = args.basedir  # only look directly inside basedir
     if 'rankings_list.csv' in os.listdir(dir_path):
-        job_name = f"wilcoxon_job_{job_count}_{int(time.time())}"
+        job_name = f"mannwhitney_job_{job_count}_{int(time.time())}"
         generate_job_script(args.hpctype, args.script, dir_path, job_name, args.jobdir, args.logdir, args.column, args.exclude)
         job_count += 1
 
