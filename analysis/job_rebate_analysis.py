@@ -165,11 +165,11 @@ def process_multiswrfdb(file_path):
     process_and_save_results(file_path, fs, "MultiSWRFDB")
 
 def process_murelief10(file_path):
-    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=16)
+    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=1)
     process_and_save_results(file_path, fs, "MuRelief10")
 
 def process_murelief100(file_path):
-    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=16)
+    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=1)
     process_and_save_results(file_path, fs, "MuRelief100")
 
 
