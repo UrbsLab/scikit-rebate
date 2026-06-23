@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 import time
 from pyinstrument import Profiler
 from line_profiler import LineProfiler
-from .scoring_utils import compute_score, ramp_function
+from .scoring_utils import compute_score, ramp_vec
 
 
 class MultiSURF(SURFstar):
@@ -102,7 +102,7 @@ class MultiSURF(SURFstar):
 
         # lp = LineProfiler()
         # lp.add_function(compute_score)
-        # lp.add_function(ramp_function)
+        # lp.add_function(ramp_vec)
         # profiler = Profiler()
         # profiler.start()
         NNlist = [self._find_neighbors(datalen) for datalen in range(self._datalen)]
