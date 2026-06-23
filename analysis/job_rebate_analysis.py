@@ -12,7 +12,7 @@ from functools import partial
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MultiSWRFDBlinearstar, MultiSWRFDBlinear, MultiSWRFDBexponentialstar, MultiSWRFDBexponential, MultiSWRFDBlinear3SDstar, MultiSWRFDBlinear3SD, MultiSWRFDBexponential3SDstar, MultiSWRFDBexponential3SD, MuRelief
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MuRelief
 
 # NEW: added exist_ok=True
 def ensure_dir(directory):

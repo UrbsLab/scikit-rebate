@@ -23,10 +23,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from __future__ import print_function
 import numpy as np
-from .surfstar import SURFstar
 from .relieff import ReliefF
 from joblib import Parallel, delayed
-from .scoring_utils import MultiSURF_compute_scores, ReliefF_compute_scores
+from .scoring_utils import ReliefF_compute_scores
 import matplotlib.pyplot as plt
 import sys
 
@@ -98,18 +97,16 @@ class MuRelief(ReliefF):
         inst_deadband = true_std / 2.
 
         # replacing the value for the target instance to the mean so that it is never selected as its own neighbor in μ-Relief
-        # dist_vect[inst] = inst_mean_dist
         dist_vect = np.insert(dist_vect, inst, inst_mean_dist)
-        # print("Dist_vect after setting dist_vect[inst] = inst_mean_dist:", dist_vect)
 
-        # NEW: unique mean, std, and deadband values for this target instance, used to construct the expected curve in distance-weight plot
-        self.instance_dist_stats.append((inst_mean_dist, true_std, inst_deadband))
+        # unique mean, std, and deadband values for this target instance, used to construct the expected curve in distance-weight plot
+        # self.instance_dist_stats.append((inst_mean_dist, true_std, inst_deadband))
 
-        # initializing all weights to 0 before the k neighbors (and only those neighbors) get weights of 1
+        # initializing all weights to 0 before the k neighbors (and only those neighbors) get weights of 1 (for plotting purposes)
         # self.distance_weight_log = [(d, 0.0) for d in dist_vect]
         # self.std_weight_log = [((d - inst_mean_dist) / true_std, 0.0) for d in dist_vect]
 
-        # NEW: calculating mean distance for each outcome group
+        # calculating mean distance for each outcome group
         for label, (dist_list, idx_list) in means_calc.items():
             if self.distarray_has_nan:
                 mean_dist = float(np.nanmean(dist_list)) if dist_list else 0.0
@@ -124,12 +121,6 @@ class MuRelief(ReliefF):
             idx_arr = np.array(idx_list)
             abs_diff_vect[idx_arr] = np.abs(dist_vect[idx_arr] - mean_dist)
 
-        # abs_diff_vect = np.abs(dist_vect - inst_mean_dist)
-        # print("Absolute difference vector:", abs_diff_vect)
-        # # sorting in descending order
-        # abs_diff_vect = np.sort(abs_diff_vect)[::-1]
-
-        # return np.array(neighbors)
         # Identify neighbors-------------------------------------------------------
         """ Neighbors for Binary Endpoints: """
         if self._class_type == 'binary':
@@ -149,13 +140,10 @@ class MuRelief(ReliefF):
                     miss_count += 1
                 
                 # for distance-weight plot purposes
-                d = dist_vect[n_index]
-                # print("Distance from", inst, "for", n_index, ":", d)
-                self.distance_weight_log.append((d, 1.0))
-                # self.distance_weight_log[n_index] = (d, 1.0)
-                std_d = (d - inst_mean_dist) / true_std
-                self.std_weight_log.append((std_d, 1.0))
-                # self.std_weight_log[n_index] = (std_d, 1.0)
+                # d = dist_vect[n_index]
+                # self.distance_weight_log.append((d, 1.0))
+                # std_d = (d - inst_mean_dist) / true_std
+                # self.std_weight_log.append((std_d, 1.0))
 
                 if match_count >= self.n_neighbors and miss_count >= self.n_neighbors:
                     break
@@ -179,12 +167,10 @@ class MuRelief(ReliefF):
                             miss_count[label] += 1
                 
                 # for distance-weight plot purposes
-                d = dist_vect[n_index]
-                self.distance_weight_log.append((d, 1.0))
-                # self.distance_weight_log[n_index] = (d, 1.0)
-                std_d = (d - inst_mean_dist) / true_std
-                self.std_weight_log.append((std_d, 1.0))
-                # self.std_weight_log[n_index] = (std_d, 1.0)
+                # d = dist_vect[n_index]
+                # self.distance_weight_log.append((d, 1.0))
+                # std_d = (d - inst_mean_dist) / true_std
+                # self.std_weight_log.append((std_d, 1.0))
 
                 if match_count >= self.n_neighbors and all(v >= self.n_neighbors for v in miss_count.values()):
                     break
@@ -205,24 +191,22 @@ class MuRelief(ReliefF):
                     miss_count += 1
                 
                 # for distance-weight plot purposes
-                d = dist_vect[n_index]
-                self.distance_weight_log.append((d, 1.0))
-                # self.distance_weight_log[n_index] = (d, 1.0)
-                std_d = (d - inst_mean_dist) / true_std
-                self.std_weight_log.append((std_d, 1.0))
-                # self.std_weight_log[n_index] = (std_d, 1.0)
+                # d = dist_vect[n_index]
+                # self.distance_weight_log.append((d, 1.0))
+                # std_d = (d - inst_mean_dist) / true_std
+                # self.std_weight_log.append((std_d, 1.0))
 
                 if match_count >= self.n_neighbors and miss_count >= self.n_neighbors:
                     break
         
         # for distance-weight plot purposes
-        n_set = set(n_list)
-        for i in range(len(dist_vect)):
-            if i not in n_set:  # skip neighbors
-                d = dist_vect[i]
-                self.distance_weight_log.append((d, 0.0))
-                std_d = (d - inst_mean_dist) / true_std
-                self.std_weight_log.append((std_d, 0.0))
+        # n_set = set(n_list)
+        # for i in range(len(dist_vect)):
+        #     if i not in n_set:  # skip neighbors
+        #         d = dist_vect[i]
+        #         self.distance_weight_log.append((d, 0.0))
+        #         std_d = (d - inst_mean_dist) / true_std
+        #         self.std_weight_log.append((std_d, 0.0))
         
         return np.array(n_list)
 
@@ -230,9 +214,9 @@ class MuRelief(ReliefF):
         """ Runs neighbor identification and feature scoring to yield μ-Relief scores. """
         nan_entries = np.isnan(self._X)
 
-        self.distance_weight_log = []  # Reset log before run
-        self.std_weight_log = []
-        self.instance_dist_stats = []
+        # self.distance_weight_log = []  # Reset log before run
+        # self.std_weight_log = []
+        # self.instance_dist_stats = []
 
         Nlist = [self._find_neighbors(datalen) for datalen in range(self._datalen)]
 
@@ -249,80 +233,80 @@ class MuRelief(ReliefF):
 
         return np.array(scores)
     
-    def plot_distance_weight_map(self, save_fig=None, show_expected=True):
-        """Visualize actual (distance, weight) pairs collected during Relief run."""
-        if not self.distance_weight_log:
-            print("No data logged yet. Run the algorithm first.")
-            return
+    # def plot_distance_weight_map(self, save_fig=None, show_expected=True):
+    #     """Visualize actual (distance, weight) pairs collected during Relief run."""
+    #     if not self.distance_weight_log:
+    #         print("No data logged yet. Run the algorithm first.")
+    #         return
 
-        distances, weights = zip(*self.distance_weight_log)
-        # NEW: use self.std_weight_log for plotting
-        distances_std, weights_std = zip(*self.std_weight_log)
-        plt.figure(figsize=(10, 6))
-        # plt.scatter(distances, weights, alpha=0.3, s=10, label='Observed')
-        plt.scatter(distances_std, weights_std, alpha=0.3, s=10, label='Observed')
+    #     distances, weights = zip(*self.distance_weight_log)
+    #     # NEW: use self.std_weight_log for plotting
+    #     distances_std, weights_std = zip(*self.std_weight_log)
+    #     plt.figure(figsize=(10, 6))
+    #     # plt.scatter(distances, weights, alpha=0.3, s=10, label='Observed')
+    #     plt.scatter(distances_std, weights_std, alpha=0.3, s=10, label='Observed')
 
-        if show_expected:
-            # average per-instance mean/std
-            x_vals = np.linspace(min(distances), max(distances), 500)
-            means, stds, deadband = zip(*self.instance_dist_stats)
-            mean_dist = np.mean(means)
-            std_dist = np.mean(stds)
-            dead_band = np.mean(deadband)
-            # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
+    #     if show_expected:
+    #         # average per-instance mean/std
+    #         x_vals = np.linspace(min(distances), max(distances), 500)
+    #         means, stds, deadband = zip(*self.instance_dist_stats)
+    #         mean_dist = np.mean(means)
+    #         std_dist = np.mean(stds)
+    #         dead_band = np.mean(deadband)
+    #         # dead_band = std_dist / 4.0 if 'TBD' in self.name else 0
 
-            # NEW: for plotting in terms of STD
-            x_vals_std = (x_vals - mean_dist) / std_dist
+    #         # NEW: for plotting in terms of STD
+    #         x_vals_std = (x_vals - mean_dist) / std_dist
 
-            x_vals_abs_diff = np.abs(x_vals - mean_dist)
+    #         x_vals_abs_diff = np.abs(x_vals - mean_dist)
 
-            # y_vals = []
-            y_vals = np.zeros(500)
-            neighbor_count = 0
-            # for x in x_vals:
-            for x_index in np.argsort(x_vals_abs_diff)[::-1]:
-                # if x < (mean_dist - dead_band):
-                #     y_vals.append(1.0)
-                # else:
-                #     y_vals.append(0.0)
-                y_vals[x_index] = 1.0
-                neighbor_count += 1
-                if neighbor_count >= self.n_neighbors:
-                    break
+    #         # y_vals = []
+    #         y_vals = np.zeros(500)
+    #         neighbor_count = 0
+    #         # for x in x_vals:
+    #         for x_index in np.argsort(x_vals_abs_diff)[::-1]:
+    #             # if x < (mean_dist - dead_band):
+    #             #     y_vals.append(1.0)
+    #             # else:
+    #             #     y_vals.append(0.0)
+    #             y_vals[x_index] = 1.0
+    #             neighbor_count += 1
+    #             if neighbor_count >= self.n_neighbors:
+    #                 break
 
-            if y_vals is not None:
-                # plt.plot(x_vals, y_vals, label='Expected', linewidth=2, color='black')
-                # NEW: use x_vals STD instead
-                plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
+    #         if y_vals is not None:
+    #             # plt.plot(x_vals, y_vals, label='Expected', linewidth=2, color='black')
+    #             # NEW: use x_vals STD instead
+    #             plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
         
-        # sorted_log = sorted(self.std_weight_log, key=lambda x: x[0], reverse=True)
-        # # Write to text file
-        # with open(save_file, "w") as f:
-        #     for tup in sorted_log:
-        #         f.write(f"{tup}\n")
+    #     # sorted_log = sorted(self.std_weight_log, key=lambda x: x[0], reverse=True)
+    #     # # Write to text file
+    #     # with open(save_file, "w") as f:
+    #     #     for tup in sorted_log:
+    #     #         f.write(f"{tup}\n")
 
-        plt.title(f'Distance-to-Weight Mapping: μ-Relief')
-        plt.xlabel('Distance from Target Instance')
-        # plt.xlabel('Standard Deviations (Distance) from Target Instance')
-        plt.ylabel('Scoring Weight')
-        plt.grid(True)
-        # NEW: grid lines different from x-tick labels:
-        # plt.gca().set_xticks(np.arange(-3, 4, 1), minor=False)
-        plt.ylim(-1.1, 1.1)
-        # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
-        # plt.xlim(0, 1.0)
-        # plt.xlim(-3.0, 3.0)
-        # plt.xticks(np.linspace(0, 1.0, num=6))
-        # plt.xticks([-3, -2, -1, 0, 1, 2, 3])
-        plt.xticks(
-            [-0.5, 0, 0.5],
-            ['(μ - σ/2)', 'μ', '(μ + σ/2)']
-        )
-        # NEW: dotted lines for deadband zone boundaries (0.5 SD on either side of mean)
-        plt.axvline(x=-0.5, color='red', linestyle='dotted')
-        plt.axvline(x=0.5,  color='red', linestyle='dotted')
-        plt.legend()
-        if save_fig:
-            plt.savefig(save_fig)
-        else:
-            plt.show()
+    #     plt.title(f'Distance-to-Weight Mapping: μ-Relief')
+    #     plt.xlabel('Distance from Target Instance')
+    #     # plt.xlabel('Standard Deviations (Distance) from Target Instance')
+    #     plt.ylabel('Scoring Weight')
+    #     plt.grid(True)
+    #     # NEW: grid lines different from x-tick labels:
+    #     # plt.gca().set_xticks(np.arange(-3, 4, 1), minor=False)
+    #     plt.ylim(-1.1, 1.1)
+    #     # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
+    #     # plt.xlim(0, 1.0)
+    #     # plt.xlim(-3.0, 3.0)
+    #     # plt.xticks(np.linspace(0, 1.0, num=6))
+    #     # plt.xticks([-3, -2, -1, 0, 1, 2, 3])
+    #     plt.xticks(
+    #         [-0.5, 0, 0.5],
+    #         ['(μ - σ/2)', 'μ', '(μ + σ/2)']
+    #     )
+    #     # NEW: dotted lines for deadband zone boundaries (0.5 SD on either side of mean)
+    #     plt.axvline(x=-0.5, color='red', linestyle='dotted')
+    #     plt.axvline(x=0.5,  color='red', linestyle='dotted')
+    #     plt.legend()
+    #     if save_fig:
+    #         plt.savefig(save_fig)
+    #     else:
+    #         plt.show()

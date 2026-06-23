@@ -243,11 +243,6 @@ class ReliefF(BaseEstimator):
             print('Created distance array in {} seconds.'.format(elapsed))
             print('Feature scoring under way ...')
 
-        # NEW: to see how long distance array creation takes:
-        elapsed = time.time() - start
-        print('Created distance array in {} seconds.'.format(elapsed))
-        print('Feature scoring under way ...')
-
         start = time.time()
        #--------------------------------------------------------------------------------------------------------------------
 
@@ -261,10 +256,6 @@ class ReliefF(BaseEstimator):
         if self.verbose:
             elapsed = time.time() - start
             print('Completed scoring in {} seconds.'.format(elapsed))
-
-        # NEW: to see how long feature scoring takes
-        elapsed = time.time() - start
-        print('Completed scoring in {} seconds.'.format(elapsed))
 
         # Compute indices of top features
         if self.rank_absolute:
