@@ -86,32 +86,6 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFstar',
         'MultiSWRFDBstar',
     ]
-    # rba_order = [
-    #     'RandomShuffle', 
-    #     'MutualInfo', 
-    #     'MultiSWRFDB', 
-    #     'MultiSWRFDBstar', 
-    #     'MultiSWRFDBlinear', 
-    #     'MultiSWRFDBlinear3SD', 
-    #     'MultiSWRFDBlinearstar', 
-    #     'MultiSWRFDBlinear3SDstar', 
-    #     'MultiSWRFDBexponential', 
-    #     'MultiSWRFDBexponential3SD', 
-    #     'MultiSWRFDBexponentialstar', 
-    #     'MultiSWRFDBexponential3SDstar'
-    # ]
-    # rba_order = [
-    #     'RandomShuffle',
-    #     'MutualInfo',
-    #     'ReliefF10',
-    #     'ReliefF100',
-    #     'MultiSURF',
-    #     'MultiSURFstar',
-    #     'ABS_ReliefF10',
-    #     'ABS_ReliefF100',
-    #     'ABS_MultiSURF',
-    #     'ABS_MultiSURFstar',
-    # ]
 
     # Define a mapping from your RBA order to new descriptive names
     rba_descriptive_names = {
@@ -132,32 +106,6 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFstar': 'MultiSWRF*',
         'MultiSWRFDBstar': 'MultiSWRFDB*',
     }
-    # rba_descriptive_names = {
-    #     'RandomShuffle': 'Random Shuffle',
-    #     'MutualInfo': 'Mutual Info',
-    #     'MultiSWRFDB': 'MultiSWRFDB',
-    #     'MultiSWRFDBstar': 'MultiSWRFDB*',
-    #     'MultiSWRFDBlinear': 'MultiSWRFDB-L',
-    #     'MultiSWRFDBlinear3SD': 'MultiSWRFDB-L-3SD',
-    #     'MultiSWRFDBlinearstar': 'MultiSWRFDB-L*',
-    #     'MultiSWRFDBlinear3SDstar': 'MultiSWRFDB-L-3SD*',
-    #     'MultiSWRFDBexponential': 'MultiSWRFDB-E',
-    #     'MultiSWRFDBexponential3SD': 'MultiSWRFDB-E-3SD',
-    #     'MultiSWRFDBexponentialstar': 'MultiSWRFDB-E*',
-    #     'MultiSWRFDBexponential3SDstar': 'MultiSWRFDB-E-3SD*',
-    # }
-    # rba_descriptive_names = {
-    #     'RandomShuffle': 'Random Shuffle',
-    #     'MutualInfo': 'Mutual Info',
-    #     'ReliefF10': 'ReliefF 10NN',
-    #     'ReliefF100': 'ReliefF 100NN',
-    #     'MultiSURF': 'MultiSURF',
-    #     'MultiSURFstar': 'MultiSURF*',
-    #     'ABS_ReliefF10': 'ReliefF 10NN (ABS)',
-    #     'ABS_ReliefF100': 'ReliefF 100NN (ABS)',
-    #     'ABS_MultiSURF': 'MultiSURF (ABS)',
-    #     'ABS_MultiSURFstar': 'MultiSURF* (ABS)',
-    # }
 
     n_pred = all_rankings_df['Feature'].nunique()
     percentages_df = percentages_df.iloc[n_pred-1:]
@@ -181,13 +129,12 @@ def process_results_dir(results_dir, prefix=""):
     cbar = heatmap.collections[0].colorbar
     cbar.outline.set_linewidth(1.5)
     cbar.outline.set_edgecolor("black")
-    # NEW: increasing font size for color bar label and tick values
     # Increase label font size
     cbar.set_label('Power (Frequency of Success)', fontsize=16)
     cbar.ax.yaxis.set_label_coords(3.0, 0.5) # explicitly placing the cbar label closer to the cbar
     # Increase tick label size
     cbar.ax.tick_params(labelsize=14)
-    # NEW: adding clear labeling of 0% power as white and 100% power as purple
+    # adding clear labeling of 0% power as white and 100% power as purple
     cbar.set_ticks([0, 20, 40, 60, 80, 100])
     cbar.set_ticklabels([
         '0 (white)',
@@ -205,9 +152,8 @@ def process_results_dir(results_dir, prefix=""):
     heatmap.set_xticks(xtick_positions)
     heatmap.set_xticklabels(xtick_labels, rotation=0, fontsize=16)
     new_ytick_labels = [rba_descriptive_names[rba] for rba in percentages_df_ordered.index]
-    # heatmap.set_yticklabels(new_ytick_labels, fontsize=11)
     heatmap.set_yticklabels(new_ytick_labels, fontsize=16)
-    # NEW: to remove xticks altogether:
+    # to remove xticks altogether:
     # heatmap.set_xticks([])
 
     plt.rcParams['font.sans-serif'] = 'Helvetica'
@@ -218,7 +164,6 @@ def process_results_dir(results_dir, prefix=""):
     heatmap.collections[0].set_rasterized(True) # rasterizing the heatmap to improve rendering of PDF with high feature counts
 
     save_path = os.path.join(results_dir, prefix + dataset_id + '.pdf')
-    # plt.savefig(save_path, format='pdf', bbox_inches='tight')
     plt.savefig(save_path, format='pdf', dpi=600, bbox_inches='tight') # high dpi for higher resolution/quality rasterized heatmap
     plt.close()
 

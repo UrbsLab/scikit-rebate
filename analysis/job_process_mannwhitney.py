@@ -4,7 +4,7 @@ import argparse
 import pandas as pd
 import numpy as np
 from itertools import combinations
-from scipy.stats import ranksums, mannwhitneyu
+from scipy.stats import mannwhitneyu
 from statsmodels.stats.multitest import multipletests
 
 def permutation_test(x, y, U_obs, n_permutations=10000, seed=42):
@@ -17,12 +17,9 @@ def permutation_test(x, y, U_obs, n_permutations=10000, seed=42):
         np.random.shuffle(combined)
         new_x = combined[:n_x]
         new_y = combined[n_x:]
-        # Z-score using U
-        # U_perm = ranksums(new_x, new_y).statistic
-        # Now U_perm = U score
+        # U_perm = U score
         U_perm = mannwhitneyu(new_x, new_y, alternative="two-sided", method="asymptotic").statistic
 
-        # if abs(U_perm) >= abs(U_obs):
         if abs(U_perm - expected_U) >= abs(U_obs - expected_U):
             count += 1
     return count / n_permutations
@@ -43,7 +40,7 @@ def process_dir(dir_path, column='rank', exclude_patterns=None):
     for rba1, rba2 in combinations(rba_groups.keys(), 2):
         x = rba_groups[rba1]
         y = rba_groups[rba2]
-        # wilcoxon_res = ranksums(x, y)
+        
         mannwhitney_res = mannwhitneyu(x, y, alternative="two-sided", method="asymptotic")
         row = {
             'RBA1': rba1,
@@ -66,13 +63,11 @@ def process_dir(dir_path, column='rank', exclude_patterns=None):
         # Benjamini-Hochberg
         results_df['mannwhitney_p_adj'] = multipletests(results_df['mannwhitney_pvalue'], method='fdr_bh')[1]
         results_df['permutation_p_adj'] = multipletests(results_df['permutation_pvalue'], method='fdr_bh')[1]
-        # results_df.sort_values(by=['mannwhitney_pvalue', 'permutation_pvalue'], ascending=True, inplace=True)
         results_df.sort_values(by=['mannwhitney_p_adj', 'permutation_p_adj'], ascending=True, inplace=True)
         output_file = os.path.join(dir_path, 'mannwhitney_ranks.csv')
     else:
         # Benjamini-Hochberg
         results_df['mannwhitney_p_adj'] = multipletests(results_df['mannwhitney_pvalue'], method='fdr_bh')[1]
-        # results_df.sort_values(by=['mannwhitney_pvalue'], ascending=True, inplace=True)
         results_df.sort_values(by=['mannwhitney_p_adj'], ascending=True, inplace=True)
         # output_file = os.path.join(dir_path, 'mannwhitney_feature_importances.csv')
         output_file = os.path.join(dir_path, 'mannwhitney_normalized_feature_importances.csv')

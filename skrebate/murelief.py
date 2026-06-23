@@ -54,8 +54,8 @@ class MuRelief(ReliefF):
                     locator.reverse()
                 dist_vect.append(self._distance_array[locator[0]][locator[1]])
                 d = self._distance_array[locator[0]][locator[1]]
-                # print("Distance between", inst, "and", j, ":", d)
-                # NEW: calculating mean for each class/outcome group
+                
+                # calculating mean for each class/outcome group
                 if self._class_type in ('binary', 'multiclass'):
                     label = self._y[j]
 
@@ -87,18 +87,15 @@ class MuRelief(ReliefF):
                     # Append data
                     dist_list.append(d)
                     idx_list.append(j)
-                # END NEW
-
-            # else:
-            #     # later to be replaced by the mean of dist_vect so that the target instance is never selected as its own neighbor
-            #     dist_vect.append(sys.maxsize)
-            #     print("Distance added to dist_vect for inst:", sys.maxsize)
 
         dist_vect = np.array(dist_vect)
-        inst_mean_dist = np.average(dist_vect)
-        inst_std = np.std(dist_vect) / 2.
-        # NEW: std for this current target instance
-        true_std = np.std(dist_vect)
+        if self.distarray_has_nan:
+            inst_mean_dist = np.nanmean(dist_vect)
+            true_std = np.nanstd(dist_vect)
+        else:
+            inst_mean_dist = np.mean(dist_vect)
+            true_std = np.std(dist_vect)
+        inst_deadband = true_std / 2.
 
         # replacing the value for the target instance to the mean so that it is never selected as its own neighbor in μ-Relief
         # dist_vect[inst] = inst_mean_dist
@@ -106,7 +103,7 @@ class MuRelief(ReliefF):
         # print("Dist_vect after setting dist_vect[inst] = inst_mean_dist:", dist_vect)
 
         # NEW: unique mean, std, and deadband values for this target instance, used to construct the expected curve in distance-weight plot
-        self.instance_dist_stats.append((inst_mean_dist, true_std, inst_std))
+        self.instance_dist_stats.append((inst_mean_dist, true_std, inst_deadband))
 
         # initializing all weights to 0 before the k neighbors (and only those neighbors) get weights of 1
         # self.distance_weight_log = [(d, 0.0) for d in dist_vect]
@@ -114,7 +111,10 @@ class MuRelief(ReliefF):
 
         # NEW: calculating mean distance for each outcome group
         for label, (dist_list, idx_list) in means_calc.items():
-            mean_dist = float(np.mean(dist_list)) if dist_list else 0.0
+            if self.distarray_has_nan:
+                mean_dist = float(np.nanmean(dist_list)) if dist_list else 0.0
+            else:
+                mean_dist = float(np.mean(dist_list)) if dist_list else 0.0
             means_calc[label] = (dist_list, idx_list, mean_dist)
 
         # creating a new 'absolute difference between the observed distance and the mean distance' vector

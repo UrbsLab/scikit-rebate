@@ -39,12 +39,4 @@ from .baseswrf import MultiSWRFstar
 from .baseswrf import MultiSWRF
 from .baseswrf import MultiSWRFDBstar
 from .baseswrf import MultiSWRFDB
-from .baseswrf import MultiSWRFDBlinearstar
-from .baseswrf import MultiSWRFDBlinear
-from .baseswrf import MultiSWRFDBexponentialstar
-from .baseswrf import MultiSWRFDBexponential
-from .baseswrf import MultiSWRFDBlinear3SDstar
-from .baseswrf import MultiSWRFDBlinear3SD
-from .baseswrf import MultiSWRFDBexponential3SDstar
-from .baseswrf import MultiSWRFDBexponential3SD
 from .murelief import MuRelief
