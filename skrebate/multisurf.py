@@ -26,10 +26,10 @@ import numpy as np
 from .surfstar import SURFstar
 from joblib import Parallel, delayed
 from .scoring_utils import MultiSURF_compute_scores
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import time
-from pyinstrument import Profiler
-from line_profiler import LineProfiler
+# from pyinstrument import Profiler
+# from line_profiler import LineProfiler
 from .scoring_utils import compute_score, ramp_vec
 
 

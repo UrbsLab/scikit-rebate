@@ -26,7 +26,7 @@ import numpy as np
 from .relieff import ReliefF
 from joblib import Parallel, delayed
 from .scoring_utils import ReliefF_compute_scores
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import sys
 
 

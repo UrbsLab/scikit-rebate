@@ -3,9 +3,9 @@ from __future__ import print_function
 import numpy as np
 from joblib import Parallel, delayed
 from .relieff import ReliefF
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import time
-from pyinstrument import Profiler
+# from pyinstrument import Profiler
 from .scoring_utils import ramp_vec
 
 

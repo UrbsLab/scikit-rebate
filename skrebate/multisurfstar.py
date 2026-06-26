@@ -26,7 +26,7 @@ import numpy as np
 from .surfstar import SURFstar
 from .scoring_utils import MultiSURFstar_compute_scores
 from joblib import Parallel, delayed
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 class MultiSURFstar(SURFstar):

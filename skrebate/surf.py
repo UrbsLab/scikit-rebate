@@ -26,7 +26,7 @@ import numpy as np
 from joblib import Parallel, delayed
 from .relieff import ReliefF
 from .scoring_utils import SURF_compute_scores
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 class SURF(ReliefF):
