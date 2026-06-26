@@ -45,7 +45,8 @@ test = [
   "pytest>=7",
   "pytest-cov",
   "flake8",
-  "mypy"
+  "mypy",
+  "pandas"
 ]
 
 [project.urls]
