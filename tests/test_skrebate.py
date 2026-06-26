@@ -9,12 +9,13 @@ np.random.seed(3249083)
 
 # Load datasets once for all tests
 # CI runs from repo root by default so path goes straight into data dir
+# ** only selecting 200 instances from each dataset to speed up CI
 datasets = {
-    "binary": pd.read_csv('data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv').sample(frac=1),
-    "cont_endpoint": pd.read_csv('data/GAMETES_Epistasis_2-Way_continuous_endpoint_a_20s_1600her_0.4__maf_0.2_EDM-2_01.csv').sample(frac=1),
-    "mixed": pd.read_csv('data/GAMETES_Epistasis_2-Way_mixed_attribute_a_20s_1600her_0.4__maf_0.2_EDM-2_01.csv').sample(frac=1),
-    "missing": pd.read_csv('data/GAMETES_Epistasis_2-Way_missing_values_0.1_a_20s_1600her_0.4__maf_0.2_EDM-2_01.csv').sample(frac=1),
-    "multiclass": pd.read_csv('data/3Class_Datasets_Loc_2_01.csv').sample(frac=1)
+    "binary": pd.read_csv('data/GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1.csv').sample(n=200, random_state=3249083),
+    "cont_endpoint": pd.read_csv('data/GAMETES_Epistasis_2-Way_continuous_endpoint_a_20s_1600her_0.4__maf_0.2_EDM-2_01.csv').sample(n=200, random_state=3249083),
+    "mixed": pd.read_csv('data/GAMETES_Epistasis_2-Way_mixed_attribute_a_20s_1600her_0.4__maf_0.2_EDM-2_01.csv').sample(n=200, random_state=3249083),
+    "missing": pd.read_csv('data/GAMETES_Epistasis_2-Way_missing_values_0.1_a_20s_1600her_0.4__maf_0.2_EDM-2_01.csv').sample(n=200, random_state=3249083),
+    "multiclass": pd.read_csv('data/3Class_Datasets_Loc_2_01.csv').sample(n=200, random_state=3249083)
 }
 
 # Parametrize over selectors
