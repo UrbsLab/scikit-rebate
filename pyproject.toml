@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61", "wheel", "setuptools-scm>=8"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -50,6 +50,9 @@ test = [
 
 [project.urls]
 "Source Code" = "https://github.com/UrbsLab/scikit-rebate"
+
+[tool.setuptools.dynamic]
+version = {attr = "skrebate._version.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["."]
