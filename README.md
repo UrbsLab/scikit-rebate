@@ -6,8 +6,8 @@ Development status: [![Development Build Status](https://travis-ci.org/UrbsLab/s
 [![Development Code Health](https://landscape.io/github/UrbsLabLab/scikit-rebate/development/landscape.svg?style=flat)](https://landscape.io/github/UrbsLab/scikit-rebate/development)
 [![Development Coverage Status](https://coveralls.io/repos/github/UrbsLab/scikit-rebate/badge.svg?branch=development&service=github)](https://coveralls.io/github/UrbsLab/scikit-rebate?branch=development)
 -->
-Package information: ![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)
-![Python 3.5](https://img.shields.io/badge/python-3.6-blue.svg)
+Package information: ![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)
+![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg) ![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT%20License-blue.svg)
 [![PyPI version](https://badge.fury.io/py/skrebate.svg)](https://badge.fury.io/py/skrebate)
 
