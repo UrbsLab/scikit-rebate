@@ -94,28 +94,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="scikit-rebate-07">scikit-rebate 0.7</h1>
+                <h1 id="scikit-rebate-08">scikit-rebate 0.8</h1>
 <ul>
 <li>
-<p>Added new core Relief-based algorithms to scikit-rebate: SWRF, SWRF*, MultiSWRF, MultiSWRF*, MultiSWRFDB, MultiSWRFDB*, and μ-Relief</p>
+<p>Added new core Relief-based algorithms to scikit-rebate: SWRF, SWRF*, MultiSWRF, MultiSWRF*, MultiSWRFDB, MultiSWRFDB*, and μ-Relief.</p>
 </li>
 <li>
-<p>Refactored code to speed up runtime by 10-35x, improving the efficiency of the feature scoring process</p>
+<p>Refactored code to speed up runtime by 10-35x, improving the efficiency of the feature scoring process.</p>
 </li>
 <li>
-<p>Added the 'categorical_features' hyperparameter, which allows users to manually specify which features should be treated as categorical</p>
+<p>Added the 'categorical_features' hyperparameter, which allows users to manually specify which features should be treated as categorical.</p>
 </li>
 <li>
-<p>Added the 'label_type' hyperparameter, which allows users to manually specify whether the target variable (label) is binary, multiclass, or continuous</p>
+<p>Added the 'label_type' hyperparameter, which allows users to manually specify whether the target variable (label) is binary, multiclass, or continuous.</p>
 </li>
 <li>
-<p>Added the 'multiclass_threshold' hyperparameter, which allows users to specify the maximum number of unique values a target variable can have before it is considered continuous (e.g. multiclass_threshold=10 means a target variable with &gt; 10 unique values is considered continuous)</p>
+<p>Added the 'multiclass_threshold' hyperparameter, which allows users to specify the maximum number of unique values a target variable can have before it is considered continuous (e.g. multiclass_threshold=10 means a target variable with &gt; 10 unique values is considered continuous).</p>
 </li>
 <li>
-<p>Changed the name of the 'discrete_threshold' hyperparameter to 'categorical_threshold'</p>
+<p>Changed the name of the 'discrete_threshold' hyperparameter to 'categorical_threshold'.</p>
 </li>
 <li>
-<p>Now utilize np.nanmean instead of np.mean when the amount of missing data is substantial enough to derail computation</p>
+<p>Now utilize np.nanmean instead of np.mean when the amount of missing data is substantial enough to derail computation.</p>
+</li>
+</ul>
+<h1 id="scikit-rebate-07">scikit-rebate 0.7</h1>
+<ul>
+<li>
+<p>The version of scikit-rebate uploaded to pypi (v0.7) and cloned from <a href="https://github.com/EpistasisLab">https://github.com/EpistasisLab</a>, last updated March 20, 2021. Ongoing development of scikit-rebate will take place on the UrbsLab GitHub page.</p>
+</li>
+<li>
+<p>Preserves the underlying algorithm and algorithmically the same as scikit-rebate v0.62 on pypi. This release includes the analysis scripts used for the scikit-rebate paper exploring the ability of Relief-based algorithms to detect higher order interactions.</p>
+</li>
+<li>
+<p>Fix for the TuRF wrapper algorithm as well as further fixes/updates to the preliminary implementations of VLS and ITER Relief wrapper algorithms.</p>
+</li>
+<li>
+<p>As scikit-rebate development continues in the future we will use the UrbsLab/scikit-rebate repo to share code updates, as well as update pypi with the most recent updates continuing on from v0.7.1.</p>
 </li>
 </ul>
 <h1 id="scikit-rebate-06">scikit-rebate 0.6</h1>
