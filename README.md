@@ -35,7 +35,7 @@ Of note, certain core algorithms have hyperparameter options that users can spec
 
 Full documentation for this package is available at: [usage documentation](https://urbslab.github.io/scikit-rebate/using/).
 
-**This reposistory is still under active development**, thus we encourage you to notify us if you discovery any bugs as well as check this respository for package updates. **
+**This reposistory is still under active development**, thus we encourage you to notify us if you discovery any bugs as well as check this respository for package updates.
 <!-- Certain algorithms require user specified run parameters (e.g. ReliefF requires the user to specify some 'k' number of nearest neighbors).  -->
 
 <!--An alternative 'stand-alone' version of [ReBATE](https://github.com/EpistasisLab/ReBATE) is also available that focuses on improving run-time with the use of Cython for optimization. This implementation also outputs feature names and associated feature scores as a text file by default. -->
