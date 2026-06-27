@@ -9,7 +9,8 @@ Development status: [![Development Build Status](https://travis-ci.org/UrbsLab/s
 Package information: ![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)
 ![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg) ![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT%20License-blue.svg)
-[![PyPI version](https://badge.fury.io/py/skrebate.svg)](https://badge.fury.io/py/skrebate)
+[![PyPI version](https://img.shields.io/pypi/v/skrebate.svg)](https://pypi.org/project/skrebate/)
+<!--[![PyPI version](https://badge.fury.io/py/skrebate.svg)](https://badge.fury.io/py/skrebate)-->
 
 # scikit-rebate
 
