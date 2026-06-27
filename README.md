@@ -31,7 +31,7 @@ Importantly, all RBA algorithms in this package support datasets with the follow
 
 - Continuous endpoints (i.e., regression)
 
-Of note, certain core algorithms have hyperparameter options that users can specify (beyond default settings), e.g. ReliefF’s parameter for ‘k’ number of nearest neighbors. These packages 'automatically detect these relevant characteristics from loaded data. However, when it comes to treating features appropriately as either categorical vs. quantiative features we recommend users specify feature types (using the `categorical_features` hyperparameter) frather than relying on `categorical_threshold` hyperparameter which can be inprecise in assigning feature types. 
+Of note, certain core algorithms have hyperparameter options that users can specify (beyond default settings), e.g. ReliefF’s parameter for ‘k’ number of nearest neighbors. These packages 'automatically detect these relevant characteristics from loaded data. However, when it comes to treating features appropriately as either categorical vs. quantiative features we recommend users specify feature types (using the `categorical_features` hyperparameter) rather than relying on `categorical_threshold` hyperparameter which can be inprecise in assigning feature types. 
 
 Full documentation for this package is available at: [usage documentation](https://urbslab.github.io/scikit-rebate/using/).
 
