@@ -173,8 +173,7 @@ We welcome you to [check the existing issues](https://github.com/EpistasisLab/sc
 Please refer to our [contribution guidelines](https://EpistasisLab.github.io/scikit-rebate/contributing/) prior to working on a new feature or bug fix.
 
 ## Citing scikit-rebate
-
-If you use scikit-rebate in a scientific publication, please consider citing the following paper:
+Please note that a new manuscript on this updated ReBATE package has been recently submitted for publication.  In the meantime, if you use scikit-rebate in a scientific publication, please consider citing the following paper:
 
 Ryan J. Urbanowicz, Randal S. Olson, Peter Schmitt, Melissa Meeker, Jason H. Moore (2018). Benchmarking Relief-Based Feature Selection Methods for Bioinformatics Data Mining. _Journal of Biomedical Informatics_, 85, 168-188. DOI: [10.1016/j.jbi.2018.07.015](https://doi.org/10.1016/j.jbi.2018.07.015)
 
