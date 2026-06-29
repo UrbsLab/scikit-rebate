@@ -1,8 +1,8 @@
 name: Python Package CI
 
 on:
-  #push:
-  #  branches: [master]
+  push:
+    branches: [master]
   # push:
   #   branches: [dev-kia-pypi]
   pull_request:

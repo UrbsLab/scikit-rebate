@@ -169,9 +169,9 @@ For updated documentation in this forked repository, please refer to this [updat
 
 ## Contributing to scikit-rebate
 
-We welcome you to [check the existing issues](https://github.com/EpistasisLab/scikit-rebate/issues/) for bugs or enhancements to work on. If you have an idea for an extension to scikit-rebate, please [file a new issue](https://github.com/EpistasisLab/scikit-rebate/issues/new) so we can discuss it.
+We welcome you to [check the existing issues](https://github.com/UrbsLab/scikit-rebate/issues/) for bugs or enhancements to work on. If you have an idea for an extension to scikit-rebate, please [file a new issue](https://github.com/UrbsLab/scikit-rebate/issues/new) so we can discuss it.
 
-Please refer to our [contribution guidelines](https://EpistasisLab.github.io/scikit-rebate/contributing/) prior to working on a new feature or bug fix.
+Please refer to our [contribution guidelines](https://UrbsLab.github.io/scikit-rebate/contributing/) prior to working on a new feature or bug fix.
 
 ## Citing scikit-rebate
 Please note that a new manuscript on this updated ReBATE package has been recently submitted for publication.  In the meantime, if you use scikit-rebate in a scientific publication, please consider citing the following paper:
