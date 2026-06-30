@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """
-scikit-rebate was primarily developed at the University of Pennsylvania by:
+scikit-rebate was primarily developed at the University of Pennsylvania and at the Cedars-Sinai Health Sciences University by:
+    - Ryan J. Urbanowicz (ryanurb@upenn.edu)
     - Randal S. Olson (rso@randalolson.com)
     - Pete Schmitt (pschmitt@upenn.edu)
-    - Ryan J. Urbanowicz (ryanurb@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
+    - Ting-Hui Wu (tinghui333w@gmail.com)
+    - Kia Kazemi-Nia (kia.kazemi-nia@cshs.org)
     - and many more generous open source contributors
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -26,7 +28,7 @@ import numpy as np
 from .surf import SURF
 from .scoring_utils import SURFstar_compute_scores
 from joblib import Parallel, delayed
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 class SURFstar(SURF):
@@ -82,15 +84,9 @@ class SURFstar(SURF):
 
     def _run_algorithm(self):
         """ Runs nearest neighbor (NN) identification and feature scoring to yield SURF* scores. """
-        # sm = cnt = 0
-        # for i in range(self._datalen):
-        #     sm += sum(self._distance_array[i])
-        #     cnt += len(self._distance_array[i])
-        # avg_dist = sm / float(cnt)
-        # NEW: using numpy to compute global mean
+        # using numpy to compute global mean
         dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
-        # avg_dist = dists_flat.mean()
-        # avg_dist = np.nanmean(dists_flat)
+        
         if self.distarray_has_nan:
             avg_dist = np.nanmean(dists_flat)
         else:
@@ -98,8 +94,8 @@ class SURFstar(SURF):
 
         nan_entries = np.isnan(self._X)
 
-        self.distance_weight_log = []  # Reset log before run
-        self.std_weight_log = []
+        # self.distance_weight_log = []  # Reset log before run
+        # self.std_weight_log = []
 
         NNlist = [self._find_neighbors(datalen, avg_dist) for datalen in range(self._datalen)]
         NN_near_list = [i[0] for i in NNlist]
@@ -119,75 +115,75 @@ class SURFstar(SURF):
 
         return np.array(scores)
     
-    def plot_distance_weight_map(self, save_fig=None, show_expected=True):
-        """Visualize actual (distance, weight) pairs collected during Relief run."""
-        if not self.distance_weight_log:
-            print("No data logged yet. Run the algorithm first.")
-            return
+    # def plot_distance_weight_map(self, save_fig=None, show_expected=True):
+    #     """Visualize actual (distance, weight) pairs collected during Relief run."""
+    #     if not self.distance_weight_log:
+    #         print("No data logged yet. Run the algorithm first.")
+    #         return
 
-        distances, weights = zip(*self.distance_weight_log)
-        # NEW: use self.std_weight_log for plotting
-        distances_std, weights_std = zip(*self.std_weight_log)
-        plt.figure(figsize=(10, 6))
-        # plt.scatter(distances, weights, alpha=0.3, s=10, label='Observed')
-        plt.scatter(distances_std, weights_std, alpha=0.3, s=10, label='Observed')
+    #     distances, weights = zip(*self.distance_weight_log)
+    #     # NEW: use self.std_weight_log for plotting
+    #     distances_std, weights_std = zip(*self.std_weight_log)
+    #     plt.figure(figsize=(10, 6))
+    #     # plt.scatter(distances, weights, alpha=0.3, s=10, label='Observed')
+    #     plt.scatter(distances_std, weights_std, alpha=0.3, s=10, label='Observed')
 
-        if show_expected:
-            x_vals = np.linspace(min(distances), max(distances), 500)
-            # mean_dist = np.mean(distances)
-            # std_dist = np.std(distances)
-            # mean_dist = np.nanmean(distances)
-            # std_dist = np.nanstd(distances)
-            if self.distarray_has_nan:
-                mean_dist = np.nanmean(distances)
-                std_dist = np.nanstd(distances)
-            else:
-                mean_dist = np.mean(distances)
-                std_dist = np.std(distances)
+    #     if show_expected:
+    #         x_vals = np.linspace(min(distances), max(distances), 500)
+    #         # mean_dist = np.mean(distances)
+    #         # std_dist = np.std(distances)
+    #         # mean_dist = np.nanmean(distances)
+    #         # std_dist = np.nanstd(distances)
+    #         if self.distarray_has_nan:
+    #             mean_dist = np.nanmean(distances)
+    #             std_dist = np.nanstd(distances)
+    #         else:
+    #             mean_dist = np.mean(distances)
+    #             std_dist = np.std(distances)
 
-            # NEW: for plotting in terms of STD
-            x_vals_std = (x_vals - mean_dist) / std_dist
+    #         # NEW: for plotting in terms of STD
+    #         x_vals_std = (x_vals - mean_dist) / std_dist
 
-            y_vals = []
-            for x in x_vals:
-                if x < mean_dist:
-                    y_vals.append(1.0)
-                elif x > mean_dist:
-                    y_vals.append(-1.0)
-                else:
-                    y_vals.append(0.0)
+    #         y_vals = []
+    #         for x in x_vals:
+    #             if x < mean_dist:
+    #                 y_vals.append(1.0)
+    #             elif x > mean_dist:
+    #                 y_vals.append(-1.0)
+    #             else:
+    #                 y_vals.append(0.0)
 
-            if y_vals is not None:
-                # plt.plot(x_vals, y_vals, label='Expected', linewidth=2, color='black')
-                # NEW: use x_vals STD instead
-                plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
+    #         if y_vals is not None:
+    #             # plt.plot(x_vals, y_vals, label='Expected', linewidth=2, color='black')
+    #             # NEW: use x_vals STD instead
+    #             plt.plot(x_vals_std, y_vals, label='Expected', linewidth=2, color='black')
 
-        plt.title(f'Distance-to-Weight Mapping: SURF*')
-        plt.xlabel('Distance from Target Instance')
-        # plt.xlabel('Standard Deviations (Distance) from Target Instance')
-        plt.ylabel('Scoring Weight')
-        plt.grid(True)
-        # NEW: grid lines different from x-tick labels:
-        plt.gca().set_xticks(np.arange(-3, 4, 1), minor=False)
-        plt.ylim(-1.1, 1.1)
-        # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
-        # plt.xlim(0, 1.0)
-        plt.xlim(-3.0, 3.0)
-        # plt.xticks(np.linspace(0, 1.0, num=6))
-        # plt.xticks([-3, -2, -1, 0, 1, 2, 3])
-        # plt.xticks(
-        #     [-0.5, 0, 0.5],
-        #     ['(μ - σ/2)', 'μ', '(μ + σ/2)']
-        # )
-        plt.xticks(
-            [0],
-            ['μ']
-        )
-        # NEW: dotted lines for deadband zone boundaries (0.5 SD on either side of mean)
-        # plt.axvline(x=-0.5, color='red', linestyle='dotted')
-        # plt.axvline(x=0.5,  color='red', linestyle='dotted')
-        plt.legend()
-        if save_fig:
-            plt.savefig(save_fig)
-        else:
-            plt.show()
+    #     plt.title(f'Distance-to-Weight Mapping: SURF*')
+    #     plt.xlabel('Distance from Target Instance')
+    #     # plt.xlabel('Standard Deviations (Distance) from Target Instance')
+    #     plt.ylabel('Scoring Weight')
+    #     plt.grid(True)
+    #     # NEW: grid lines different from x-tick labels:
+    #     plt.gca().set_xticks(np.arange(-3, 4, 1), minor=False)
+    #     plt.ylim(-1.1, 1.1)
+    #     # NEW: xlim to set x-axis values between 0 and 1.0 for all graphs (consistent)
+    #     # plt.xlim(0, 1.0)
+    #     plt.xlim(-3.0, 3.0)
+    #     # plt.xticks(np.linspace(0, 1.0, num=6))
+    #     # plt.xticks([-3, -2, -1, 0, 1, 2, 3])
+    #     # plt.xticks(
+    #     #     [-0.5, 0, 0.5],
+    #     #     ['(μ - σ/2)', 'μ', '(μ + σ/2)']
+    #     # )
+    #     plt.xticks(
+    #         [0],
+    #         ['μ']
+    #     )
+    #     # NEW: dotted lines for deadband zone boundaries (0.5 SD on either side of mean)
+    #     # plt.axvline(x=-0.5, color='red', linestyle='dotted')
+    #     # plt.axvline(x=0.5,  color='red', linestyle='dotted')
+    #     plt.legend()
+    #     if save_fig:
+    #         plt.savefig(save_fig)
+    #     else:
+    #         plt.show()

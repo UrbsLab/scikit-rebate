@@ -12,7 +12,7 @@ from functools import partial
 
 package_path = os.path.abspath(os.path.join("", ".."))
 sys.path.insert(0, package_path)
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MultiSWRFDBlinearstar, MultiSWRFDBlinear, MultiSWRFDBexponentialstar, MultiSWRFDBexponential, MultiSWRFDBlinear3SDstar, MultiSWRFDBlinear3SD, MultiSWRFDBexponential3SDstar, MultiSWRFDBexponential3SD, MuRelief, TURF, VLS, Iter
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MuRelief, TURF, VLS, Iter
 
 # NEW: added exist_ok=True
 def ensure_dir(directory):
@@ -21,9 +21,8 @@ def ensure_dir(directory):
 
 def process_and_save_results(file_path, fs, method_name):
     df = pd.read_csv(file_path, sep='\t')
-    # features, labels = df.drop('Class', axis=1).values, df['Class'].values
+    
     X, y = df.drop('Class', axis=1).values, df['Class'].values
-    # X_train, _, y_train, _ = train_test_split(features, labels)
 
     # to keep track of runtime for large feature datasets
     start_time = time.time()
@@ -85,29 +84,9 @@ def process_random_shuffle(file_path):
 
     # Shuffle feature column names (excluding 'Class' if present)
     if 'Class' in df.columns:
-        # columns_to_shuffle = df.drop('Class', axis=1).columns.tolist()
         columns_to_shuffle = sorted(df.drop('Class', axis=1).columns.tolist())
     else:
-        # columns_to_shuffle = df.columns.tolist()
         columns_to_shuffle = sorted(df.columns.tolist())
-
-    # # START OLD
-    # # shuffled_columns = np.random.permutation(columns_to_shuffle)
-    # # NEW: reproducible shuffling based on file name
-    # base_name = os.path.splitext(os.path.basename(file_path))[0]
-    # # creating a deterministic seed based on the file name
-    # seed = int(hashlib.sha256(base_name.encode()).hexdigest(), 16) % (2**32)
-    # # creating a local RNG seeded from the file name
-    # rng = default_rng(seed)
-    # # shuffle columns deterministically for this file
-    # shuffled_columns = rng.permutation(columns_to_shuffle)
-
-    # shuffled_df = pd.DataFrame(shuffled_columns, columns=['Feature'])
-
-    # # base_name = os.path.splitext(os.path.basename(file_path))[0]
-    # output_path = os.path.join(results_dir, f"{base_name}_RandShuffle.txt")
-    # shuffled_df.to_csv(output_path, index=False, sep='\t')
-    # # END OLD
 
     base_name = os.path.splitext(os.path.basename(file_path))[0]
     # Take the last 2 characters of base_name (i.e. the file number)
@@ -124,25 +103,16 @@ def process_random_shuffle(file_path):
 
         shuffled_df = pd.DataFrame(shuffled_columns, columns=['Feature'])
 
-        # base_name = os.path.splitext(os.path.basename(file_path))[0]
-        # output_path = os.path.join(results_dir, f"{base_name}_RandShuffle.txt")
         output_path = os.path.join(results_dir, f"{base_name}{i}_RandShuffle.txt")
         shuffled_df.to_csv(output_path, index=False, sep='\t')
 
 def process_mutual_info(file_path):
-    # df = pd.read_csv(file_path, sep='\t')
-    # features, labels = df.drop('Class', axis=1).values, df['Class'].values
-    # X_train, _, y_train, _ = train_test_split(features, labels)
-    # scores = mutual_info_classif(X_train, y_train)
-    # fs = type('MI', (), {'feature_importances_': scores})()  # Mock object with same interface
     df = pd.read_csv(file_path, sep='\t')
     # counting the number of labels in the 'Class' column to determine whether this is a classification or regression problem:
     num_labels = df['Class'].nunique()
     if num_labels <= 10:
-        # fs = mutual_info_classif
         fs = partial(mutual_info_classif, random_state=42) # setting random_state for mutual_info
     else:
-        # fs = mutual_info_regression
         fs = partial(mutual_info_regression, random_state=42)
     process_and_save_results(file_path, fs, "MutualInfo")
 
@@ -194,45 +164,12 @@ def process_multiswrfdb(file_path):
     fs = MultiSWRFDB(n_jobs=16)
     process_and_save_results(file_path, fs, "MultiSWRFDB")
 
-def process_multiswrfdblinearstar(file_path):
-    fs = MultiSWRFDBlinearstar(n_jobs=16)
-    process_and_save_results(file_path, fs, "MultiSWRFDBlinearstar")
-
-def process_multiswrfdblinear(file_path):
-    fs = MultiSWRFDBlinear(n_jobs=16)
-    process_and_save_results(file_path, fs, "MultiSWRFDBlinear")
-
-def process_multiswrfdbexponentialstar(file_path):
-    fs = MultiSWRFDBexponentialstar(n_jobs=16)
-    process_and_save_results(file_path, fs, "MultiSWRFDBexponentialstar")
-
-def process_multiswrfdbexponential(file_path):
-    fs = MultiSWRFDBexponential(n_jobs=16)
-    process_and_save_results(file_path, fs, "MultiSWRFDBexponential")
-
-# 3 SD versions of MultiSWRFDB variants:
-def process_multiswrfdblinear3SDstar(file_path):
-    fs = MultiSWRFDBlinear3SDstar(n_jobs=16)
-    process_and_save_results(file_path, fs, "MultiSWRFDBlinear3SDstar")
-
-def process_multiswrfdblinear3SD(file_path):
-    fs = MultiSWRFDBlinear3SD(n_jobs=16)
-    process_and_save_results(file_path, fs, "MultiSWRFDBlinear3SD")
-
-def process_multiswrfdbexponential3SDstar(file_path):
-    fs = MultiSWRFDBexponential3SDstar(n_jobs=16)
-    process_and_save_results(file_path, fs, "MultiSWRFDBexponential3SDstar")
-
-def process_multiswrfdbexponential3SD(file_path):
-    fs = MultiSWRFDBexponential3SD(n_jobs=16)
-    process_and_save_results(file_path, fs, "MultiSWRFDBexponential3SD")
-
 def process_murelief10(file_path):
-    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=16)
+    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=1)
     process_and_save_results(file_path, fs, "MuRelief10")
 
 def process_murelief100(file_path):
-    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=16)
+    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=1)
     process_and_save_results(file_path, fs, "MuRelief100")
 
 # ********** Wrapper Algorithms
@@ -313,6 +250,22 @@ def process_turf_vls_multiswrfdbstar_niter2_return10000(file_path):
     fs = TURF(relief_object=VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
     process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDBstar_niter2_return10000")
 
+# ***** Iter-Relief
+# *** ReliefF (k=10)
+def process_iter_relieff10(file_path):
+    fs = Iter(relief_object=ReliefF(n_jobs=16, n_neighbors=10)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_ReliefF10")
+
+# *** MultiSWRFDB
+def process_iter_multiswrfdb(file_path):
+    fs = Iter(relief_object=MultiSWRFDB(n_jobs=16)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_MultiSWRFDB")
+
+# *** MultiSWRFDBstar
+def process_iter_multiswrfdbstar(file_path):
+    fs = Iter(relief_object=MultiSWRFDBstar(n_jobs=16)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_MultiSWRFDBstar")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--algorithm', required=True, help='Algorithm to use')
@@ -334,14 +287,6 @@ def main():
         'multiswrf': process_multiswrf,
         'multiswrfdbstar': process_multiswrfdbstar,
         'multiswrfdb': process_multiswrfdb,
-        'multiswrfdblinearstar': process_multiswrfdblinearstar,
-        'multiswrfdblinear': process_multiswrfdblinear,
-        'multiswrfdbexponentialstar': process_multiswrfdbexponentialstar,
-        'multiswrfdbexponential': process_multiswrfdbexponential,
-        'multiswrfdblinear3sdstar': process_multiswrfdblinear3SDstar,
-        'multiswrfdblinear3sd': process_multiswrfdblinear3SD,
-        'multiswrfdbexponential3sdstar': process_multiswrfdbexponential3SDstar,
-        'multiswrfdbexponential3sd': process_multiswrfdbexponential3SD,
         'murelief10': process_murelief10,
         'murelief100': process_murelief100,
         'turf_relieff10_niter10_return10000': process_turf_relieff10_niter10_return10000,
@@ -359,6 +304,9 @@ def main():
         'turf_vls_relieff10_niter2_return10000': process_turf_vls_relieff10_niter2_return10000,
         'turf_vls_multiswrfdb_niter2_return10000': process_turf_vls_multiswrfdb_niter2_return10000,
         'turf_vls_multiswrfdbstar_niter2_return10000': process_turf_vls_multiswrfdbstar_niter2_return10000,
+        'iter_relieff10': process_iter_relieff10,
+        'iter_multiswrfdb': process_iter_multiswrfdb,
+        'iter_multiswrfdbstar': process_iter_multiswrfdbstar,
     }
 
     if args.algorithm not in alg_map:

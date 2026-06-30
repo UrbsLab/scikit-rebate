@@ -209,17 +209,7 @@ def main():
             (merged_uni_twoway_df['Median_uni'] + merged_uni_twoway_df['Median_two']) / 2
         )
     })
-    # univariate_twoway_final_df = pd.DataFrame({
-    #     'RBA': merged_uni_twoway_df['RBA'],
-    #     'Weighted_Mean': (
-    #         merged_uni_twoway_df['Mean_uni'] * 0.5 + 
-    #         merged_uni_twoway_df['Mean_two'] * 0.5
-    #     ),
-    #     'Weighted_Median': (
-    #         merged_uni_twoway_df['Median_uni'] * 0.5 + 
-    #         merged_uni_twoway_df['Median_two'] * 0.5
-    #     )
-    # })
+    
     # sorting this dataframe
     univariate_twoway_final_df = (
         univariate_twoway_final_df
@@ -284,17 +274,6 @@ def main():
     print(f"[INFO] Saved (2-way only) rankings to {twoway_path}")
     print(f"[INFO] Saved (univariate + 2-way) rankings to {univariate_twoway_path}")
     print(f"[INFO] Saved (univariate + 2-way + 3-way) rankings to {univariate_twoway_threeway_path}")
-
-    # # --- Save global concatenated rankings_list.csv ---
-    # global_rankings_path = os.path.join(parent_dir, 'global_rankings_list.csv')
-    # final_combined_df.to_csv(global_rankings_path, index=False)
-    # print(f"[INFO] Saved global rankings list: {global_rankings_path}")
-
-    # # --- Compute and save global RBA rankings ---
-    # global_summary_df = compute_global_summary(final_combined_df)
-    # global_summary_path = os.path.join(parent_dir, 'global_rba_rankings.csv')
-    # global_summary_df.to_csv(global_summary_path, index=False)
-    # print(f"[INFO] Saved global RBA rankings: {global_summary_path}")
         
 
 
