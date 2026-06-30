@@ -59,12 +59,6 @@ def main():
     os.makedirs(args.logdir, exist_ok=True)
 
     job_count = 0
-    # for root, dirs, files in os.walk(args.basedir):
-    #     if 'rankings_list.csv' in files:
-    #         dir_path = root
-    #         job_name = f"wilcoxon_job_{job_count}_{int(time.time())}"
-    #         generate_job_script(args.hpctype, args.script, dir_path, job_name, args.jobdir, args.logdir, args.column, args.exclude)
-    #         job_count += 1
     dir_path = args.basedir  # only look directly inside basedir
     if 'rankings_list.csv' in os.listdir(dir_path):
         job_name = f"mannwhitney_job_{job_count}_{int(time.time())}"

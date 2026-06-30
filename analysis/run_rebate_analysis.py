@@ -20,38 +20,6 @@ ALGORITHMS = [
     "murelief100"
 ]
 
-# # editing default algorithms for balance when running run_rebate_analysis
-# ALGORITHMS = [
-#     "mutual_info",
-#     "relieff10",
-#     "relieff100",
-#     "surf",
-#     "surfstar",
-#     "multisurf",
-#     "multisurfstar",
-#     "random",
-#     "swrfstar",
-#     "swrf",
-#     "multiswrfstar",
-#     "multiswrf",
-#     "multiswrfdbstar",
-#     "multiswrfdb"
-# ]
-
-# ALGORITHMS = [
-#     # "random",
-#     # "mutual_info",
-#     # "surf"
-#     # "surfstar",
-#     # "multisurfstar",
-#     "swrfstar",
-#     "swrf",
-#     "tbd1star",
-#     "tbd1",
-#     "tbd2star",
-#     "tbd2",
-# ]
-
 LSF_TEMPLATE = """#!/bin/bash
 #BSUB -J {job_name}
 #BSUB -o logs/{job_name}.out
@@ -100,7 +68,6 @@ def generate_hpc_jobs(data_dir, dataset_files, algorithms, job_dir, suffix, hpct
         raise Exception(f"Unsupported HPC type: {hpctype}")
     job_paths = []
     for dataset in dataset_files:
-        # base_name = os.path.splitext(os.path.basename(dataset))[0]
         rel_path = os.path.relpath(dataset, data_dir)
         parts = rel_path.split(os.sep) # Split into parts
         last_dirs_and_file = parts[-3:]  # [-3:] = last 2 dirs + file
@@ -127,9 +94,6 @@ def main():
     parser.add_argument("--algorithms", nargs="+", default=ALGORITHMS, help="Algorithms to run")
     parser.add_argument("--hpctype", choices=["lsf", "slurm"], default="slurm", help="HPC type (lsf or slurm)")
     args = parser.parse_args()
-
-    # if not args.algorithms:
-    #     args.algorithms = ALGORITHMS
 
     suffix = time.strftime("%Y%m%d_%H%M%S")
     dataset_files = find_dataset_files(args.datadir)

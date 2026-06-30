@@ -27,14 +27,6 @@ def collect_rba_rankings(root_dir):
         'MultiSWRFDBstar': 'MultiSWRFDB*',
         'MuRelief10': 'Mu-Relief 10N',
         'MuRelief100': 'Mu-Relief 100N',
-        'MultiSWRFDBlinear': 'MultiSWRFDB-L',
-        'MultiSWRFDBlinear3SD': 'MultiSWRFDB-L-3SD',
-        'MultiSWRFDBlinearstar': 'MultiSWRFDB-L*',
-        'MultiSWRFDBlinear3SDstar': 'MultiSWRFDB-L-3SD*',
-        'MultiSWRFDBexponential': 'MultiSWRFDB-E',
-        'MultiSWRFDBexponential3SD': 'MultiSWRFDB-E-3SD',
-        'MultiSWRFDBexponentialstar': 'MultiSWRFDB-E*',
-        'MultiSWRFDBexponential3SDstar': 'MultiSWRFDB-E-3SD*',
         'TURF_ReliefF10_niter10_return10000': 'TuRF (ReliefF 10NN, n=10)',
         'TURF_ReliefF10_niter20_return10000': 'TuRF (ReliefF 10NN, n=20)',
         'TURF_MultiSWRFDB_niter10_return10000': 'TuRF (MultiSWRFDB, n=10)',
@@ -54,12 +46,10 @@ def collect_rba_rankings(root_dir):
 
     for subdir, dirs, _ in os.walk(root_dir):
         subgroup_rankings_df = pd.DataFrame()
-        # Only process Results folders that are within a_100 directories
-        # if os.path.basename(subdir) == "Results" and "a_100" in subdir:
+        # Only process Results folders that are within these directories
         if os.path.basename(subdir) == "Results" and any(x in subdir for x in ["a_100", "a_1000", "a_10000", "a_100000", "mainEff_largerfeatures_data", "a_50000", "a_20000"]):
             for rba in os.listdir(subdir):
-                # if "ABS" in rba or "Shuffle" in rba:
-                if "ABS" in rba:
+                if rba not in rba_descriptive_names:
                     continue
                 rba_path = os.path.join(subdir, rba)
                 if not os.path.isdir(rba_path):
@@ -97,7 +87,6 @@ def collect_rba_rankings(root_dir):
 
                     # Only keep true predictive features
                     predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank']]
-                    # predictive_df['RBA'] = rba
                     predictive_df['RBA'] = rba_descriptive_names[rba]
 
                     # for subgroup ranking (ex. mainEff, her=0.2, EDM-1); i.e. group of 30 replicate dataset files
@@ -107,7 +96,6 @@ def collect_rba_rankings(root_dir):
 
             compute_summary_stats(subgroup_rankings_df, subdir)
 
-    # return all_rankings_df
     compute_summary_stats(all_rankings_df, root_dir)
 
 
@@ -123,31 +111,25 @@ def compute_summary_stats(rankings_df, save_dir):
         .rename(columns={'mean': 'Mean', 'median': 'Median'})
     )
 
-    # summary.sort_values(by='Mean', inplace=True)
     summary.sort_values(by=['Mean', 'Median'], inplace=True)
 
     # Get title from basename of save_dir
-    # title = os.path.basename(os.path.normpath(save_dir))
     if os.path.basename(os.path.normpath(save_dir)) == "Results":
         title = os.path.basename(os.path.dirname(save_dir))
     else:
         title = os.path.basename(os.path.normpath(save_dir))
 
     summary_path = os.path.join(save_dir, 'rba_rankings.csv')
-    # summary.to_csv(summary_path, index=False)
-    # print(f"Saved summary CSV: {summary_path}")
 
     rankings_list_path = os.path.join(save_dir, 'rankings_list.csv')
-    # all_rankings_df[['Feature', 'Feature_Importance', 'Rank', 'RBA']].to_csv(rankings_list_path, index=False)
-    # print(f"Saved detailed rankings list: {rankings_list_path}")
 
-    # --- Write summary CSV with title ---
+    # Write summary CSV with title
     with open(summary_path, 'w') as f:
         f.write(f"# {title}\n")
         summary.to_csv(f, index=False)
     print(f"Saved summary CSV: {summary_path}")
 
-    # --- Write detailed rankings CSV with title ---
+    # Write detailed rankings CSV with title
     with open(rankings_list_path, 'w') as f:
         f.write(f"# {title}\n")
         rankings_df[['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank', 'RBA']].to_csv(f, index=False)
@@ -159,14 +141,8 @@ def main():
     parser.add_argument("root_dir", help="Path to the dataset group directory (e.g., path/to/mainEff).")
     args = parser.parse_args()
 
-    # all_rankings_df = collect_rba_rankings(args.root_dir)
     collect_rba_rankings(args.root_dir)
 
-    # if all_rankings_df.empty:
-    #     print("No valid ranking data found.")
-    #     sys.exit(0)
-
-    # compute_summary_stats(all_rankings_df, args.root_dir)
     print("Completed processing for:", args.root_dir)
 
 
