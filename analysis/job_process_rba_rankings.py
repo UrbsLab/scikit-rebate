@@ -42,6 +42,9 @@ def collect_rba_rankings(root_dir):
         'TURF_VLS_ReliefF10_niter2_return10000': 'TuRF (VLS (ReliefF 10NN), n=2)',
         'TURF_VLS_MultiSWRFDB_niter2_return10000': 'TuRF (VLS (MultiSWRFDB), n=2)',
         'TURF_VLS_MultiSWRFDBstar_niter2_return10000': 'TuRF (VLS (MultiSWRFDB*), n=2)',
+        'Iter_ReliefF10': 'Iter (ReliefF 10NN)',
+        'Iter_MultiSWRFDB': 'Iter (MultiSWRFDB)',
+        'Iter_MultiSWRFDBstar': 'Iter (MultiSWRFDB*)',
     }
 
     for subdir, dirs, _ in os.walk(root_dir):
