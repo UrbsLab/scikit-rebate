@@ -117,7 +117,7 @@ def process_mutual_info(file_path):
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_relieff10(file_path):
-    fs = ReliefF(n_features_to_select=2,n_neighbors=10,n_jobs=1)
+    fs = ReliefF(n_features_to_select=2,n_neighbors=10,n_jobs=16)
     process_and_save_results(file_path, fs, "ReliefF10")
 
 def process_relieff100(file_path):
@@ -125,7 +125,7 @@ def process_relieff100(file_path):
     process_and_save_results(file_path, fs, "ReliefF100")
 
 def process_surf(file_path):
-    fs = SURF(n_jobs=1)
+    fs = SURF(n_jobs=16)
     process_and_save_results(file_path, fs, "SURF")
 
 def process_surfstar(file_path):
@@ -141,7 +141,7 @@ def process_multisurfstar(file_path):
     process_and_save_results(file_path, fs, "MultiSURFstar")
 
 def process_swrfstar(file_path):
-    fs = SWRFstar(n_jobs=1)
+    fs = SWRFstar(n_jobs=16)
     process_and_save_results(file_path, fs, "SWRFstar")
 
 def process_swrf(file_path):
@@ -165,11 +165,11 @@ def process_multiswrfdb(file_path):
     process_and_save_results(file_path, fs, "MultiSWRFDB")
 
 def process_murelief10(file_path):
-    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=1)
+    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=16)
     process_and_save_results(file_path, fs, "MuRelief10")
 
 def process_murelief100(file_path):
-    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=1)
+    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=16)
     process_and_save_results(file_path, fs, "MuRelief100")
 
 # ********** Wrapper Algorithms
