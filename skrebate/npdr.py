@@ -236,6 +236,13 @@ class NPDR(ReliefF):
         else:
             self._distance_array = self._distarray_no_missing(xc, xd)
 
+        # needed since find_neighbors() is in context of self.relief_object
+        self.relief_object._distance_array = self._distance_array
+        self.relief_object._datalen = self._datalen
+        self.relief_object._label_list = self._label_list
+        self.relief_object._class_type = self._class_type
+        self.relief_object.distarray_has_nan = self.distarray_has_nan
+        
         # list to contain all neighbor pairs across all target instances
         global_neighborhood_pairs = [] 
 
