@@ -297,6 +297,7 @@ def main():
         'multiswrfdb': process_multiswrfdb,
         'murelief10': process_murelief10,
         'murelief100': process_murelief100,
+        'npdr': process_npdr,
         'turf_relieff10_niter10_return10000': process_turf_relieff10_niter10_return10000,
         'turf_relieff10_niter20_return10000': process_turf_relieff10_niter20_return10000,
         'turf_multiswrfdb_niter10_return10000': process_turf_multiswrfdb_niter10_return10000,
