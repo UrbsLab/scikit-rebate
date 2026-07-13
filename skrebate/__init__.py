@@ -42,3 +42,4 @@ from .baseswrf import MultiSWRF
 from .baseswrf import MultiSWRFDBstar
 from .baseswrf import MultiSWRFDB
 from .murelief import MuRelief
+from .npdr import NPDR

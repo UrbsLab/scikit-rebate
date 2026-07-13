@@ -1,0 +1,326 @@
+import os
+import time
+import sys
+import argparse
+import pandas as pd
+import numpy as np
+from numpy.random import default_rng
+from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
+import hashlib
+from functools import partial
+
+package_path = os.path.abspath(os.path.join("", ".."))
+sys.path.insert(0, package_path)
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MuRelief, NPDR, TURF, VLS, Iter
+
+# NEW: added exist_ok=True
+def ensure_dir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
+
+def process_and_save_results(file_path, fs, method_name):
+    df = pd.read_csv(file_path, sep='\t')
+    
+    X, y = df.drop('Class', axis=1).values, df['Class'].values
+
+    # to keep track of runtime for large feature datasets
+    start_time = time.time()
+    try:
+        fs.fit(X, y)
+    except AttributeError:
+        scores = fs(X, y)
+        fs = type('MI', (), {'feature_importances_': scores})()
+    end_time = time.time()
+
+    temp_list = []
+    for feature_name, feature_score in zip(df.drop('Class', axis=1).columns, fs.feature_importances_):
+        temp_list.append([feature_name, feature_score])
+    
+    Results = pd.DataFrame(temp_list, columns=['Feature', 'Feature_Importance'])
+    ABSResults = Results.copy()
+    ABSResults['ABS_Feature_Importance'] = ABSResults['Feature_Importance'].abs()
+    Results.sort_values(by='Feature_Importance', ascending=False, inplace=True)
+    ABSResults.sort_values(by='ABS_Feature_Importance', ascending=False, inplace=True)
+
+    base_dir = os.path.dirname(file_path)
+    results_dir = os.path.join(base_dir, "Results")
+    method_dir = os.path.join(results_dir, method_name)
+    abs_method_dir = os.path.join(results_dir, f"ABS_{method_name}")
+    ensure_dir(method_dir)
+    ensure_dir(abs_method_dir)
+
+    base_name = os.path.splitext(os.path.basename(file_path))[0]
+    Results.to_csv(os.path.join(method_dir, f"{base_name}_Results.txt"), index=False, sep='\t')
+    ABSResults.to_csv(os.path.join(abs_method_dir, f"{base_name}_ABSResults.txt"), index=False, sep='\t')
+    # Save runtime CSV
+    runtime = end_time - start_time
+    runtime_df = pd.DataFrame([{
+        "Dataset": base_name,
+        "Algorithm": method_name,
+        "Runtime (sec)": round(runtime, 4),
+        "Runtime (min)": round(runtime / 60, 4)
+    }])
+    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime.csv"), index=False)
+
+    # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
+    # if method_name in ["SWRFstar", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
+    #     fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), show_expected=True)
+    #     # fs.plot_distance_weight_map(save_fig=os.path.join(method_dir, f"{base_name}_WeightPlot.png"), save_file=os.path.join(method_dir, f"{base_name}_stdweightlog.txt"), show_expected=True)
+
+    # ** To test summary() function of NPDR
+    feature_names = df.drop('Class', axis=1).columns
+    fs.summary(feature_name=feature_names)
+
+    print(f"Processed {file_path} with {method_name}. Results saved to {method_dir} and {abs_method_dir}.")
+
+def process_random_shuffle(file_path):
+    # Define the directory to store results
+    results_dir = os.path.join(os.path.dirname(file_path), "Results", "RandomShuffle")
+    ensure_dir(results_dir)
+
+    # Read the file
+    try:
+        df = pd.read_csv(file_path, sep='\t')
+    except Exception as e:
+        print(f"Error reading {file_path}: {e}")
+        return
+
+    # Shuffle feature column names (excluding 'Class' if present)
+    if 'Class' in df.columns:
+        columns_to_shuffle = sorted(df.drop('Class', axis=1).columns.tolist())
+    else:
+        columns_to_shuffle = sorted(df.columns.tolist())
+
+    base_name = os.path.splitext(os.path.basename(file_path))[0]
+    # Take the last 2 characters of base_name (i.e. the file number)
+    seed_str = base_name[-2:]  # example: "01"
+    # Convert to deterministic integer seed
+    file_seed = int(hashlib.sha256(seed_str.encode()).hexdigest(), 16) % (2**32)
+
+    for i in range(40): # 40 random shuffles per replicate file (40 X 30 = 1200 random shuffles per configuration)
+        seed = file_seed + i
+        # creating a local RNG seeded from the file name
+        rng = default_rng(seed)
+        # shuffle columns deterministically for this file
+        shuffled_columns = rng.permutation(columns_to_shuffle)
+
+        shuffled_df = pd.DataFrame(shuffled_columns, columns=['Feature'])
+
+        output_path = os.path.join(results_dir, f"{base_name}{i}_RandShuffle.txt")
+        shuffled_df.to_csv(output_path, index=False, sep='\t')
+
+def process_mutual_info(file_path):
+    df = pd.read_csv(file_path, sep='\t')
+    # counting the number of labels in the 'Class' column to determine whether this is a classification or regression problem:
+    num_labels = df['Class'].nunique()
+    if num_labels <= 10:
+        fs = partial(mutual_info_classif, random_state=42) # setting random_state for mutual_info
+    else:
+        fs = partial(mutual_info_regression, random_state=42)
+    process_and_save_results(file_path, fs, "MutualInfo")
+
+def process_relieff10(file_path):
+    fs = ReliefF(n_features_to_select=2,n_neighbors=10,n_jobs=1)
+    process_and_save_results(file_path, fs, "ReliefF10")
+
+def process_relieff100(file_path):
+    fs = ReliefF(n_features_to_select=2,n_neighbors=100,n_jobs=16)
+    process_and_save_results(file_path, fs, "ReliefF100")
+
+def process_surf(file_path):
+    fs = SURF(n_jobs=1)
+    process_and_save_results(file_path, fs, "SURF")
+
+def process_surfstar(file_path):
+    fs = SURFstar(n_jobs=16)
+    process_and_save_results(file_path, fs, "SURFstar")
+
+def process_multisurf(file_path):
+    fs = MultiSURF(n_jobs=16)
+    process_and_save_results(file_path, fs, "MultiSURF")
+
+def process_multisurfstar(file_path):
+    fs = MultiSURFstar(n_jobs=16)
+    process_and_save_results(file_path, fs, "MultiSURFstar")
+
+def process_swrfstar(file_path):
+    fs = SWRFstar(n_jobs=1)
+    process_and_save_results(file_path, fs, "SWRFstar")
+
+def process_swrf(file_path):
+    fs = SWRF(n_jobs=16)
+    process_and_save_results(file_path, fs, "SWRF")
+
+def process_multiswrfstar(file_path):
+    fs = MultiSWRFstar(n_jobs=16)
+    process_and_save_results(file_path, fs, "MultiSWRFstar")
+
+def process_multiswrf(file_path):
+    fs = MultiSWRF(n_jobs=16)
+    process_and_save_results(file_path, fs, "MultiSWRF")
+
+def process_multiswrfdbstar(file_path):
+    fs = MultiSWRFDBstar(n_jobs=16)
+    process_and_save_results(file_path, fs, "MultiSWRFDBstar")
+
+def process_multiswrfdb(file_path):
+    fs = MultiSWRFDB(n_jobs=16)
+    process_and_save_results(file_path, fs, "MultiSWRFDB")
+
+def process_murelief10(file_path):
+    fs = MuRelief(n_features_to_select=2,n_neighbors=10,n_jobs=1)
+    process_and_save_results(file_path, fs, "MuRelief10")
+
+def process_murelief100(file_path):
+    fs = MuRelief(n_features_to_select=2,n_neighbors=100,n_jobs=1)
+    process_and_save_results(file_path, fs, "MuRelief100")
+
+def process_npdr(file_path):
+    fs = NPDR(n_features_to_select=10,n_jobs=1)
+    process_and_save_results(file_path, fs, "NPDR")
+
+# ********** Wrapper Algorithms
+
+# FOR 100K FEATURE DATASETS:
+# ***** TuRF implementations:
+# *** ReliefF (k=10)
+def process_turf_relieff10_niter10_return10000(file_path):
+    fs = TURF(relief_object=ReliefF(n_jobs=16, n_neighbors=10), n_iterations=10) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_ReliefF10_niter10_return10000")
+
+def process_turf_relieff10_niter20_return10000(file_path):
+    fs = TURF(relief_object=ReliefF(n_jobs=16, n_neighbors=10), n_iterations=20) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_ReliefF10_niter20_return10000")
+
+# *** MultiSWRFDB
+def process_turf_multiswrfdb_niter10_return10000(file_path):
+    fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), n_iterations=10) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_MultiSWRFDB_niter10_return10000")
+
+def process_turf_multiswrfdb_niter20_return10000(file_path):
+    fs = TURF(relief_object=MultiSWRFDB(n_jobs=16), n_iterations=20) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_MultiSWRFDB_niter20_return10000")
+
+# *** MultiSWRFDBstar
+def process_turf_multiswrfdbstar_niter10_return10000(file_path):
+    fs = TURF(relief_object=MultiSWRFDBstar(n_jobs=16), n_iterations=10) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_MultiSWRFDBstar_niter10_return10000")
+
+def process_turf_multiswrfdbstar_niter20_return10000(file_path):
+    fs = TURF(relief_object=MultiSWRFDBstar(n_jobs=16), n_iterations=20) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_MultiSWRFDBstar_niter20_return10000")
+
+# ***** VLS Implementations:
+# *** ReliefF (k=10)
+def process_vls_relieff10(file_path):
+    fs = VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_ReliefF10")
+
+# *** ReliefF (k=10) w/ ensure_pair_coverage=True
+def process_vls_relieff10_paircoverage(file_path):
+    fs = VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, ensure_pair_coverage=True, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_ReliefF10_paircoverage")
+
+# *** MultiSWRFDB
+def process_vls_multiswrfdb(file_path):
+    fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_MultiSWRFDB")
+
+# *** MultiSWRFDB w/ ensure_pair_coverage=True
+def process_vls_multiswrfdb_paircoverage(file_path):
+    fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, ensure_pair_coverage=True, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_MultiSWRFDB_paircoverage")
+
+# *** MultiSWRFDBstar
+def process_vls_multiswrfdbstar(file_path):
+    fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar")
+
+# *** MultiSWRFDBstar w/ ensure_pair_coverage=True
+def process_vls_multiswrfdbstar_paircoverage(file_path):
+    fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, ensure_pair_coverage=True, random_state=42, n_jobs=-1)
+    process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar_paircoverage")
+
+# ***** TuRF w/ VLS Implementations:
+# *** ReliefF (k=10)
+def process_turf_vls_relieff10_niter2_return10000(file_path):
+    fs = TURF(relief_object=VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_VLS_ReliefF10_niter2_return10000")
+
+# *** MultiSWRFDB
+def process_turf_vls_multiswrfdb_niter2_return10000(file_path):
+    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDB_niter2_return10000")
+
+# *** MultiSWRFDBstar
+def process_turf_vls_multiswrfdbstar_niter2_return10000(file_path):
+    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
+    process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDBstar_niter2_return10000")
+
+# ***** Iter-Relief
+# *** ReliefF (k=10)
+def process_iter_relieff10(file_path):
+    fs = Iter(relief_object=ReliefF(n_jobs=16, n_neighbors=10)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_ReliefF10")
+
+# *** MultiSWRFDB
+def process_iter_multiswrfdb(file_path):
+    fs = Iter(relief_object=MultiSWRFDB(n_jobs=16)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_MultiSWRFDB")
+
+# *** MultiSWRFDBstar
+def process_iter_multiswrfdbstar(file_path):
+    fs = Iter(relief_object=MultiSWRFDBstar(n_jobs=16)) # use all other default values
+    process_and_save_results(file_path, fs, "Iter_MultiSWRFDBstar")
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--algorithm', required=True, help='Algorithm to use')
+    parser.add_argument('--input_file', required=True, help='Path to the input .txt file')
+    args = parser.parse_args()
+
+    alg_map = {
+        'random': process_random_shuffle,
+        'mutual_info': process_mutual_info,
+        'relieff10': process_relieff10,
+        'relieff100': process_relieff100,
+        'surf': process_surf,
+        'surfstar': process_surfstar,
+        'multisurf': process_multisurf,
+        'multisurfstar': process_multisurfstar,
+        'swrfstar': process_swrfstar,
+        'swrf': process_swrf,
+        'multiswrfstar': process_multiswrfstar,
+        'multiswrf': process_multiswrf,
+        'multiswrfdbstar': process_multiswrfdbstar,
+        'multiswrfdb': process_multiswrfdb,
+        'murelief10': process_murelief10,
+        'murelief100': process_murelief100,
+        'turf_relieff10_niter10_return10000': process_turf_relieff10_niter10_return10000,
+        'turf_relieff10_niter20_return10000': process_turf_relieff10_niter20_return10000,
+        'turf_multiswrfdb_niter10_return10000': process_turf_multiswrfdb_niter10_return10000,
+        'turf_multiswrfdb_niter20_return10000': process_turf_multiswrfdb_niter20_return10000,
+        'turf_multiswrfdbstar_niter10_return10000': process_turf_multiswrfdbstar_niter10_return10000,
+        'turf_multiswrfdbstar_niter20_return10000': process_turf_multiswrfdbstar_niter20_return10000,
+        'vls_relieff10': process_vls_relieff10,
+        'vls_relieff10_paircoverage': process_vls_relieff10_paircoverage,
+        'vls_multiswrfdb': process_vls_multiswrfdb,
+        'vls_multiswrfdb_paircoverage': process_vls_multiswrfdb_paircoverage,
+        'vls_multiswrfdbstar': process_vls_multiswrfdbstar,
+        'vls_multiswrfdbstar_paircoverage': process_vls_multiswrfdbstar_paircoverage,
+        'turf_vls_relieff10_niter2_return10000': process_turf_vls_relieff10_niter2_return10000,
+        'turf_vls_multiswrfdb_niter2_return10000': process_turf_vls_multiswrfdb_niter2_return10000,
+        'turf_vls_multiswrfdbstar_niter2_return10000': process_turf_vls_multiswrfdbstar_niter2_return10000,
+        'iter_relieff10': process_iter_relieff10,
+        'iter_multiswrfdb': process_iter_multiswrfdb,
+        'iter_multiswrfdbstar': process_iter_multiswrfdbstar,
+    }
+
+    if args.algorithm not in alg_map:
+        raise ValueError(f"Unsupported algorithm: {args.algorithm}")
+    
+    alg_map[args.algorithm](args.input_file)
+
+if __name__ == "__main__":
+    main()
