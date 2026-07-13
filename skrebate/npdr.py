@@ -95,7 +95,7 @@ class NPDR(ReliefF):
             raise TypeError(
                 "relief_object must be a core RBA from the skrebate package"
             )
-        if self.label_type == "continuous" and isinstance(self.relief_object, (ReliefF, MuRelief)):
+        if self.label_type == "continuous" and type(self.relief_object) in (ReliefF, MuRelief):
             raise ValueError(
                 "If label_type is 'continuous', a radius-based relief_object must be used"
             )
@@ -173,13 +173,13 @@ class NPDR(ReliefF):
                     "Detected between 3 and 10 unique outcome values. Multiclass data is not supported; encoding as continuous outcome.",
                     UserWarning,
                 )
-                if isinstance(self.relief_object, (ReliefF, MuRelief)):
+                if type(self.relief_object) in (ReliefF, MuRelief):
                     raise ValueError(
                         "Detected continuous-valued outcome, so a radius-based relief_object must be used"
                     )
             else:
                 self._class_type = 'continuous'
-                if isinstance(self.relief_object, (ReliefF, MuRelief)):
+                if type(self.relief_object) in (ReliefF, MuRelief):
                     raise ValueError(
                         "Detected continuous-valued outcome, so a radius-based relief_object must be used"
                     )
@@ -240,7 +240,7 @@ class NPDR(ReliefF):
         global_neighborhood_pairs = [] 
 
         # Checking what type of instance self.relief_object is
-        if isinstance(self.relief_object, (ReliefF, MuRelief, MultiSURF)):
+        if type(self.relief_object) in (ReliefF, MuRelief, MultiSURF):
             neighbor_list = [self.relief_object._find_neighbors(datalen) for datalen in range(self._datalen)]
 
             # creating pairs for global neighborhood, each of the tuple form (target_idx, neighbor_idx)
@@ -248,7 +248,7 @@ class NPDR(ReliefF):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
 
-        elif isinstance(self.relief_object, (MultiSURFstar)):
+        elif type(self.relief_object) in (MultiSURFstar,):
             NNlist = [self.relief_object._find_neighbors(datalen) for datalen in range(self._datalen)]
             NN_near_list = [i[0] for i in NNlist]
             NN_far_list = [i[1] for i in NNlist]
@@ -261,7 +261,7 @@ class NPDR(ReliefF):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
         
-        elif isinstance(self.relief_object, (SURF)):
+        elif type(self.relief_object) in (SURF,):
             dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
             if self.distarray_has_nan:
                 avg_dist = np.nanmean(dists_flat)
@@ -275,7 +275,7 @@ class NPDR(ReliefF):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
         
-        elif isinstance(self.relief_object, (SURFstar)):
+        elif type(self.relief_object) in (SURFstar,):
             dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
             if self.distarray_has_nan:
                 avg_dist = np.nanmean(dists_flat)
@@ -294,7 +294,7 @@ class NPDR(ReliefF):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
 
-        elif isinstance(self.relief_object, (SWRF, MultiSWRF, MultiSWRFDB)):
+        elif type(self.relief_object) in (SWRF, MultiSWRF, MultiSWRFDB):
             dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
             if self.distarray_has_nan:
                 mean_dist = np.nanmean(dists_flat)
@@ -311,7 +311,7 @@ class NPDR(ReliefF):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
         
-        elif isinstance(self.relief_object, (SWRFstar, MultiSWRFstar, MultiSWRFDBstar)):
+        elif type(self.relief_object) in (SWRFstar, MultiSWRFstar, MultiSWRFDBstar):
             dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
             if self.distarray_has_nan:
                 mean_dist = np.nanmean(dists_flat)
