@@ -10,7 +10,7 @@ from sklearn.feature_selection import mutual_info_classif, mutual_info_regressio
 import hashlib
 from functools import partial
 
-package_path = os.path.abspath(os.path.join("", ".."))
+package_path = os.path.abspath(os.path.join("", "..", "..")) # two directories up since this is in analysis/npdr_test
 sys.path.insert(0, package_path)
 from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MuRelief, NPDR, TURF, VLS, Iter
 
