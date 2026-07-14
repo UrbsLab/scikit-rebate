@@ -354,8 +354,8 @@ class NPDR(ReliefF):
             print("Relief_object is SWRF*, MultiSWRF*, or MultiSWRFDB*")
         # global neighborhood computation completed
         # * global neighborhood will include both (a, b) and (b, a) pairs currently (just like core RBAs)
-        print("Global neighborhood pairs: \n", global_neighborhood_pairs)
-        print("Length of global_neighborhood_pairs:", len(global_neighborhood_pairs))
+        # print("Global neighborhood pairs: \n", global_neighborhood_pairs)
+        # print("Length of global_neighborhood_pairs:", len(global_neighborhood_pairs))
 
         # ensure y and covariates are np arrays
         y_arr = np.asarray(self._y)
@@ -431,6 +431,7 @@ class NPDR(ReliefF):
 
         # *** vectorized version of commented out code above (dist_y and dist_covariates computation)
         pairs = np.asarray(global_neighborhood_pairs)
+        print("Pairs: \n", pairs)
         print("Pairs shape:", pairs.shape)
 
         # computing distance vector for y (outcome)
@@ -441,8 +442,8 @@ class NPDR(ReliefF):
             # difference between targets and neighbors in outcome (binary, different = 1 equal = 0)
             dist_y = (y_arr[pairs[:, 0]] != y_arr[pairs[:, 1]]).astype(int)
 
-        print("Dist_y: \n", dist_y)
-        print("Dist_y shape:", dist_y.shape)
+        # print("Dist_y: \n", dist_y)
+        # print("Dist_y shape:", dist_y.shape)
 
         # computing distance matrix for covariates (if they exist)
         if self._covariates is not None:
@@ -553,8 +554,8 @@ class NPDR(ReliefF):
                 X_arr[global_neighborhood_pairs[:, 1], a]
             ).astype(int)
         # *** end of vectorized version for dist_a computation
-        print("Dist_a: \n", dist_a)
-        print("Dist_a shape:", dist_a.shape)
+        # print("Dist_a: \n", dist_a)
+        # print("Dist_a shape:", dist_a.shape)
 
         # if there are no covariates, outcome difference is only regressed on attribute a difference
         if self._covariates is None:
@@ -564,8 +565,8 @@ class NPDR(ReliefF):
 
         # add y-intercept term
         X_model = sm.add_constant(X_model)
-        print("X model: \n", X_model)
-        print("X_model shape:", X_model.shape)
+        # print("X model: \n", X_model)
+        # print("X_model shape:", X_model.shape)
 
         if self._class_type == "continuous":
             model = sm.OLS(dist_y, X_model).fit()
