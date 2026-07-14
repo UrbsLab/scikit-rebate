@@ -167,6 +167,7 @@ class NPDR(ReliefF):
         else:
             if len(self._label_list) == 2:
                 self._class_type = 'binary'
+                print("Class type = binary")
             elif len(self._label_list) <= 10:
                 self._class_type = 'continuous'
                 warnings.warn(
@@ -177,12 +178,14 @@ class NPDR(ReliefF):
                     raise ValueError(
                         "Detected continuous-valued outcome, so a radius-based relief_object must be used"
                     )
+                print("Class type = continuous")
             else:
                 self._class_type = 'continuous'
                 if type(self.relief_object) in (ReliefF, MuRelief):
                     raise ValueError(
                         "Detected continuous-valued outcome, so a radius-based relief_object must be used"
                     )
+                print("Class type = continuous")
 
         self._num_attributes = len(self._X[0])  # Number of predictors in training data
 
@@ -255,6 +258,8 @@ class NPDR(ReliefF):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
 
+            print("Relief_object is ReliefF, Mu-Relief, or MultiSURF")
+
         elif type(self.relief_object) in (MultiSURFstar,):
             NNlist = [self.relief_object._find_neighbors(datalen) for datalen in range(self._datalen)]
             NN_near_list = [i[0] for i in NNlist]
@@ -267,6 +272,8 @@ class NPDR(ReliefF):
             for target_idx, neighbors in enumerate(NN_far_list):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
+
+            print("Relief_object is MultiSURF*")
         
         elif type(self.relief_object) in (SURF,):
             dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
@@ -281,6 +288,8 @@ class NPDR(ReliefF):
             for target_idx, neighbors in enumerate(NNlist):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
+
+            print("Relief_object is SURF")
         
         elif type(self.relief_object) in (SURFstar,):
             dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
@@ -301,6 +310,8 @@ class NPDR(ReliefF):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
 
+            print("Relief_object is SURF*")
+
         elif type(self.relief_object) in (SWRF, MultiSWRF, MultiSWRFDB):
             dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
             if self.distarray_has_nan:
@@ -317,6 +328,8 @@ class NPDR(ReliefF):
             for target_idx, neighbors in enumerate(NN_near_list):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
+
+            print("Relief_object is SWRF, MultiSWRF, or MultiSWRFDB")
         
         elif type(self.relief_object) in (SWRFstar, MultiSWRFstar, MultiSWRFDBstar):
             dists_flat = np.concatenate([np.array(row) for row in self._distance_array])
@@ -337,8 +350,12 @@ class NPDR(ReliefF):
             for target_idx, neighbors in enumerate(NN_far_list):
                 for neighbor_idx in neighbors:
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
+
+            print("Relief_object is SWRF*, MultiSWRF*, or MultiSWRFDB*")
         # global neighborhood computation completed
         # * global neighborhood will include both (a, b) and (b, a) pairs currently (just like core RBAs)
+        print("Global neighborhood pairs: \n", global_neighborhood_pairs)
+        print("Length of global_neighborhood_pairs:", len(global_neighborhood_pairs))
 
         # ensure y and covariates are np arrays
         y_arr = np.asarray(self._y)
@@ -364,6 +381,8 @@ class NPDR(ReliefF):
                         covariate_types.append("categorical")
                     else:
                         covariate_types.append("continuous")
+
+            print("Covariate types: \n", covariate_types)
 
         # # distance vector for y and covariates 
         # dist_y = []
@@ -412,6 +431,7 @@ class NPDR(ReliefF):
 
         # *** vectorized version of commented out code above (dist_y and dist_covariates computation)
         pairs = np.asarray(global_neighborhood_pairs)
+        print("Pairs shape:", pairs.shape)
 
         # computing distance vector for y (outcome)
         if self._class_type == "continuous":
@@ -420,6 +440,9 @@ class NPDR(ReliefF):
         else:
             # difference between targets and neighbors in outcome (binary, different = 1 equal = 0)
             dist_y = (y_arr[pairs[:, 0]] != y_arr[pairs[:, 1]]).astype(int)
+
+        print("Dist_y: \n", dist_y)
+        print("Dist_y shape:", dist_y.shape)
 
         # computing distance matrix for covariates (if they exist)
         if self._covariates is not None:
@@ -438,12 +461,16 @@ class NPDR(ReliefF):
                         covariates_arr[pairs[:, 0], cov_idx] !=
                         covariates_arr[pairs[:, 1], cov_idx]
                     ).astype(int)
+
+            print("Dist_covariates: \n", dist_covariates)
+            print("Dist_covariates shape:", dist_covariates.shape)
         else:
             dist_covariates = None # set to None if self._covariates was not defined
         # *** end of vectorized version for dist_y and dist_covariates computation
 
         # will be used to identify feature type for each feature
         attr_types = [value[0] for value in self.attr.values()]
+        print("Attr_types: \n", attr_types)
         # ensure X is np array
         X_arr = np.asarray(self._X)
 
@@ -526,6 +553,8 @@ class NPDR(ReliefF):
                 X_arr[global_neighborhood_pairs[:, 1], a]
             ).astype(int)
         # *** end of vectorized version for dist_a computation
+        print("Dist_a: \n", dist_a)
+        print("Dist_a shape:", dist_a.shape)
 
         # if there are no covariates, outcome difference is only regressed on attribute a difference
         if self._covariates is None:
@@ -535,6 +564,8 @@ class NPDR(ReliefF):
 
         # add y-intercept term
         X_model = sm.add_constant(X_model)
+        print("X model: \n", X_model)
+        print("X_model shape:", X_model.shape)
 
         if self._class_type == "continuous":
             model = sm.OLS(dist_y, X_model).fit()
