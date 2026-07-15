@@ -177,7 +177,7 @@ def process_murelief100(file_path):
     process_and_save_results(file_path, fs, "MuRelief100")
 
 def process_npdr(file_path):
-    fs = NPDR(n_features_to_select=10,n_jobs=1)
+    fs = NPDR(n_features_to_select=10,n_jobs=16)
     process_and_save_results(file_path, fs, "NPDR")
 
 # ********** Wrapper Algorithms
