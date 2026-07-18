@@ -384,52 +384,7 @@ class NPDR(ReliefF):
 
             print("Covariate types: \n", covariate_types)
 
-        # # distance vector for y and covariates 
-        # dist_y = []
-        # dist_covariates = []
-
-        # # * can parallelize this process
-        # for i, j in global_neighborhood_pairs:
-        #     # value target i has for y
-        #     y_i = y_arr[i]
-        #     # value neighbor j has for y
-        #     y_j = y_arr[j]
-
-        #     if self._class_type == "continuous":
-        #         # difference between target and neighbor in outcome (continuous)
-        #         diff_y = np.abs(y_i - y_j)
-        #     else:
-        #         # difference between target and neighbor in outcome (binary, different = 1 equal = 0)
-        #         diff_y = 1 if y_i != y_j else 0
-
-        #     # add distance in y between (target i and neighbor j) to y distance vector
-        #     dist_y.append(diff_y)
-
-        #     # if covariates is not None, add to distance vector/matrix for covariates
-        #     if self._covariates is not None:
-        #         # list to contain differences between current target and neighbor for all covariates (a "row" of differences, columns = # of covariates)
-        #         cov_differences = []
-        #         for cov_idx in range(covariates_arr.shape[1]):
-        #             # values for current covariate 'cov' for target i and neighbor j
-        #             cov_i = covariates_arr[i, cov_idx]
-        #             cov_j = covariates_arr[j, cov_idx]
-
-        #             if covariate_types[cov_idx] == "continuous":
-        #                 # difference between target and neighbor in current covariate (continuous)
-        #                 diff_cov = np.abs(cov_i - cov_j)
-        #             else:
-        #                 # difference between target and neighbor in current covariate (categorical, different = 1 equal = 0)
-        #                 diff_cov = 1 if cov_i != cov_j else 0
-                    
-        #             # add difference for this covariate to the list of all covariate differences for current i and j
-        #             cov_differences.append(diff_cov)
-
-        #         dist_covariates.append(cov_differences) 
-        
-        # dist_y = np.array(dist_y)
-        # dist_covariates = np.array(dist_covariates)
-
-        # *** vectorized version of commented out code above (dist_y and dist_covariates computation)
+        # distance vector for y and covariates (vectorized)
         pairs = np.asarray(global_neighborhood_pairs)
         print("Pairs: \n", pairs)
         print("Pairs shape:", pairs.shape)
@@ -510,34 +465,7 @@ class NPDR(ReliefF):
         return self
 
     def _create_regression_model(self, a, attr_types, X_arr, global_neighborhood_pairs, dist_covariates, dist_y):
-        # # distance vector for feature a
-        # dist_a = []
-        # # access feature type of current feature
-        # feature_type = attr_types[a]
-
-        # if feature_type == 'continuous':
-        #     # loop through all the neighborhood pairs
-        #     for i, j in global_neighborhood_pairs:
-        #         a_i = X_arr[i, a]
-        #         a_j = X_arr[j, a]
-
-        #         diff_a = np.abs(a_i - a_j)
-
-        #         dist_a.append(diff_a)
-        # else: # feature_type is categorical
-        #     # loop through all the neighborhood pairs
-        #     for i, j in global_neighborhood_pairs:
-        #         a_i = X_arr[i, a]
-        #         a_j = X_arr[j, a]
-
-        #         diff_a = 1 if a_i != a_j else 0
-
-        #         dist_a.append(diff_a)
-            
-        # # distance vector for attribute a -> ensure it is a np array
-        # dist_a = np.array(dist_a)
-
-        # *** vectorized version of commented out code above (dist_a computation)
+        # *** distance vector for feature a (vectorized)
         # access feature type of current feature
         feature_type = attr_types[a]
 
