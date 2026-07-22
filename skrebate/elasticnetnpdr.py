@@ -1,4 +1,5 @@
 # from sklearn.base import BaseEstimator
+from .npdr import NPDR
 from .relieff import ReliefF
 from .surf import SURF
 from .surfstar import SURFstar
@@ -10,21 +11,24 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.stats.multitest import multipletests
 from scipy.stats import t, norm
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import ElasticNetCV, LogisticRegressionCV
 from joblib import Parallel, delayed
 import warnings
 import time
 
-class NPDR(ReliefF):
+class ElasticNetNPDR(NPDR):
 
-    """Feature selection algorithm designed for continuous outcome data (but also handles binary outcomes).
-    Based on the NPDR algorithm as introduced in:
+    """Variant of NPDR that passes all predictors into a single regression model.
+    Utilizes regularization to extract and highlight the most relevant features. Unlike NPDR, does not support covariates.
+    Based on the description of Regularized NPDR in:
     T.T. Le, B.A. Dawkins, and B.A. McKinney
     Nearest-neighbor Projected-Distance Regression (NPDR) for detecting network interactions with adjustments for multiple tests and confounding
     """
 
-    def __init__(self, n_features_to_select=10, label_type=None, relief_object=None, padj_method="fdr_bh", categorical_threshold=10, 
-                 categorical_features=None, categorical_covariates=None, n_jobs=1):
-        """Sets up NPDR to perform feature selection
+    def __init__(self, n_features_to_select=10, label_type=None, relief_object=None, categorical_threshold=10, 
+                 categorical_features=None, l1_ratio=0.5, alpha="auto", n_jobs=1):
+        """Sets up ElasticNetNPDR to perform feature selection
         Parameters
         ----------
         n_features_to_select: int (default: 10)
@@ -37,8 +41,6 @@ class NPDR(ReliefF):
             Used to determine whether logistic or linear regression should be run on the outcome variable.
         relief_object: object (default: None)
             A core Relief-based algorithm (RBA) that has a _find_neighbors function. Used to identify neighbor instances for each target.
-        padj_method: str (default: "fdr_bh")
-            Method used to adjust p-values for multiple testing.
         categorical_threshold: int (default: 10)
             Value used to determine if a feature is categorical/discrete or continuous.
             If the number of unique values in a feature is > categorical_threshold, then it is
@@ -46,22 +48,24 @@ class NPDR(ReliefF):
         categorical_features: list (default: None)
             List of index columns indicating features to be treated as categorical.
             If set to None, the features will be automatically classified based on the categorical_threshold.
-        categorical_covariates: list (default: None)
-            List of index columns indicating covariates to be treated as categorical.
-            If set to None, the covariates will be automatically classified based on the categorical_threshold.  
+        l1_ratio: float (default: 0.5)
+            The combination of L1 and L2 penalty used. l1_ratio=1 applies the L1 penalty, 
+            l1_ratio=0 applies the L2 penalty, and 0 < l1_ratio < 1 applies a combination of L1 and L2 penalty.
+        alpha: str/float (default: "auto")
+            Constant that multiplies the penalty terms. If "auto", alpha is selected through cross validation.
         n_jobs: int (default: 1)
             The number of cores to dedicate to computing the scores with joblib.
             Assigning this parameter to -1 will dedicate as many cores as are available on your system.
             We recommend setting this parameter to -1 to speed up the algorithm as much as possible.
         """
-
+        
         self.n_features_to_select = n_features_to_select
         self.label_type = label_type
         self.relief_object = (MultiSWRFDB() if relief_object is None else relief_object)
-        self.padj_method = padj_method
         self.categorical_threshold = categorical_threshold
         self.categorical_features = categorical_features
-        self.categorical_covariates = categorical_covariates
+        self.l1_ratio = l1_ratio
+        self.alpha = alpha
         self.n_jobs = n_jobs
 
         self._validate_params()
@@ -99,21 +103,6 @@ class NPDR(ReliefF):
             raise ValueError(
                 "If label_type is 'continuous', a radius-based relief_object must be used"
             )
-
-        allowed_methods = (
-            "bonferroni",
-            "sidak",
-            "holm-sidak",
-            "holm",
-            "fdr_bh",
-            "fdr_by",
-            "fdr_tsbh",
-            "fdr_tsbky",
-        )
-        if self.padj_method not in allowed_methods:
-            raise ValueError(
-                f"padj_method must be one of {allowed_methods}, got '{self.padj_method}'"
-            )
         
         if not isinstance(self.categorical_threshold, int):
             raise TypeError("categorical_threshold must be an integer")
@@ -123,33 +112,36 @@ class NPDR(ReliefF):
         if self.categorical_features is not None and not isinstance(self.categorical_features, list):
             raise TypeError("categorical_features must be a list of feature indices or None")
         
-        if self.categorical_covariates is not None and not isinstance(self.categorical_covariates, list):
-            raise TypeError("categorical_covariates must be a list of covariate indices or None")
+        if not 0 <= self.l1_ratio <= 1:
+            raise ValueError("l1_ratio must be between 0 and 1")
+
+        if self.alpha != "auto":
+            if not isinstance(self.alpha, (int, float)):
+                raise ValueError("alpha must be 'auto' or a positive numeric value")
+            if self.alpha <= 0:
+                raise ValueError("alpha must be positive")
 
         if not isinstance(self.n_jobs, int):
             raise TypeError("n_jobs must be an integer")
         if self.n_jobs == 0 or self.n_jobs < -1:
             raise ValueError("n_jobs must be a positive integer or -1")
         
-    def fit(self, X, y, covariates=None):
-        """Scikit-learn required: Computes the feature importance scores (standardized beta's) from the training data.
+    def fit(self, X, y):
+        """Scikit-learn required: Computes the feature importance scores (beta's) from the training data.
         Parameters
         ----------
         X: array-like {n_samples, n_features}
             Training instances to compute the feature importance scores from
         y: array-like {n_samples}
             Training outcomes
-        covariates: None or array-like {n_samples, n_covariates}
-            Covariates in per-attribute regression models. None or a matrix of covariate values.
 
         Returns
         -------
-        Copy of the NPDR instance
+        Copy of the ElasticNetNPDR instance
         """
 
         self._X = X  # matrix of predictive variables ('independent variables')
         self._y = y  # vector of values for outcome variable ('dependent variable')
-        self._covariates = covariates # matrix of covariates
 
         self._datalen = len(self._X)  # Number of training instances ('n')
 
@@ -245,7 +237,7 @@ class NPDR(ReliefF):
         self.relief_object._label_list = self._label_list
         self.relief_object._class_type = self._class_type
         self.relief_object.distarray_has_nan = self.distarray_has_nan
-        
+
         # list to contain all neighbor pairs across all target instances
         global_neighborhood_pairs = [] 
 
@@ -352,42 +344,11 @@ class NPDR(ReliefF):
                     global_neighborhood_pairs.append((target_idx, neighbor_idx))
 
             print("Relief_object is SWRF*, MultiSWRF*, or MultiSWRFDB*")
-        # global neighborhood computation completed
-        # * global neighborhood will include both (a, b) and (b, a) pairs currently (just like core RBAs)
-        # print("Global neighborhood pairs: \n", global_neighborhood_pairs)
-        # print("Length of global_neighborhood_pairs:", len(global_neighborhood_pairs))
-
-        # ensure y and covariates are np arrays
+        
+        # ensure y is np array
         y_arr = np.asarray(self._y)
-        covariates_arr = np.asarray(self._covariates)
 
-        # identifying whether covariates are continuous or categorical (if they exist)
-        covariate_types = []
-        if self._covariates is not None:
-            if self.categorical_covariates is None: # categorical covariates are not specified, automatically identify
-                for cov_idx in range(covariates_arr.shape[1]):
-                    cov_values = covariates_arr[:, cov_idx]
-                    cov_values = cov_values[~np.isnan(cov_values)]  # Exclude any missing values from consideration
-                    unique_cov_values = np.unique(cov_values).size
-
-                    if unique_cov_values <= self.categorical_threshold:
-                        covariate_types.append("categorical")
-                    else:
-                        covariate_types.append("continuous")
-            else: # categorical covariates are specified
-                categorical_covariates = set(self.categorical_covariates) # list changed to set for faster lookup
-                for cov_idx in range(covariates_arr.shape[1]):
-                    if cov_idx in categorical_covariates:
-                        covariate_types.append("categorical")
-                    else:
-                        covariate_types.append("continuous")
-
-            print("Covariate types: \n", covariate_types)
-
-        # distance vector for y and covariates (vectorized)
         pairs = np.asarray(global_neighborhood_pairs)
-        print("Pairs: \n", pairs)
-        print("Pairs shape:", pairs.shape)
 
         # computing distance vector for y (outcome)
         if self._class_type == "continuous":
@@ -396,123 +357,105 @@ class NPDR(ReliefF):
         else:
             # difference between targets and neighbors in outcome (binary, different = 1 equal = 0)
             dist_y = (y_arr[pairs[:, 0]] != y_arr[pairs[:, 1]]).astype(int)
-
-        # print("Dist_y: \n", dist_y)
-        # print("Dist_y shape:", dist_y.shape)
-
-        # computing distance matrix for covariates (if they exist)
-        if self._covariates is not None:
-            dist_covariates = np.empty((len(pairs), covariates_arr.shape[1]))
-
-            for cov_idx, cov_type in enumerate(covariate_types):
-                if cov_type == "continuous":
-                    # difference between targets and neighbors in current covariate (continuous)
-                    dist_covariates[:, cov_idx] = np.abs(
-                        covariates_arr[pairs[:, 0], cov_idx] -
-                        covariates_arr[pairs[:, 1], cov_idx]
-                    )
-                else:
-                    # difference between targets and neighbors in current covariate (categorical, different = 1 equal = 0)
-                    dist_covariates[:, cov_idx] = (
-                        covariates_arr[pairs[:, 0], cov_idx] !=
-                        covariates_arr[pairs[:, 1], cov_idx]
-                    ).astype(int)
-
-            print("Dist_covariates: \n", dist_covariates)
-            print("Dist_covariates shape:", dist_covariates.shape)
-        else:
-            dist_covariates = None # set to None if self._covariates was not defined
-        # *** end of vectorized version for dist_y and dist_covariates computation
-
+        
         # will be used to identify feature type for each feature
         attr_types = [value[0] for value in self.attr.values()]
-        print("Attr_types: \n", attr_types)
         # ensure X is np array
         X_arr = np.asarray(self._X)
 
-        # looping through the columns of X (i.e. looping through the attributes to create per-attribute regression models)
-        results = Parallel(n_jobs=self.n_jobs)(
-            delayed(self._create_regression_model)(
-                a,
-                attr_types,
-                X_arr,
-                pairs,
-                dist_covariates,
-                dist_y
-            )
-            for a in range(self._X.shape[1])
-        )
-        # for a in range(self._X.shape[1]):
+        # computing distance vector for X (features)
+        dist_X = np.empty((len(pairs), X_arr.shape[1]))
 
-        betas = np.array([r[0] for r in results])
-        z_betas = np.array([r[1] for r in results])
-        pvalues = np.array([r[2] for r in results])
+        for feat_idx, feat_type in enumerate(attr_types):
+            if feat_type == "continuous":
+                # difference between targets and neighbors in current feature (continuous)
+                dist_X[:, feat_idx] = np.abs(
+                    X_arr[pairs[:, 0], feat_idx] -
+                    X_arr[pairs[:, 1], feat_idx]
+                )
+            else:
+                # difference between targets and neighbors in current feature (categorical, different = 1 equal = 0)
+                dist_X[:, feat_idx] = (
+                    X_arr[pairs[:, 0], feat_idx] !=
+                    X_arr[pairs[:, 1], feat_idx]
+                ).astype(int)
+        
+        # since the final feature importances are raw betas (not z-scores/t-scores), must standardize dist_X
+        self.scaler_ = StandardScaler()
+        dist_X = self.scaler_.fit_transform(dist_X)
 
-        # storing results as instance variables (z_betas are the final feature importance scores)
-        self.beta_ = betas
-        self.feature_importances_ = z_betas
-        self.pvalues_ = pvalues
+        # creating regression model with all predictive features, returning coefficients (feature importances)
+        feature_importances = self._create_regression_model(dist_X, dist_y)
 
-        pvalues_adj = multipletests(
-            self.pvalues_,
-            method=self.padj_method
-        )[1]
-        self.pvalues_adj_ = pvalues_adj # adjusted p-values
+        self.feature_importances_ = feature_importances
 
         # sorting feature indices based on feature importance score
         self.top_features_ = np.argsort(self.feature_importances_)[::-1]
 
         return self
+    
+    def _create_regression_model(self, dist_X, dist_y):
+        # if self.alpha = "auto", use CV to select alpha for model
+        if self.alpha == "auto":
+            if self._class_type == "continuous": # if continuous, use ElasticNetCV package
+                cv_model = ElasticNetCV(
+                    l1_ratio=self.l1_ratio,
+                    cv=5
+                )
 
-    def _create_regression_model(self, a, attr_types, X_arr, global_neighborhood_pairs, dist_covariates, dist_y):
-        # *** distance vector for feature a (vectorized)
-        # access feature type of current feature
-        feature_type = attr_types[a]
+                cv_model.fit(dist_X, dist_y)
 
-        if feature_type == "continuous":
-            # difference between targets and neighbors in feature a (continuous)
-            dist_a = np.abs(
-                X_arr[global_neighborhood_pairs[:, 0], a] -
-                X_arr[global_neighborhood_pairs[:, 1], a]
-            )
+                alpha_selected = cv_model.alpha_ # alpha selected after CV
+            else: # if binary, use LogisticRegressionCV with penalty="elasticnet" and solver="saga"
+                cv_model = LogisticRegressionCV(
+                    penalty="elasticnet",
+                    solver="saga",
+                    l1_ratios=[self.l1_ratio],
+                    cv=5,
+                    max_iter=5000,
+                    random_state=42
+                )
+
+                cv_model.fit(dist_X, dist_y)
+
+                alpha_selected = 1 / cv_model.C_[0] # since C = 1/alpha (1/lambda), extract best alpha like this
+        # else, use positive numeric alpha provided by user
         else:
-            # difference between targets and neighbors in feature a (categorical)
-            dist_a = (
-                X_arr[global_neighborhood_pairs[:, 0], a] !=
-                X_arr[global_neighborhood_pairs[:, 1], a]
-            ).astype(int)
-        # *** end of vectorized version for dist_a computation
-        # print("Dist_a: \n", dist_a)
-        # print("Dist_a shape:", dist_a.shape)
+            alpha_selected = self.alpha
 
-        # if there are no covariates, outcome difference is only regressed on attribute a difference
-        if self._covariates is None:
-            X_model = dist_a.reshape(-1, 1) # making sure X_model is 2D
-        else:
-            X_model = np.column_stack((dist_a, dist_covariates)) # if covariates exist, add them to matrix
+        # for user to see what alpha was selected for the model
+        self.alpha_ = alpha_selected 
 
-        # add y-intercept term
-        X_model = sm.add_constant(X_model)
-        # print("X model: \n", X_model)
-        # print("X_model shape:", X_model.shape)
+        # add y-intercept term for statsmodels
+        X_model = sm.add_constant(dist_X)
 
         if self._class_type == "continuous":
-            # model = sm.OLS(dist_y, X_model).fit()
-            model = sm.GLM(dist_y, X_model, family=sm.families.Gaussian()).fit()
+            model = sm.GLM(
+                dist_y,
+                X_model,
+                family=sm.families.Gaussian()
+            ).fit_regularized(
+                alpha=alpha_selected,
+                L1_wt=self.l1_ratio
+            )
 
-            beta_a = model.params[1]
-            z_beta_a = model.tvalues[1] # coefficient of a's z-score (referred to as 'standardized beta' in original paper)
-            # pvalue = t.sf(z_beta_a, df=model.df_resid) # one-sided p-value; uses survival function to test if z_beta_a > 0 (alternative hypothesis), i.e. probability of z_beta_a being this large assuming null is true
-            pvalue = norm.sf(z_beta_a)  # GLM uses normal-based inference; needed for OLS to GLM switch
-        else: # outcome is binary
-            # model = sm.Logit(dist_y, X_model).fit(disp=False)
-            model = sm.GLM(dist_y, X_model, family=sm.families.Binomial()).fit()
+            # exclude intercept
+            coefficients = model.params[1:]
 
-            beta_a = model.params[1]
-            z_beta_a = model.tvalues[1] # coefficient of a's z-score (referred to as 'standardized beta' in original paper)
-            pvalue = norm.sf(z_beta_a) # one-sided p-value
+        else:  # outcome is binary
+            model = sm.GLM(
+                dist_y,
+                X_model,
+                family=sm.families.Binomial()
+            ).fit_regularized(
+                alpha=alpha_selected,
+                L1_wt=self.l1_ratio
+            )
 
-        return (beta_a, z_beta_a, pvalue)
+            # exclude intercept
+            coefficients = model.params[1:]
+
+        return coefficients
     
     def summary(self, sort=True, feature_name=None, show_feature_type=False):
         """Provides a summary of the features with their importance scores, ranks, and feature types.
@@ -521,7 +464,7 @@ class NPDR(ReliefF):
         sort: bool, optional
             Whether to sort the features by importance. Default is True.
         feature_name: list of str or None, optional
-            A list of feature names. If None, feature indices will be used. Default is None.
+            A list of feature names. If None, feature indicies will be used. Default is None.
         show_feature_type: bool, optional
             Whether to display the type of the features. Default if False.
 
@@ -552,13 +495,11 @@ class NPDR(ReliefF):
             column_width = max(longest_name_length+1, min_width)
 
         if show_feature_type:
-            print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}{'Raw Beta':<15}{'P-value':<15}{'Adj. P-value':<15}{'Feature type':<15}")
+            print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}{'Feature type':<15}")
             for idx in id_order:
-                print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}{self.beta_[idx]:<15.8f}{self.pvalues_[idx]:<15.4e}{self.pvalues_adj_[idx]:<15.4e}{data_type[idx]:<15}")
+                print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}{data_type[idx]:<15}")
 
         else:
-            print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}{'Raw Beta':<15}{'P-value':<15}{'Adj. P-value':<15}")
+            print(f"{'Feature name':<{column_width}}{'Feature importances':<23}{'Feature rank':<15}")
             for idx in id_order:
-                print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}{self.beta_[idx]:<15.8f}{self.pvalues_[idx]:<15.4e}{self.pvalues_adj_[idx]:<15.4e}")
-
-
+                print(f"{printed_name[idx]:<{column_width}}{self.feature_importances_[idx]:<23.8f}{rank_dict[idx]:<15}")
