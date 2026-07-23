@@ -86,6 +86,7 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFstar',
         'MultiSWRFDBstar',
         'NPDR',
+        'ElasticNetNPDR',
     ]
     # rba_order = [
     #     'RandomShuffle',
@@ -149,6 +150,7 @@ def process_results_dir(results_dir, prefix=""):
         'MultiSWRFstar': 'MultiSWRF*',
         'MultiSWRFDBstar': 'MultiSWRFDB*',
         'NPDR': 'NPDR',
+        'ElasticNetNPDR': 'ElasticNetNPDR',
     }
     # rba_descriptive_names = {
     #     'RandomShuffle': 'Random Shuffle',

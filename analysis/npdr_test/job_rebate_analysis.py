@@ -12,7 +12,7 @@ from functools import partial
 
 package_path = os.path.abspath(os.path.join("", "..", "..")) # two directories up since this is in analysis/npdr_test
 sys.path.insert(0, package_path)
-from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MuRelief, NPDR, TURF, VLS, Iter
+from skrebate import ReliefF, SURF, SURFstar, MultiSURF, MultiSURFstar, SWRFstar, SWRF, MultiSWRFstar, MultiSWRF, MultiSWRFDBstar, MultiSWRFDB, MuRelief, NPDR, ElasticNetNPDR, TURF, VLS, Iter
 
 # NEW: added exist_ok=True
 def ensure_dir(directory):
@@ -180,6 +180,10 @@ def process_npdr(file_path):
     fs = NPDR(n_features_to_select=10,n_jobs=16)
     process_and_save_results(file_path, fs, "NPDR")
 
+def process_elasticnetnpdr(file_path):
+    fs = ElasticNetNPDR(n_features_to_select=10,n_jobs=1)
+    process_and_save_results(file_path, fs, "ElasticNetNPDR")
+
 # ********** Wrapper Algorithms
 
 # FOR 100K FEATURE DATASETS:
@@ -298,6 +302,7 @@ def main():
         'murelief10': process_murelief10,
         'murelief100': process_murelief100,
         'npdr': process_npdr,
+        'elasticnetnpdr': process_elasticnetnpdr,
         'turf_relieff10_niter10_return10000': process_turf_relieff10_niter10_return10000,
         'turf_relieff10_niter20_return10000': process_turf_relieff10_niter20_return10000,
         'turf_multiswrfdb_niter10_return10000': process_turf_multiswrfdb_niter10_return10000,

@@ -28,6 +28,7 @@ def collect_rba_rankings(root_dir):
         'MuRelief10': 'Mu-Relief 10N',
         'MuRelief100': 'Mu-Relief 100N',
         'NPDR': 'NPDR',
+        'ElasticNetNPDR': 'ElasticNetNPDR',
         # 'TURF_ReliefF10_niter10_return10000': 'TuRF (ReliefF 10NN, n=10)',
         # 'TURF_ReliefF10_niter20_return10000': 'TuRF (ReliefF 10NN, n=20)',
         # 'TURF_MultiSWRFDB_niter10_return10000': 'TuRF (MultiSWRFDB, n=10)',

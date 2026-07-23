@@ -81,7 +81,7 @@ def main():
     rba_order = [
         'RandomShuffle','MutualInfo','ReliefF10','ReliefF100','MuRelief10','MuRelief100','SURF',
         'MultiSURF','SWRF','MultiSWRF','MultiSWRFDB','SURFstar','MultiSURFstar','SWRFstar','MultiSWRFstar','MultiSWRFDBstar',
-        'NPDR'
+        'NPDR', 'ElasticNetNPDR'
     ]
 
     # Grab all Results folders (for 100 feature datasets)
