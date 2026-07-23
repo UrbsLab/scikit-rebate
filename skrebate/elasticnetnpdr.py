@@ -374,6 +374,7 @@ class ElasticNetNPDR(NPDR):
         # computing distance vector for X (features)
         dist_X = np.empty((len(pairs), X_arr.shape[1]))
 
+        start_time = time.time()
         for feat_idx, feat_type in enumerate(attr_types):
             if feat_type == "continuous":
                 # difference between targets and neighbors in current feature (continuous)
@@ -387,10 +388,12 @@ class ElasticNetNPDR(NPDR):
                     X_arr[pairs[:, 0], feat_idx] !=
                     X_arr[pairs[:, 1], feat_idx]
                 ).astype(int)
+        print("Time taken to create dist_X:", time.time() - start_time, "sec")
         
         # since the final feature importances are raw betas (not z-scores/t-scores), must standardize dist_X for raw betas to be comparable
         self.scaler_ = StandardScaler()
         dist_X = self.scaler_.fit_transform(dist_X)
+        print("Time taken to standardize dist_X:", time.time() - start_time, "sec")
 
         # creating regression model with all predictive features, returning coefficients (feature importances)
         feature_importances = self._create_regression_model(dist_X, dist_y)
@@ -403,6 +406,7 @@ class ElasticNetNPDR(NPDR):
         return self
     
     def _create_regression_model(self, dist_X, dist_y):
+        start_time = time.time()
         # if self.alpha = "auto", use CV to select alpha for model
         if self.alpha == "auto":
             if self._class_type == "continuous": # if continuous, use ElasticNetCV package
@@ -430,6 +434,8 @@ class ElasticNetNPDR(NPDR):
         # else, use positive numeric alpha provided by user
         else:
             alpha_selected = self.alpha
+
+        print("Time taken to complete alpha CV:", time.time() - start_time, "sec")
 
         # for user to see what alpha was selected for the model
         self.alpha_ = alpha_selected 
