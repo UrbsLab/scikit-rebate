@@ -11,8 +11,12 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.stats.multitest import multipletests
 from scipy.stats import t, norm
+from scipy.optimize import minimize
+from scipy.special import expit
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import ElasticNetCV, LogisticRegressionCV
+from sklearn.linear_model import ElasticNetCV, LogisticRegressionCV, ElasticNet, LogisticRegression
+from sklearn.metrics import log_loss, mean_squared_error
+from sklearn.model_selection import KFold
 from joblib import Parallel, delayed
 import warnings
 import time
@@ -380,7 +384,7 @@ class ElasticNetNPDR(NPDR):
                     X_arr[pairs[:, 1], feat_idx]
                 ).astype(int)
         
-        # since the final feature importances are raw betas (not z-scores/t-scores), must standardize dist_X
+        # since the final feature importances are raw betas (not z-scores/t-scores), must standardize dist_X for raw betas to be comparable
         self.scaler_ = StandardScaler()
         dist_X = self.scaler_.fit_transform(dist_X)
 
@@ -394,68 +398,278 @@ class ElasticNetNPDR(NPDR):
 
         return self
     
+    # def _create_regression_model(self, dist_X, dist_y):
+    #     # if self.alpha = "auto", use CV to select alpha for model
+    #     if self.alpha == "auto":
+    #         if self._class_type == "continuous": # if continuous, use ElasticNetCV package
+    #             cv_model = ElasticNetCV(
+    #                 l1_ratio=self.l1_ratio,
+    #                 cv=5
+    #             )
+
+    #             cv_model.fit(dist_X, dist_y)
+
+    #             alpha_selected = cv_model.alpha_ # alpha selected after CV
+    #         else: # if binary, use LogisticRegressionCV with penalty="elasticnet" and solver="saga"
+    #             cv_model = LogisticRegressionCV(
+    #                 penalty="elasticnet",
+    #                 solver="saga",
+    #                 l1_ratios=[self.l1_ratio],
+    #                 cv=5,
+    #                 max_iter=5000,
+    #                 random_state=42
+    #             )
+
+    #             cv_model.fit(dist_X, dist_y)
+
+    #             alpha_selected = 1 / cv_model.C_[0] # since C = 1/alpha (1/lambda), extract best alpha like this
+    #     # else, use positive numeric alpha provided by user
+    #     else:
+    #         alpha_selected = self.alpha
+
+    #     # for user to see what alpha was selected for the model
+    #     self.alpha_ = alpha_selected 
+
+    #     # # add y-intercept term for statsmodels
+    #     # X_model = sm.add_constant(dist_X)
+
+    #     if self._class_type == "continuous":
+    #         # model = sm.GLM(
+    #         #     dist_y,
+    #         #     X_model,
+    #         #     family=sm.families.Gaussian()
+    #         # ).fit_regularized(
+    #         #     alpha=alpha_selected,
+    #         #     L1_wt=self.l1_ratio
+    #         # )
+
+    #         # # exclude intercept
+    #         # coefficients = model.params[1:]
+    #         model = ElasticNet(
+    #             l1_ratio=self.l1_ratio,
+    #             alpha=alpha_selected
+    #         ).fit(dist_X, dist_y)
+
+    #         # ElasticNet stores intercept separately, so this is just the features
+    #         coefficients = model.coef_
+
+    #     else:  # outcome is binary
+    #         # model = sm.GLM(
+    #         #     dist_y,
+    #         #     X_model,
+    #         #     family=sm.families.Binomial()
+    #         # ).fit_regularized(
+    #         #     alpha=alpha_selected,
+    #         #     L1_wt=self.l1_ratio
+    #         # )
+
+    #         # # exclude intercept
+    #         # coefficients = model.params[1:]
+    #         model = LogisticRegression(
+    #             penalty="elasticnet",
+    #             solver="saga",
+    #             l1_ratio=self.l1_ratio,
+    #             C=1.0/alpha_selected,
+    #             max_iter=5000,
+    #             random_state=42
+    #         ).fit(dist_X, dist_y)
+
+    #         # excludes intercept; coef_ here is 2D so turning into 1D
+    #         coefficients = model.coef_[0]
+
+    #     return coefficients
+
+    # ** _create_regression_model with non-negativity constraints on coefficients
     def _create_regression_model(self, dist_X, dist_y):
         # if self.alpha = "auto", use CV to select alpha for model
         if self.alpha == "auto":
-            if self._class_type == "continuous": # if continuous, use ElasticNetCV package
-                cv_model = ElasticNetCV(
-                    l1_ratio=self.l1_ratio,
-                    cv=5
-                )
-
-                cv_model.fit(dist_X, dist_y)
-
-                alpha_selected = cv_model.alpha_ # alpha selected after CV
-            else: # if binary, use LogisticRegressionCV with penalty="elasticnet" and solver="saga"
-                cv_model = LogisticRegressionCV(
-                    penalty="elasticnet",
-                    solver="saga",
-                    l1_ratios=[self.l1_ratio],
-                    cv=5,
-                    max_iter=5000,
-                    random_state=42
-                )
-
-                cv_model.fit(dist_X, dist_y)
-
-                alpha_selected = 1 / cv_model.C_[0] # since C = 1/alpha (1/lambda), extract best alpha like this
+            alpha_selected = self._select_alpha_cv(
+                dist_X,
+                dist_y
+            )
         # else, use positive numeric alpha provided by user
         else:
             alpha_selected = self.alpha
 
         # for user to see what alpha was selected for the model
-        self.alpha_ = alpha_selected 
+        self.alpha_ = alpha_selected
 
-        # add y-intercept term for statsmodels
-        X_model = sm.add_constant(dist_X)
-
-        if self._class_type == "continuous":
-            model = sm.GLM(
-                dist_y,
-                X_model,
-                family=sm.families.Gaussian()
-            ).fit_regularized(
-                alpha=alpha_selected,
-                L1_wt=self.l1_ratio
-            )
-
-            # exclude intercept
-            coefficients = model.params[1:]
-
-        else:  # outcome is binary
-            model = sm.GLM(
-                dist_y,
-                X_model,
-                family=sm.families.Binomial()
-            ).fit_regularized(
-                alpha=alpha_selected,
-                L1_wt=self.l1_ratio
-            )
-
-            # exclude intercept
-            coefficients = model.params[1:]
+        # fit regularized model to find optimized coefficients (feature importances)
+        # use selected alpha value, l1_ratio as indicated in constructor
+        _, coefficients = self._fit_elastic_net(dist_X, dist_y, alpha_selected)
 
         return coefficients
+    
+    def _select_alpha_cv(self, X, y):
+        # 50 candidate regularization strengths (from 10^-5 to 10^2)
+        alpha_grid = np.logspace(-5, 2, 50)
+
+        kfold = KFold(
+            n_splits=5,
+            shuffle=True,
+            random_state=42
+        )
+        
+        results = Parallel(n_jobs=self.n_jobs)(
+            delayed(self._evaluate_alpha)(
+                alpha,
+                X,
+                y,
+                kfold
+            )
+            for alpha in alpha_grid
+        )
+
+        alpha_scores = dict(results)
+
+        # Select lowest validation loss
+        best_alpha = min(
+            alpha_scores,
+            key=alpha_scores.get
+        )
+
+        return best_alpha
+    
+    def _evaluate_alpha(self, alpha, X, y, kfold):
+        """Helper function of _select_alpha_cv to test a given alpha value"""
+        fold_scores = []
+
+        for train_idx, val_idx in kfold.split(X):
+
+            X_train = X[train_idx]
+            X_val = X[val_idx]
+
+            y_train = y[train_idx]
+            y_val = y[val_idx]
+
+            intercept, coefficients = self._fit_elastic_net(
+                X_train,
+                y_train,
+                alpha
+            )
+
+            predictions = self._predict_elastic_net(
+                X_val,
+                intercept,
+                coefficients
+            )
+
+            if self._class_type == "continuous":
+                score = mean_squared_error(
+                    y_val,
+                    predictions
+                )
+            else:
+                score = log_loss(
+                    y_val,
+                    predictions
+                )
+
+            fold_scores.append(score)
+
+        return alpha, np.mean(fold_scores)
+
+    def _fit_elastic_net(self, X, y, alpha):
+        """Function to fit and optimize coefficient values given input settings."""
+        n_features = X.shape[1]
+
+        # initial coefficient values, will be optimized using designated method
+        initial_params = np.zeros(n_features + 1)
+
+        # objective function that will optimize coefficient values
+        if self._class_type == "continuous":
+            objective_function = self.elastic_net_gaussian_objective
+        else: # outcome is binary
+            objective_function = self.elastic_net_logistic_objective
+
+        # compute coefficients, with a non-negativity constraint (no coefficient can have negative value)
+        result = minimize(
+            objective_function,
+            initial_params,
+            args=(
+                X,
+                y,
+                alpha,
+                self.l1_ratio
+            ),
+            method="L-BFGS-B",
+            bounds=[
+                (None, None)   # intercept
+            ] + [
+                (0, None)      # beta >= 0
+            ] * n_features,
+            options={
+                "maxiter": 5000
+            }
+        )
+
+        if not result.success:
+            raise RuntimeError(result.message)
+
+        # intercept, feature coefficients
+        return result.x[0], result.x[1:] 
+    
+    def _predict_elastic_net(self, X, intercept, coefficients):
+        """Function """
+        logits = intercept + X @ coefficients
+
+        if self._class_type == "continuous":
+            return logits
+
+        else:
+            return expit(logits)
+
+    @staticmethod
+    def elastic_net_logistic_objective(params, X, y, alpha, l1_ratio):
+        """
+        params[0] = intercept
+        params[1:] = coefficients
+        """
+
+        intercept = params[0]
+        beta = params[1:]
+
+        # logistic negative log likelihood
+        logits = intercept + X @ beta
+        probs = expit(logits)
+
+        eps = 1e-12
+        nll = -np.mean(
+            y * np.log(probs + eps)
+            + (1-y) * np.log(1-probs + eps)
+        )
+
+        # Elastic net penalty (do not penalize intercept)
+        l1 = l1_ratio * np.sum(np.abs(beta))
+        l2 = (1-l1_ratio) * np.sum(beta**2) / 2
+
+        penalty = alpha * (l1 + l2)
+
+        return nll + penalty
+    
+    @staticmethod
+    def elastic_net_gaussian_objective(params, X, y, alpha, l1_ratio):
+        """
+        params[0] = intercept
+        params[1:] = coefficients
+        """
+
+        intercept = params[0]
+        beta = params[1:]
+
+        # prediction
+        y_pred = intercept + X @ beta
+
+        # Gaussian negative log likelihood (MSE)
+        mse = np.sum((y - y_pred)**2) / (2 * len(y))
+
+        # Elastic Net penalty
+        l1 = l1_ratio * np.sum(np.abs(beta))
+        l2 = (1 - l1_ratio) * np.sum(beta**2) / 2
+
+        penalty = alpha * (l1 + l2)
+
+        return mse + penalty
     
     def summary(self, sort=True, feature_name=None, show_feature_type=False):
         """Provides a summary of the features with their importance scores, ranks, and feature types.

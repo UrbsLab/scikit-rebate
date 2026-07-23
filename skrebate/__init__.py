@@ -43,3 +43,4 @@ from .baseswrf import MultiSWRFDBstar
 from .baseswrf import MultiSWRFDB
 from .murelief import MuRelief
 from .npdr import NPDR
+from .elasticnetnpdr import ElasticNetNPDR
