@@ -181,7 +181,7 @@ def process_npdr(file_path):
     process_and_save_results(file_path, fs, "NPDR")
 
 def process_elasticnetnpdr(file_path):
-    fs = ElasticNetNPDR(n_features_to_select=10,n_jobs=-1)
+    fs = ElasticNetNPDR(n_features_to_select=10,n_jobs=16)
     process_and_save_results(file_path, fs, "ElasticNetNPDR")
 
 # ********** Wrapper Algorithms

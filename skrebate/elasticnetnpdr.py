@@ -354,9 +354,9 @@ class ElasticNetNPDR(NPDR):
 
         pairs = np.asarray(global_neighborhood_pairs)
 
-        # to free up memory before dist_X/dist_y computation
-        del self._distance_array
-        self.relief_object._distance_array = None
+        # # to free up memory before dist_X/dist_y computation
+        # del self._distance_array
+        # self.relief_object._distance_array = None
 
         # computing distance vector for y (outcome)
         if self._class_type == "continuous":
