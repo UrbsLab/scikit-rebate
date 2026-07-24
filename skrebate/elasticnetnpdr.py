@@ -448,6 +448,9 @@ class ElasticNetNPDR(NPDR):
 
                 cv_model.fit(dist_X, dist_y)
 
+                # TESTING: to see how many iterations are being used in CV
+                print("Iterations taken in CV:\n", cv_model.n_iter_)
+
                 alpha_selected = 1 / cv_model.C_[0] # since C = 1/alpha (1/lambda), extract best alpha like this
         # else, use positive numeric alpha provided by user
         else:
