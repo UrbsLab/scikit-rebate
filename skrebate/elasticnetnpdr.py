@@ -412,7 +412,8 @@ class ElasticNetNPDR(NPDR):
             if self._class_type == "continuous": # if continuous, use ElasticNetCV package
                 cv_model = ElasticNetCV(
                     l1_ratio=self.l1_ratio,
-                    cv=5
+                    cv=5,
+                    n_jobs=self.n_jobs
                 )
 
                 cv_model.fit(dist_X, dist_y)
@@ -425,7 +426,8 @@ class ElasticNetNPDR(NPDR):
                     l1_ratios=[self.l1_ratio],
                     cv=5,
                     max_iter=5000,
-                    random_state=42
+                    random_state=42,
+                    n_jobs=self.n_jobs
                 )
 
                 cv_model.fit(dist_X, dist_y)
