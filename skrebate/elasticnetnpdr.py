@@ -375,19 +375,35 @@ class ElasticNetNPDR(NPDR):
         dist_X = np.empty((len(pairs), X_arr.shape[1]))
 
         start_time = time.time()
-        for feat_idx, feat_type in enumerate(attr_types):
-            if feat_type == "continuous":
-                # difference between targets and neighbors in current feature (continuous)
-                dist_X[:, feat_idx] = np.abs(
-                    X_arr[pairs[:, 0], feat_idx] -
-                    X_arr[pairs[:, 1], feat_idx]
-                )
-            else:
-                # difference between targets and neighbors in current feature (categorical, different = 1 equal = 0)
-                dist_X[:, feat_idx] = (
-                    X_arr[pairs[:, 0], feat_idx] !=
-                    X_arr[pairs[:, 1], feat_idx]
-                ).astype(int)
+        # for feat_idx, feat_type in enumerate(attr_types):
+        #     if feat_type == "continuous":
+        #         # difference between targets and neighbors in current feature (continuous)
+        #         dist_X[:, feat_idx] = np.abs(
+        #             X_arr[pairs[:, 0], feat_idx] -
+        #             X_arr[pairs[:, 1], feat_idx]
+        #         )
+        #     else:
+        #         # difference between targets and neighbors in current feature (categorical, different = 1 equal = 0)
+        #         dist_X[:, feat_idx] = (
+        #             X_arr[pairs[:, 0], feat_idx] !=
+        #             X_arr[pairs[:, 1], feat_idx]
+        #         ).astype(int)
+        # *** new vectorized version for dist_X computation: 2 vectorized ops rather than for loop over each feature
+        continuous = np.array([t == "continuous" for t in attr_types])
+        categorical = ~continuous
+
+        # Continuous features
+        dist_X[:, continuous] = np.abs(
+            X_arr[pairs[:, 0]][:, continuous] -
+            X_arr[pairs[:, 1]][:, continuous]
+        )
+
+        # Categorical features
+        dist_X[:, categorical] = (
+            X_arr[pairs[:, 0]][:, categorical] !=
+            X_arr[pairs[:, 1]][:, categorical]
+        ).astype(int)
+        # *** end of new vectorized version for dist_X computation
         print("Time taken to create dist_X:", time.time() - start_time, "sec")
         
         # since the final feature importances are raw betas (not z-scores/t-scores), must standardize dist_X for raw betas to be comparable
