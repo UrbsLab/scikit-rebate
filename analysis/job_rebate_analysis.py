@@ -221,9 +221,13 @@ def process_vls_relieff10_paircoverage_subset5000(file_path):
 # def process_vls_multiswrfdb(file_path):
 #     fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
 #     process_and_save_results(file_path, fs, "VLS_MultiSWRFDB")
-# *** MultiSWRFDB (for 150k feature set size: increasing num_feature_subset to 900)
+# # *** MultiSWRFDB (for 150k feature set size: increasing num_feature_subset to 900)
+# def process_vls_multiswrfdb(file_path):
+#     fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=900, size_feature_subset=10000, random_state=42, n_jobs=-1)
+#     process_and_save_results(file_path, fs, "VLS_MultiSWRFDB")
+# *** MultiSWRFDB (for 200k feature set size: increasing num_feature_subset to 1600)
 def process_vls_multiswrfdb(file_path):
-    fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=900, size_feature_subset=10000, random_state=42, n_jobs=-1)
+    fs = VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=1600, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDB")
 
 # *** MultiSWRFDB w/ ensure_pair_coverage=True
@@ -239,9 +243,13 @@ def process_vls_multiswrfdb_paircoverage_subset5000(file_path):
 # def process_vls_multiswrfdbstar(file_path):
 #     fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1)
 #     process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar")
-# *** MultiSWRFDBstar (for 150k feature set size: increasing num_feature_subset to 900)
+# # *** MultiSWRFDBstar (for 150k feature set size: increasing num_feature_subset to 900)
+# def process_vls_multiswrfdbstar(file_path):
+#     fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=900, size_feature_subset=10000, random_state=42, n_jobs=-1)
+#     process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar")
+# *** MultiSWRFDBstar (for 200k feature set size: increasing num_feature_subset to 1600)
 def process_vls_multiswrfdbstar(file_path):
-    fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=900, size_feature_subset=10000, random_state=42, n_jobs=-1)
+    fs = VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=1600, size_feature_subset=10000, random_state=42, n_jobs=-1)
     process_and_save_results(file_path, fs, "VLS_MultiSWRFDBstar")
 
 # *** MultiSWRFDBstar w/ ensure_pair_coverage=True
