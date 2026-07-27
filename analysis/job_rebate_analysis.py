@@ -267,15 +267,23 @@ def process_turf_vls_relieff10_niter2_return10000(file_path):
     fs = TURF(relief_object=VLS(relief_object=ReliefF(n_jobs=1, n_neighbors=10), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
     process_and_save_results(file_path, fs, "TURF_VLS_ReliefF10_niter2_return10000")
 
-# *** MultiSWRFDB
-def process_turf_vls_multiswrfdb_niter2_return10000(file_path):
-    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
-    process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDB_niter2_return10000")
+# # *** MultiSWRFDB
+# def process_turf_vls_multiswrfdb_niter2_return10000(file_path):
+#     fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
+#     process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDB_niter2_return10000")
+# *** MultiSWRFDB (for 200k feature set size). For TuRF part: 1 removal iteration, num_scores_to_return=20k. For VLS part: num_feature_subset=1600 instead of 400 now that features 100k -> 200k
+def process_turf_vls_multiswrfdb_niter1_return20000(file_path):
+    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=1600, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=1, num_scores_to_return=20000)
+    process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDB_niter1_return20000")
 
-# *** MultiSWRFDBstar
-def process_turf_vls_multiswrfdbstar_niter2_return10000(file_path):
-    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
-    process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDBstar_niter2_return10000")
+# # *** MultiSWRFDBstar
+# def process_turf_vls_multiswrfdbstar_niter2_return10000(file_path):
+#     fs = TURF(relief_object=VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=400, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=2) # by default: num_scores_to_return = 10k
+#     process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDBstar_niter2_return10000")
+# *** MultiSWRFDBstar (for 200k feature set size). For TuRF part: 1 removal iteration, num_scores_to_return=20k. For VLS part: num_feature_subset=1600 instead of 400 now that features 100k -> 200k
+def process_turf_vls_multiswrfdbstar_niter1_return20000(file_path):
+    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDBstar(n_jobs=1), num_feature_subset=1600, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=1, num_scores_to_return=20000)
+    process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDBstar_niter1_return20000")
 
 # ***** Iter-Relief
 # *** ReliefF (k=10)
@@ -332,8 +340,10 @@ def main():
         'vls_multiswrfdbstar_paircoverage': process_vls_multiswrfdbstar_paircoverage,
         'vls_multiswrfdbstar_paircoverage_subset5000': process_vls_multiswrfdbstar_paircoverage_subset5000,
         'turf_vls_relieff10_niter2_return10000': process_turf_vls_relieff10_niter2_return10000,
-        'turf_vls_multiswrfdb_niter2_return10000': process_turf_vls_multiswrfdb_niter2_return10000,
-        'turf_vls_multiswrfdbstar_niter2_return10000': process_turf_vls_multiswrfdbstar_niter2_return10000,
+        # 'turf_vls_multiswrfdb_niter2_return10000': process_turf_vls_multiswrfdb_niter2_return10000,
+        # 'turf_vls_multiswrfdbstar_niter2_return10000': process_turf_vls_multiswrfdbstar_niter2_return10000,
+        'turf_vls_multiswrfdb_niter1_return20000': process_turf_vls_multiswrfdb_niter1_return20000,
+        'turf_vls_multiswrfdbstar_niter1_return20000': process_turf_vls_multiswrfdbstar_niter1_return20000,
         'iter_relieff10': process_iter_relieff10,
         'iter_multiswrfdb': process_iter_multiswrfdb,
         'iter_multiswrfdbstar': process_iter_multiswrfdbstar,

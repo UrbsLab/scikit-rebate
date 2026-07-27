@@ -4,7 +4,7 @@ import numpy as np
 from .vls import VLS
 
 class TURF(BaseEstimator):
-    def __init__(self, relief_object, n_iterations=10, num_scores_to_return=10000):
+    def __init__(self, relief_object, n_iterations=2, num_scores_to_return=10000):
         '''
         :param relief_object:           Must be an object that implements the standard sklearn fit function, and after fit, has attributes feature_importances_
                                         and top_features_ that can be accessed. Scores must be a 1D np.ndarray of length # of features.
@@ -13,8 +13,8 @@ class TURF(BaseEstimator):
                                         of features in the dataset.    
         :param num_scores_to_return:    Number of nonzero scores to return after training. Default = min(num_features, 10000)
         '''
-        if not self.check_is_int(num_scores_to_return) or num_scores_to_return <= 0 or num_scores_to_return > 10000:
-            raise Exception('num_scores_to_return must be a positive integer <= 10,000')
+        if not self.check_is_int(num_scores_to_return) or num_scores_to_return <= 0 or (num_scores_to_return > 10000 and type(self.relief_object) not in (VLS,)):
+            raise Exception('num_scores_to_return must be a positive integer <= 10,000 (when relief_object is a core RBA).\nIf relief_object is an instance of VLS, num_scores_to_return may exceed 10,000.')
 
         if not self.check_is_int(n_iterations) or n_iterations <= 0:
             raise Exception('n_iterations must be a positive integer')
