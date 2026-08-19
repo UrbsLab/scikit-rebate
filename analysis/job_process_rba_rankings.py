@@ -32,7 +32,7 @@ def collect_rba_rankings(root_dir):
     for subdir, dirs, _ in os.walk(root_dir):
         subgroup_rankings_df = pd.DataFrame()
         # Only process Results folders that are within these directories
-        if os.path.basename(subdir) == "Results" and any(x in subdir for x in ["a_100", "a_1000", "a_10000", "a_100000", "mainEff_largerfeatures_data", "a_50000", "a_20000"]):
+        if os.path.basename(subdir) == "Results" and any(x in subdir for x in ["a_100", "a_1000", "a_10000", "a_100000", "mainEff_largerfeatures_data", "a_50000", "a_20000", "a_2000", "a_5000", "a_8000"]):
             for rba in os.listdir(subdir):
                 if rba not in rba_descriptive_names:
                     continue
