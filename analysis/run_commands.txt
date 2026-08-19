@@ -304,7 +304,7 @@ zip -r mannwhitney_results_largefeaturedatasets_mainEff.zip mainEff_largerfeatur
 
 # saving from HPC to local desktop 
 
-pscp kazemik@esplhpccompbio-lv01:/home/kazemik/Repos/ReBATE/data/mannwhitney_results_largefeaturedatasets_mainEff.zip "C:\Users\KazemiK\OneDrive - Cedars-Sinai Health System\Desktop\"
+pscp kazemik@esplhpccompbio-lv01:/home/kazemik/Repos/ReBATE/data/mannwhitney_results_largefeaturedatasets_mainEff.zip "C:\Users\KazemiK\OneDrive - Cedars-Sinai Health System\Desktop\"  
 ---------------------------------------------------------------------------- 
 Additional Dataset Groups (from Phil paper)
  
