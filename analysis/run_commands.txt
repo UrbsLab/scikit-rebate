@@ -217,7 +217,11 @@ python run_rebate_analysis.py --datadir=/home/kazemik/Repos/ReBATE/data/mainEff_
 # running run_rebate_analysis for 100000 feature dataset; no --algorithms specified means use the script’s default algorithms (all 16)
  
 python run_rebate_analysis.py --datadir=/home/kazemik/Repos/ReBATE/data/mainEff_largerfeatures_data/1-feature_100000_Feature_H_0.4_MAF_0.2_EDM-2 
----------------- 
+----------------
+# command to get heatmap visualization for 100 features dataset
+
+python run_process_heatmap.py --basedir=/home/kazemik/Repos/ReBATE/data/AbsVal_Benchmark_Data/GAMETES_2.2_dev_peter_mainEff_Datasets_Loc_1_Qnt_2_Pop_100000/a_100/s_1600/her_0.4__maf_0.2/a_100s_1600her_0.4__maf_0.2_EDM-2 --prefix=100features_main_rerun_
+ 
 # command to get heatmap visualization for 1000 features dataset
  
 python run_process_heatmap.py --basedir=/home/kazemik/Repos/ReBATE/data/mainEff_largerfeatures_data/1-feature_1000_Feature_H_0.4_MAF_0.2_EDM-2 --prefix=1000features_main_rerun_
@@ -259,6 +263,48 @@ zip -r RBArankings_mainEfflargefeaturedatasets_rerun.zip mainEff_largerfeatures_
 # creating a copy of the zip file locally (HPC to local desktop) 
 
 pscp kazemik@esplhpccompbio-lv01:/home/kazemik/Repos/ReBATE/data/RBArankings_mainEfflargefeaturedatasets_rerun.zip "C:\Users\KazemiK\OneDrive - Cedars-Sinai Health System\Desktop\" 
+---------------------------------------------------------------------------- 
+Statistical Significance Tests 
+
+# computing Mann-Whitney U and Permutation Test for 100 features (on ranks) 
+
+python run_process_mannwhitney.py --basedir=/home/kazemik/Repos/ReBATE/data/AbsVal_Benchmark_Data/GAMETES_2.2_dev_peter_mainEff_Datasets_Loc_1_Qnt_2_Pop_100000/a_100/s_1600/her_0.4__maf_0.2/a_100s_1600her_0.4__maf_0.2_EDM-2/Results --column rank --exclude shuffle 
+
+# computing only Mann-Whitney U for 100 features (on feature_importances) 
+
+python run_process_mannwhitney.py --basedir=/home/kazemik/Repos/ReBATE/data/AbsVal_Benchmark_Data/GAMETES_2.2_dev_peter_mainEff_Datasets_Loc_1_Qnt_2_Pop_100000/a_100/s_1600/her_0.4__maf_0.2/a_100s_1600her_0.4__maf_0.2_EDM-2/Results --column feature_importance --exclude shuffle 
+
+# computing Mann-Whitney U and Permutation Test for 1000 features (on ranks) 
+
+python run_process_mannwhitney.py --basedir=/home/kazemik/Repos/ReBATE/data/mainEff_largerfeatures_data/1-feature_1000_Feature_H_0.4_MAF_0.2_EDM-2 --column rank --exclude shuffle 
+
+# computing only Mann-Whitney U for 1000 features (on feature_importances) 
+
+python run_process_mannwhitney.py --basedir=/home/kazemik/Repos/ReBATE/data/mainEff_largerfeatures_data/1-feature_1000_Feature_H_0.4_MAF_0.2_EDM-2 --column feature_importance --exclude shuffle 
+
+# computing Mann-Whitney U and Permutation Test for 10,000 features (on ranks) 
+
+python run_process_mannwhitney.py --basedir=/home/kazemik/Repos/ReBATE/data/mainEff_largerfeatures_data/1-feature_10000_Feature_H_0.4_MAF_0.2_EDM-2 --column rank --exclude shuffle 
+
+# computing only Mann-Whitney U for 10,000 features (on feature_importances) 
+
+python run_process_mannwhitney.py --basedir=/home/kazemik/Repos/ReBATE/data/mainEff_largerfeatures_data/1-feature_10000_Feature_H_0.4_MAF_0.2_EDM-2 --column feature_importance --exclude shuffle 
+
+# computing Mann-Whitney U and Permutation Test for 100,000 features (on ranks) 
+
+python run_process_mannwhitney.py --basedir=/home/kazemik/Repos/ReBATE/data/mainEff_largerfeatures_data/1-feature_100000_Feature_H_0.4_MAF_0.2_EDM-2 --column rank --exclude shuffle 
+
+# computing only Mann-Whitney U for 100,000 features (on feature_importances) 
+
+python run_process_mannwhitney.py --basedir=/home/kazemik/Repos/ReBATE/data/mainEff_largerfeatures_data/1-feature_100000_Feature_H_0.4_MAF_0.2_EDM-2 --column feature_importance --exclude shuffle 
+
+# save mannwhitney_ranks.csv and mannwhitney_normalized_feature_importances.csv files (for mainEff_largerfeatures_data) 
+
+zip -r mannwhitney_results_largefeaturedatasets_mainEff.zip mainEff_largerfeatures_data -i '*mannwhitney_ranks*' '*mannwhitney_normalized_feature_importances*' 
+
+# saving from HPC to local desktop 
+
+pscp kazemik@esplhpccompbio-lv01:/home/kazemik/Repos/ReBATE/data/mannwhitney_results_largefeaturedatasets_mainEff.zip "C:\Users\KazemiK\OneDrive - Cedars-Sinai Health System\Desktop\"
 ---------------------------------------------------------------------------- 
 Additional Dataset Groups (from Phil paper)
  
