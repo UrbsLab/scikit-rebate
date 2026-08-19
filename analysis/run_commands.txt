@@ -262,7 +262,7 @@ zip -r RBArankings_mainEfflargefeaturedatasets_rerun.zip mainEff_largerfeatures_
 
 # creating a copy of the zip file locally (HPC to local desktop) 
 
-pscp kazemik@esplhpccompbio-lv01:/home/kazemik/Repos/ReBATE/data/RBArankings_mainEfflargefeaturedatasets_rerun.zip "C:\Users\KazemiK\OneDrive - Cedars-Sinai Health System\Desktop\" 
+pscp kazemik@esplhpccompbio-lv01:/home/kazemik/Repos/ReBATE/data/RBArankings_mainEfflargefeaturedatasets_rerun.zip "C:\Users\KazemiK\OneDrive - Cedars-Sinai Health System\Desktop\"
 ---------------------------------------------------------------------------- 
 Statistical Significance Tests 
 
