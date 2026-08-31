@@ -28,7 +28,7 @@ python {python_script} "{results_path}" {prefix_flag}
 #SBATCH --error={log_dir}/{job_name}.err
 #SBATCH --ntasks=1
 #SBATCH --mem=4G
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #SBATCH --partition=defq
 
 python {python_script} "{results_path}" {prefix_flag}
