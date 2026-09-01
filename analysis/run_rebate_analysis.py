@@ -38,8 +38,8 @@ SLURM_TEMPLATE = """#!/bin/bash
 #SBATCH --error=logs/{job_name}.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=48
-#SBATCH --mem=192G
-#SBATCH --time=7-00:00:00
+#SBATCH --mem=256G
+#SBATCH --time=30-00:00:00
 #SBATCH --partition=defq
 
 python job_rebate_analysis.py --algorithm {algorithm} --input_file "{input_file}"
@@ -54,7 +54,7 @@ def find_dataset_files(root_dir):
     for dirpath, _, filenames in os.walk(root_dir):
         if "EDM" in os.path.basename(dirpath) or os.path.basename(dirpath) == "3Class_Datasets_Loc_2" or os.path.basename(dirpath) == "9Class_Datasets_Loc_2":
             for filename in filenames:
-                if filename.endswith(".txt"):
+                if filename.endswith(("1.txt", "2.txt")):
                     dataset_files.append(os.path.join(dirpath, filename))
     return dataset_files
 
