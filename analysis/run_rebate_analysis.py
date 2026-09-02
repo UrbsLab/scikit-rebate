@@ -38,7 +38,7 @@ SLURM_TEMPLATE = """#!/bin/bash
 #SBATCH --error=logs/{job_name}.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=48
-#SBATCH --mem=256G
+#SBATCH --mem=512G
 #SBATCH --time=30-00:00:00
 #SBATCH --partition=defq
 
