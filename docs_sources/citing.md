@@ -1,6 +1,6 @@
-If you use scikit-rebate v0.8.0 or later and/or the SWRF, MultiSWRF*, MultiSWRF, MultiSWRFDB*, or MultiSWRFDB algorithms in a scientific publication, please consider citing the following paper (currently on arxiv):
+If you use scikit-rebate v0.8.0 or later and/or the SWRF, MultiSWRF\*, MultiSWRF, MultiSWRFDB\*, or MultiSWRFDB algorithms in a scientific publication, please consider citing the following paper (currently on arxiv):
 
-*Kia Kazemi-Nia, Harsh Bandhey, Philip J. Freda, Ryan J. Urbanowicz (2026). Advancing Interaction-Sensitive Feature Selection: Novel Relief-Based Algorithms, Expanded Comparisons, and Recommendations for Biomedical Data Mining. arXiv preprint arXiv:2608.28552, 2026*
+*Kia Kazemi-Nia, Harsh Bandhey, Philip J. Freda, Ryan J. Urbanowicz (2026). Advancing Interaction-Sensitive Feature Selection: Novel Relief-Based Algorithms, Expanded Comparisons, and Recommendations for Biomedical Data Mining. arXiv preprint arXiv:2608.28552, 2026.*
 
 <!-- when new paper is published, add that paper and say "if you use SWRF, MultiSWRF/MultiSWRF*, or MultiSWRFDB/MultiSWRFDB*, cite the following paper" -->
 If you use **scikit-rebate** or the **MultiSURF** algorithm in a scientific publication, please consider citing the following paper:
