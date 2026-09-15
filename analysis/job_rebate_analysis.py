@@ -305,9 +305,13 @@ def process_turf_vls_relieff10_niter2_return10000(file_path):
 # def process_turf_vls_multiswrfdb_niter1_return20000(file_path):
 #     fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=1600, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=1, num_scores_to_return=20000)
 #     process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDB_niter1_return20000")
-# *** MultiSWRFDB (for 500k feature set size). For TuRF part: 1 removal iteration, num_scores_to_return=100k. For VLS part: num_feature_subset=10000 instead of 400 now that features 100k -> 500k
+# # *** MultiSWRFDB (for 500k feature set size). For TuRF part: 1 removal iteration, num_scores_to_return=100k. For VLS part: num_feature_subset=10000 instead of 400 now that features 100k -> 500k
+# def process_turf_vls_multiswrfdb_niter1_return100000(file_path):
+#     fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=10000, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=1, num_scores_to_return=100000)
+#     process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDB_niter1_return100000")
+# *** MultiSWRFDB (for 1M feature set size). For TuRF part: 1 removal iteration, num_scores_to_return=100k. For VLS part: num_feature_subset=40000 instead of 400 now that features 100k -> 1M
 def process_turf_vls_multiswrfdb_niter1_return100000(file_path):
-    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=10000, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=1, num_scores_to_return=100000)
+    fs = TURF(relief_object=VLS(relief_object=MultiSWRFDB(n_jobs=1), num_feature_subset=40000, size_feature_subset=10000, random_state=42, n_jobs=-1), n_iterations=1, num_scores_to_return=100000)
     process_and_save_results(file_path, fs, "TURF_VLS_MultiSWRFDB_niter1_return100000")
 
 # # *** MultiSWRFDBstar
