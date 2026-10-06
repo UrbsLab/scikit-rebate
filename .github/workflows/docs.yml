@@ -1,0 +1,36 @@
+name: Docs
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install package and documentation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .
+          python -m pip install mkdocs
+
+      - name: Build documentation
+        run: |
+          mkdocs build --clean
+
+      - name: Deploy documentation
+        if: github.ref == 'refs/heads/master'
+        run: |
+          mkdocs gh-deploy
