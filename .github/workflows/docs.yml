@@ -33,4 +33,4 @@ jobs:
       - name: Deploy documentation
         if: github.ref == 'refs/heads/master'
         run: |
-          mkdocs gh-deploy
+          mkdocs gh-deploy --force
