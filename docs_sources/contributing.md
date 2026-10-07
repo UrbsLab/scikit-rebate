@@ -75,13 +75,11 @@ If your contribution involves any code changes:
 
 If your contribution requires a new library dependency:
 
-* Double-check that the new dependency is easy to install via `pip` or Anaconda and supports both Python 2 and 3. If the dependency requires a complicated installation, then we most likely won't merge your changes because we want to keep scikit-rebate easy to install.
+* Double-check that the new dependency is easy to install via `pip` or Anaconda. If the dependency requires a complicated installation, then we most likely won't merge your changes because we want to keep scikit-rebate easy to install.
 
-* Add a line to pip install the library to [.travis_install.sh](https://github.com/EpistasisLab/scikit-rebate/blob/master/ci/.travis_install.sh#L46)
+* When adding a dependency, ensure that the supported version range is compatible with the Python versions and other dependencies supported by scikit-rebate.
 
-* Add a line to print the version of the library to [.travis_install.sh](https://github.com/EpistasisLab/scikit-rebate/blob/master/ci/.travis_install.sh#L56)
-
-* Similarly add a line to print the version of the library to [.travis_test.sh](https://github.com/EpistasisLab/scikit-rebate/blob/master/ci/.travis_test.sh#L16)
+* Add the new library as a dependency in the dependencies list in [pyproject.toml](https://github.com/UrbsLab/scikit-rebate/blob/master/pyproject.toml)
 
 ## Updating the documentation
 
@@ -95,6 +93,6 @@ We use [mkdocs](http://www.mkdocs.org/) to manage our [documentation](http://Epi
 
 ## After submitting your pull request
 
-After submitting your pull request, [Travis-CI](https://travis-ci.com/) will automatically run unit tests on your changes and make sure that your updated code builds and runs on Python 2 and 3. We also use services that automatically check code quality and test coverage.
+After submitting your pull request, scikit-rebate will automatically run unit tests on your changes and make sure that your updated code builds and runs on supported Python versions. We also use services that automatically check code quality and test coverage.
 
 Check back shortly after submitting your pull request to make sure that your code passes these checks. If any of the checks come back with a red X, then do your best to address the errors.
