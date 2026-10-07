@@ -55,7 +55,7 @@ GitHub:
 
 Finally, go to the web page of your fork of the scikit-rebate repo, and click 'Pull Request' (PR) to send your changes to the maintainers for review. Make sure that you send your PR to the `development` branch, as the `master` branch is reserved for the latest stable release. This will start the CI server to check all the project's unit tests run and send an email to the maintainers.
 
-(For details on the above look up the [Git documentation](http://git-scm.com/documentation) on the web.)
+(For details on the above look up the [Git documentation](http://git-scm.com/documentation) on the web)
 
 ## Before submitting your pull request
 
