@@ -25,3 +25,6 @@ def main():
             f'/common/kazemik/ReBATE_ADSP/ADSP_traindata_samples/ADSP_randomsample_seed{i}.txt',
             index=False
         )
+
+if __name__ == "__main__":
+    main()
