@@ -24,7 +24,61 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import numpy as np
+from numba import njit, prange
 
+
+@njit(parallel=True)
+def distance_matrix_kernel(xc, xd, mode, n_attributes):
+    """
+    Calculate a symmetric pairwise distance matrix in parallel.
+
+    mode:
+        0 = categorical (Hamming)
+        1 = continuous (Manhattan / Cityblock)
+        2 = mixed (Hamming * n_attributes + Cityblock)
+    * Hamming = normalized Hamming
+    """
+    n_samples = xd.shape[0] if mode != 1 else xc.shape[0]
+
+    distances = np.zeros((n_samples, n_samples), dtype=np.float64)
+
+    n_cat = xd.shape[1]
+    n_cont = xc.shape[1]
+
+    for i in prange(n_samples):
+        for j in range(n_samples):
+            if i == j:
+                continue
+
+            dist = 0.0
+
+            # Categorical distance (Hamming)
+            if mode == 0 or mode == 2:
+                mismatches = 0
+
+                for k in range(n_cat):
+                    if xd[i, k] != xd[j, k]:
+                        mismatches += 1
+
+                d_dist = mismatches / n_cat
+
+                if mode == 0:
+                    dist = d_dist
+                else:
+                    dist = d_dist * n_attributes # multiplied by n_attributes to match the original code in _distarray_no_missing(), but consider multiplying by number of discrete attributes instead
+
+            # Continuous distance (Manhattan / Cityblock)
+            if mode == 1 or mode == 2:
+                c_dist = 0.0
+
+                for k in range(n_cont):
+                    c_dist += abs(xc[i, k] - xc[j, k])
+
+                dist += c_dist
+
+            distances[i, j] = dist
+
+    return distances
 
 # (Subset of continuous-valued feature data, Subset of discrete-valued (categorical) feature data, max/min difference, instance index, boolean mask for continuous, boolean mask for discrete)
 def get_row_missing(xc, xd, cdiffs, index, cindices, dindices):

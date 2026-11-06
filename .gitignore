@@ -85,4 +85,5 @@ analysis/BasicXOR3/
 analysis/jobs/
 analysis/logs/
 analysis/core2wayEpistasis
+analysis/ADSP/
 *.zip

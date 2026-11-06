@@ -30,7 +30,9 @@ import warnings
 import sys
 from sklearn.base import BaseEstimator
 from joblib import Parallel, delayed
-from .scoring_utils import get_row_missing, ReliefF_compute_scores, get_row_missing_iter
+from numba import get_num_threads, set_num_threads
+from .scoring_utils import distance_matrix_kernel, get_row_missing, ReliefF_compute_scores, get_row_missing_iter
+from .numba_utils import resolve_num_threads
 
 
 class ReliefF(BaseEstimator):
@@ -203,6 +205,9 @@ class ReliefF(BaseEstimator):
             if self.attr[key][0] == 'continuous':
                 C = True
 
+        print("Time taken for _get_attribute_info() to finish:", time.time() - start)
+        start = time.time()  # Runtime tracking
+
         # For downstream computational efficiency, determine if dataset is comprised of all categorical, all continuous, or a mix of categorical/continuous features.
         if C and D:
             self.data_type = 'mixed'
@@ -214,6 +219,9 @@ class ReliefF(BaseEstimator):
             raise ValueError('Invalid data type in data set.')
         #--------------------------------------------------------------------------------------------------------------------
 
+        print("Time taken for C and D check to finish:", time.time() - start)
+        start = time.time()  # Runtime tracking
+
         # Compute the distance array between all data points ----------------------------------------------------------------
         # For downstream efficiency, separate features in dataset by type (i.e. categorical/continuous); categorical = didx (discrete)
         diffs, cidx, didx = self._dtype_array()
@@ -221,6 +229,9 @@ class ReliefF(BaseEstimator):
 
         xc = self._X[:, cidx]  # Subset of continuous-valued feature data
         xd = self._X[:, didx]  # Subset of categorical-valued feature data
+
+        print("Time taken for _dtype_array() to finish:", time.time() - start)
+        start = time.time()  # Runtime tracking
 
         self.distarray_has_nan = False
         """ For efficiency, the distance array is computed more efficiently for data with no missing values.
@@ -240,6 +251,8 @@ class ReliefF(BaseEstimator):
             else:
                 self._distance_array = self._distarray_no_missing_iter(xc, xd, self._weights)
 
+        print("Time taken for distance array computation to finish:", time.time() - start)
+        
         if self.verbose:
             elapsed = time.time() - start
             print('Created distance array in {} seconds.'.format(elapsed))
@@ -388,15 +401,47 @@ class ReliefF(BaseEstimator):
 
         if self.data_type == 'categorical':  # categorical features only
             return squareform(pdist(self._X, metric='hamming'))
+
+            # empty = np.empty((self._X.shape[0], 0), dtype=np.float64)
+
+            # return self._distance_matrix_host_caller(
+            #     empty, self._X, 0, self._num_attributes, self.n_jobs
+            # )
         elif self.data_type == 'mixed':  # mix of categorical and continuous features
             d_dist = squareform(pdist(xd, metric='hamming'))
             # Cityblock is also known as Manhattan distance
             c_dist = squareform(pdist(pre_normalize(xc), metric='cityblock'))
             return np.add(d_dist * self._num_attributes, c_dist)
 
+            # return self._distance_matrix_host_caller(
+            #     pre_normalize(xc), xd, 2, self._num_attributes, self.n_jobs
+            # )
+
         else: #continuous features only
             #xc = pre_normalize(xc)
             return squareform(pdist(pre_normalize(xc), metric='cityblock'))
+
+            # empty = np.empty((xc.shape[0], 0), dtype=np.float64)
+
+            # return self._distance_matrix_host_caller(
+            #     pre_normalize(xc), empty, 1, self._num_attributes, self.n_jobs
+            # )
+    
+    def _distance_matrix_host_caller(self, xc, xd, mode, n_attributes, n_jobs):
+        """Host caller for distance matrix kernel (CPU)"""
+        original_num_threads = get_num_threads()
+        num_threads_to_set = resolve_num_threads(n_jobs)
+
+        set_num_threads(num_threads_to_set)
+
+        try:
+            distances = distance_matrix_kernel(
+                xc, xd, mode, n_attributes
+            )
+        finally:
+            set_num_threads(original_num_threads)
+
+        return distances
 
     #==================================================================#
     def _dtype_array(self):
