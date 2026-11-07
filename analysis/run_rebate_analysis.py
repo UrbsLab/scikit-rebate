@@ -37,7 +37,7 @@ SLURM_TEMPLATE = """#!/bin/bash
 #SBATCH --output=logs/{job_name}.out
 #SBATCH --error=logs/{job_name}.err
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=128G
 #SBATCH --time=7-00:00:00
 #SBATCH --partition=defq
@@ -54,7 +54,7 @@ def find_dataset_files(root_dir):
     for dirpath, _, filenames in os.walk(root_dir):
         if "EDM" in os.path.basename(dirpath) or os.path.basename(dirpath) == "3Class_Datasets_Loc_2" or os.path.basename(dirpath) == "9Class_Datasets_Loc_2":
             for filename in filenames:
-                if filename.endswith(".txt"):
+                if filename.endswith("1.txt"):
                     dataset_files.append(os.path.join(dirpath, filename))
     return dataset_files
 
