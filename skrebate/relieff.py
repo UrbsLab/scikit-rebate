@@ -400,6 +400,7 @@ class ReliefF(BaseEstimator):
         #------------------------------------------#
 
         if self.data_type == 'categorical':  # categorical features only
+            print("Detected only categorical features")
             return squareform(pdist(self._X, metric='hamming'))
 
             # empty = np.empty((self._X.shape[0], 0), dtype=np.float64)
