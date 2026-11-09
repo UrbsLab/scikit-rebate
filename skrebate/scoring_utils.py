@@ -27,7 +27,8 @@ import numpy as np
 from numba import njit, prange
 
 
-@njit(parallel=True)
+# @njit(parallel=True)
+@njit
 def distance_matrix_kernel(xc, xd, mode, n_attributes):
     """
     Calculate a symmetric pairwise distance matrix in parallel.
@@ -45,7 +46,8 @@ def distance_matrix_kernel(xc, xd, mode, n_attributes):
     n_cat = xd.shape[1]
     n_cont = xc.shape[1]
 
-    for i in prange(n_samples):
+    # for i in prange(n_samples):
+    for i in range(n_samples):
         for j in range(i+1, n_samples): # only calculate distance between a pair once
 
             dist = 0.0
