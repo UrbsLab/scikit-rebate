@@ -46,9 +46,7 @@ def distance_matrix_kernel(xc, xd, mode, n_attributes):
     n_cont = xc.shape[1]
 
     for i in prange(n_samples):
-        for j in range(n_samples):
-            if i == j:
-                continue
+        for j in range(i+1, n_samples): # only calculate distance between a pair once
 
             dist = 0.0
 
@@ -77,6 +75,7 @@ def distance_matrix_kernel(xc, xd, mode, n_attributes):
                 dist += c_dist
 
             distances[i, j] = dist
+            distances[j, i] = dist
 
     return distances
 
