@@ -406,7 +406,7 @@ class ReliefF(BaseEstimator):
             empty = np.empty((self._X.shape[0], 0), dtype=np.float64)
 
             return self._distance_matrix_host_caller(
-                empty, self._X, 0, self._num_attributes, self.n_jobs
+                empty, self._X, 0, self._num_attributes, 1
             )
         elif self.data_type == 'mixed':  # mix of categorical and continuous features
             d_dist = squareform(pdist(xd, metric='hamming'))

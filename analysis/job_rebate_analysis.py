@@ -75,7 +75,7 @@ def process_and_save_results(file_path, fs, method_name):
         "Runtime (sec)": round(runtime, 4),
         "Runtime (min)": round(runtime / 60, 4)
     }])
-    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime.csv"), index=False)
+    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime_1coreForDistMatrix.csv"), index=False)
 
     # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
     # if method_name in ["SWRFstar", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
