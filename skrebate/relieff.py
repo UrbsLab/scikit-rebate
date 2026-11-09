@@ -401,13 +401,13 @@ class ReliefF(BaseEstimator):
 
         if self.data_type == 'categorical':  # categorical features only
             print("Detected only categorical features")
-            return squareform(pdist(self._X, metric='hamming'))
+            # return squareform(pdist(self._X, metric='hamming'))
 
-            # empty = np.empty((self._X.shape[0], 0), dtype=np.float64)
+            empty = np.empty((self._X.shape[0], 0), dtype=np.float64)
 
-            # return self._distance_matrix_host_caller(
-            #     empty, self._X, 0, self._num_attributes, self.n_jobs
-            # )
+            return self._distance_matrix_host_caller(
+                empty, self._X, 0, self._num_attributes, self.n_jobs
+            )
         elif self.data_type == 'mixed':  # mix of categorical and continuous features
             d_dist = squareform(pdist(xd, metric='hamming'))
             # Cityblock is also known as Manhattan distance
@@ -436,13 +436,13 @@ class ReliefF(BaseEstimator):
         set_num_threads(num_threads_to_set)
 
         try:
-            distances = distance_matrix_kernel(
+            distance_matrix = distance_matrix_kernel(
                 xc, xd, mode, n_attributes
             )
         finally:
             set_num_threads(original_num_threads)
 
-        return distances
+        return distance_matrix
 
     #==================================================================#
     def _dtype_array(self):
