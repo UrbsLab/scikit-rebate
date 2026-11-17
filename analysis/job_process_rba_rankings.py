@@ -73,6 +73,7 @@ def collect_rba_rankings(root_dir):
                     # Only keep true predictive features
                     predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank']]
                     predictive_df['RBA'] = rba_descriptive_names[rba]
+                    predictive_df['Dataset'] = file
 
                     # for subgroup ranking (ex. mainEff, her=0.2, EDM-1); i.e. group of 30 replicate dataset files
                     subgroup_rankings_df = pd.concat([subgroup_rankings_df, predictive_df], ignore_index=True)
