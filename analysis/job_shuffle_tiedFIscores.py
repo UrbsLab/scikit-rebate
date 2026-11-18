@@ -44,3 +44,6 @@ def main():
 
     # Randomly shuffle ties involving predictive features in the input (Results.txt) file
     shuffle_ties(args.input_file, output_dir)
+
+if __name__ == "__main__":
+    main()
