@@ -7,6 +7,7 @@ import numpy as np
 from numpy.random import default_rng
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
+from xgboost import XGBClassifier
 import hashlib
 from functools import partial
 
@@ -75,7 +76,7 @@ def process_and_save_results(file_path, fs, method_name):
         "Runtime (sec)": round(runtime, 4),
         "Runtime (min)": round(runtime / 60, 4)
     }])
-    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime_postnanhandling.csv"), index=False)
+    runtime_df.to_csv(os.path.join(method_dir, f"{base_name}_runtime.csv"), index=False)
 
     # ******** If I uncomment this function, I need to go back and uncomment logging lines within other files
     # if method_name in ["SWRFstar", "SWRF", "MultiSWRF", "MultiSWRFstar", "MultiSWRFDB", "MultiSWRFDBstar", "MultiSWRFDBlinear", "MultiSWRFDBlinearstar", "MultiSWRFDBexponential", "MultiSWRFDBexponentialstar", "MultiSWRFDBlinear3SD", "MultiSWRFDBlinear3SDstar", "MultiSWRFDBexponential3SD", "MultiSWRFDBexponential3SDstar", "SURF", "SURFstar", "MultiSURF", "MultiSURFstar", "MuRelief10", "MuRelief100"]:
@@ -129,6 +130,10 @@ def process_mutual_info(file_path):
     else:
         fs = partial(mutual_info_regression, random_state=42, discrete_features=True)
     process_and_save_results(file_path, fs, "MutualInfo")
+
+def process_xgboost(file_path):
+    fs = XGBClassifier(random_state=42, n_jobs=1)
+    process_and_save_results(file_path, fs, "XGBoost")
 
 def process_relieff10(file_path):
     fs = ReliefF(n_features_to_select=2,n_neighbors=10,n_jobs=1)
@@ -196,6 +201,7 @@ def main():
     alg_map = {
         'random': process_random_shuffle,
         'mutual_info': process_mutual_info,
+        'xgboost': process_xgboost,
         'relieff10': process_relieff10,
         'relieff100': process_relieff100,
         'surf': process_surf,
