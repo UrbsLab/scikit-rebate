@@ -132,7 +132,7 @@ def process_mutual_info(file_path):
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_xgboost(file_path):
-    fs = XGBClassifier(random_state=42, n_jobs=1)
+    fs = XGBClassifier(random_state=42, n_jobs=16)
     process_and_save_results(file_path, fs, "XGBoost")
 
 def process_relieff10(file_path):
