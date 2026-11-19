@@ -71,6 +71,7 @@ def process_results_dir(results_dir, prefix=""):
     rba_order = [
         'RandomShuffle',
         'MutualInfo',
+        'XGBoost',
         'ReliefF10',
         'ReliefF100',
         'MuRelief10',
@@ -91,6 +92,7 @@ def process_results_dir(results_dir, prefix=""):
     rba_descriptive_names = {
         'RandomShuffle': 'Random Shuffle',
         'MutualInfo': 'Mutual Info',
+        'XGBoost': 'XGBoost',
         'ReliefF10': 'ReliefF 10NN',
         'ReliefF100': 'ReliefF 100NN',
         'MuRelief10': 'Mu-Relief 10N',
