@@ -136,7 +136,7 @@ def process_mutual_info(file_path):
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_xgboost(file_path):
-    fs = XGBClassifier(enable_categorical=True, tree_method='hist', random_state=42, n_jobs=1) # tree_method='hist' explictly used for categorical features (default of tree_method is auto, which uses hist in current XGBoost version)
+    fs = XGBClassifier(enable_categorical=True, tree_method='hist', random_state=42, n_jobs=16) # tree_method='hist' explictly used for categorical features (default of tree_method is auto, which uses hist in current XGBoost version)
     process_and_save_results(file_path, fs, "XGBoost")
 
 def process_relieff10(file_path):
