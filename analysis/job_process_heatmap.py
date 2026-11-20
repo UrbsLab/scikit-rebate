@@ -29,8 +29,8 @@ def process_results_dir(results_dir, prefix=""):
                     else:
                         column_to_use = 'ABS_Feature_Importance' if "ABS" in rba else 'Feature_Importance'
                         df = pd.read_csv(file_path, sep='\t', usecols=['Feature', column_to_use])
-                        df.sort_values(by=column_to_use, ascending=False, inplace=True)
-                        df.reset_index(drop=True, inplace=True)
+                        # df.sort_values(by=column_to_use, ascending=False, inplace=True)
+                        # df.reset_index(drop=True, inplace=True)
                         df['Rank'] = df.index + 1
 
                     predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Rank']]
