@@ -3,7 +3,8 @@ import os
 import pandas as pd
 
 def shuffle_ties(results_file, output_dir):
-    df = pd.read_csv(results_file, sep='\t')
+    # Reading Feature_Importance as a string to preserve the original values (i.e. the original decimal precision); no truncating
+    df = pd.read_csv(results_file, sep='\t', dtype={'Feature_Importance': str})
 
     shuffled_groups = []
 
