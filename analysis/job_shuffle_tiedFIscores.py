@@ -2,6 +2,7 @@ import argparse
 import os
 import pandas as pd
 import numpy as np
+import hashlib
 
 def shuffle_ties(results_file, output_dir):
     # Reading Feature_Importance as a string to preserve the original values (i.e. the original decimal precision); no truncating
@@ -9,7 +10,10 @@ def shuffle_ties(results_file, output_dir):
 
     shuffled_groups = []
 
-    rng = np.random.default_rng(42) # reproducible, but ensures, for example, that every 2 row permutation is not the same (as it would be with random_state=int in .sample())
+    with open(results_file, 'rb') as f: # open the file in read-binary mode
+        file_hash = hashlib.sha256(f.read()).hexdigest() # read the entire file as bytes with f.read(), calculate a SHA-256 cryptographic hash of those bytes with hashlib.sha256(), return the hash as a hexadecimal string (64 hexadecimal characters) with .hexdigest()
+    seed = int(file_hash[:16], 16) # generating seed from the content of the Results.txt file; extract the first 16 characters of the hexadecimal string, convert that value into a decimal integer
+    rng = np.random.default_rng(seed) # reproducible, but ensures, for example, that every 2 row permutation is not the same (as it would be with random_state=int in .sample())
 
     # Iterate through groups with identical Feature_Importance values
     for importance, group in df.groupby('Feature_Importance', sort=False):
