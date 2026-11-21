@@ -1,12 +1,15 @@
 import argparse
 import os
 import pandas as pd
+import numpy as np
 
 def shuffle_ties(results_file, output_dir):
     # Reading Feature_Importance as a string to preserve the original values (i.e. the original decimal precision); no truncating
     df = pd.read_csv(results_file, sep='\t', dtype={'Feature_Importance': str})
 
     shuffled_groups = []
+
+    rng = np.random.default_rng(42) # reproducible, but ensures, for example, that every 2 row permutation is not the same (as it would be with random_state=int in .sample())
 
     # Iterate through groups with identical Feature_Importance values
     for importance, group in df.groupby('Feature_Importance', sort=False):
@@ -17,7 +20,7 @@ def shuffle_ties(results_file, output_dir):
         #     group = group.sample(frac=1, random_state=42)
         # Only shuffle groups containing multiple rows
         if len(group) > 1:
-            group = group.sample(frac=1, random_state=42)
+            group = group.sample(frac=1, random_state=rng)
 
         shuffled_groups.append(group)
 
