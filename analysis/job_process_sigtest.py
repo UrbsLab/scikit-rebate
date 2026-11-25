@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from itertools import combinations
 # from scipy.stats import mannwhitneyu
-from scipy.stats import wilcoxon, binomtest
+from scipy.stats import wilcoxon, binomtest, PermutationMethod
 from statsmodels.stats.multitest import multipletests
 
 def wilcoxon_signed_rank_test(rba_groups):
@@ -21,7 +21,8 @@ def wilcoxon_signed_rank_test(rba_groups):
             wilcoxon_statistic = 0.0
             wilcoxon_pvalue = 1.0
         else:
-            wilcoxon_res = wilcoxon(x, y, alternative="two-sided", method="auto", zero_method="wilcox")
+            # using permutation-based approach; presence of ties between algorithms (i.e. zero differences) can lead to inaccurate p-values with method="asymptotic" combined with a small sample size
+            wilcoxon_res = wilcoxon(x, y, alternative="two-sided", method=PermutationMethod(n_resamples=10000, random_state=42), zero_method="wilcox")
 
             wilcoxon_statistic = wilcoxon_res.statistic
             wilcoxon_pvalue = wilcoxon_res.pvalue

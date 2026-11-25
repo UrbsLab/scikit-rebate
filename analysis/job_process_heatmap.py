@@ -118,7 +118,7 @@ def process_results_dir(results_dir, prefix=""):
 
     plt.figure(figsize=(12, 7))
     print(percentages_df_ordered)
-    # heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, vmin=0, vmax=100, cbar_kws={'label': 'Power (Frequency of Success)'}) # explicit 0% and 100% for min and max values that heatmap colorscheme corresponds to
+    # heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, vmin=0, vmax=100, cbar_kws={'label': 'Success Rate (%)'}) # explicit 0% and 100% for min and max values that heatmap colorscheme corresponds to
     heatmap = sns.heatmap(percentages_df_ordered, annot=False, fmt=".1f", cmap=custom_cmap, vmin=0, vmax=100, cbar=False) # if no color bar legend is desired
     for i in range(percentages_df_ordered.shape[0] - 1):
         heatmap.axhline(i + 1, color='black', linewidth=1.5)
@@ -132,11 +132,11 @@ def process_results_dir(results_dir, prefix=""):
     # cbar.outline.set_linewidth(1.5)
     # cbar.outline.set_edgecolor("black")
     # # Increase label font size
-    # cbar.set_label('Power (Frequency of Success)', fontsize=16)
+    # cbar.set_label('Success Rate (%)', fontsize=16)
     # cbar.ax.yaxis.set_label_coords(3.0, 0.5) # explicitly placing the cbar label closer to the cbar
     # # Increase tick label size
     # cbar.ax.tick_params(labelsize=14)
-    # # adding clear labeling of 0% power as white and 100% power as purple
+    # # adding clear labeling of 0% success rate as white and 100% success rate as purple
     # cbar.set_ticks([0, 20, 40, 60, 80, 100])
     # cbar.set_ticklabels([
     #     '0 (white)',

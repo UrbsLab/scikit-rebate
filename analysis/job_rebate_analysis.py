@@ -48,20 +48,6 @@ def process_and_save_results(file_path, fs, method_name):
     Results.sort_values(by='Feature_Importance', ascending=False, inplace=True)
     ABSResults.sort_values(by='ABS_Feature_Importance', ascending=False, inplace=True)
 
-    # in case Mutual Info produces many FI scores tied at 0
-    if method_name == "MutualInfo":
-        # can be used for both regular and ABS, since MutualInfo doesn't produce negative scores
-        zero_mask = Results['Feature_Importance'] == 0.0
-
-        shuffled_zero_indices = (
-            Results.loc[zero_mask]
-            .sample(frac=1, random_state=42)
-            .index
-        )
-
-        Results.loc[zero_mask] = Results.loc[shuffled_zero_indices].to_numpy()
-        ABSResults.loc[zero_mask] = ABSResults.loc[shuffled_zero_indices].to_numpy()
-
     base_dir = os.path.dirname(file_path)
     results_dir = os.path.join(base_dir, "Results")
     method_dir = os.path.join(results_dir, method_name)

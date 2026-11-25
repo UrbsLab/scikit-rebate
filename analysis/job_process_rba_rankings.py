@@ -13,6 +13,7 @@ def collect_rba_rankings(root_dir):
     rba_descriptive_names = {
         'RandomShuffle': 'Random Shuffle',
         'MutualInfo': 'Mutual Info',
+        'XGBoost': 'XGBoost',
         'ReliefF10': 'ReliefF 10NN',
         'ReliefF100': 'ReliefF 100NN',
         'SURF': 'SURF',
@@ -39,6 +40,9 @@ def collect_rba_rankings(root_dir):
                 rba_path = os.path.join(subdir, rba)
                 if not os.path.isdir(rba_path):
                     continue
+                rba_path = os.path.join(rba_path, "Results_shuffledTies") # look for Results_shuffledTies.txt files
+                if not os.path.isdir(rba_path):
+                    continue
 
                 for file in os.listdir(rba_path):
                     if not file.endswith('.txt'):
@@ -62,16 +66,16 @@ def collect_rba_rankings(root_dir):
                             print(f"Skipping {file_path} (error: {e})")
                             continue
 
-                        # Sort by descending feature importance and assign ranks
-                        df.sort_values(by='Feature_Importance', ascending=False, inplace=True)
-                        df.reset_index(drop=True, inplace=True)
+                        # Sort by descending feature importance and assign ranks (commenting out because they are already sorted)
+                        # df.sort_values(by='Feature_Importance', ascending=False, inplace=True)
+                        # df.reset_index(drop=True, inplace=True)
                         df['Rank'] = df.index + 1
                         # Normalize feature importance between 0 and 1
                         df['Normalized_Feature_Importance'] = (df['Feature_Importance'] - df['Feature_Importance'].min()) / \
                                                                 (df['Feature_Importance'].max() - df['Feature_Importance'].min())
 
-                    # Only keep true predictive features
-                    predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank']]
+                    # Only keep the worst-ranked predictive feature
+                    predictive_df = df[df['Feature'].str.startswith('M')][['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank']].nlargest(1, 'Rank')
                     predictive_df['RBA'] = rba_descriptive_names[rba]
                     predictive_df['Dataset'] = file
 
@@ -92,12 +96,12 @@ def compute_summary_stats(rankings_df, save_dir):
 
     summary = (
         rankings_df.groupby('RBA')['Rank']
-        .agg(['mean', 'median'])
+        .agg(['mean', 'std', 'median'])
         .reset_index()
-        .rename(columns={'mean': 'Mean', 'median': 'Median'})
+        .rename(columns={'mean': 'Mean', 'std': 'STD', 'median': 'Median'})
     )
 
-    summary.sort_values(by=['Mean', 'Median'], inplace=True)
+    summary.sort_values(by=['Mean', 'STD', 'Median'], inplace=True)
 
     # Get title from basename of save_dir
     if os.path.basename(os.path.normpath(save_dir)) == "Results":
@@ -118,7 +122,7 @@ def compute_summary_stats(rankings_df, save_dir):
     # Write detailed rankings CSV with title
     with open(rankings_list_path, 'w') as f:
         f.write(f"# {title}\n")
-        rankings_df[['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank', 'RBA']].to_csv(f, index=False)
+        rankings_df[['Feature', 'Feature_Importance', 'Normalized_Feature_Importance', 'Rank', 'RBA', 'Dataset']].to_csv(f, index=False)
     print(f"Saved detailed rankings list: {rankings_list_path}")
 
 

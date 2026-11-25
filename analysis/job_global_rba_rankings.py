@@ -80,11 +80,11 @@ def compute_global_summary(all_rankings_df):
     """
     summary = (
         all_rankings_df.groupby('RBA')['Rank']
-        .agg(['mean', 'median'])
+        .agg(['mean', 'std', 'median'])
         .reset_index()
-        .rename(columns={'mean': 'Mean', 'median': 'Median'})
+        .rename(columns={'mean': 'Mean', 'std': 'STD', 'median': 'Median'})
     )
-    summary.sort_values(by=['Mean', 'Median'], inplace=True)
+    summary.sort_values(by=['Mean', 'STD', 'Median'], inplace=True)
     return summary
 
 
@@ -262,16 +262,22 @@ def main():
         .reset_index(drop=True)
     )
 
-    # --- Save final .csv's with metrics for (2-way only), (univariate + 2-way), (univariate + 2-way + 3-way) ---
+    # --- Save final .csv's with metrics for (univariate only), (2-way only), (3-way only), (univariate + 2-way), (univariate + 2-way + 3-way) ---
+    uni_path = os.path.join(parent_dir, 'global_rba_rankings_univariateonly.csv')
     twoway_path = os.path.join(parent_dir, 'global_rba_rankings_2wayonly.csv')
+    threeway_path = os.path.join(parent_dir, 'global_rba_rankings_3wayonly.csv')
     univariate_twoway_path = os.path.join(parent_dir, 'global_rba_rankings_uni2way.csv')
     univariate_twoway_threeway_path = os.path.join(parent_dir, 'global_rba_rankings_uni2way3way.csv')
 
+    univariate_summary_df.to_csv(uni_path, index=False)
     twoway_summary_df.to_csv(twoway_path, index=False)
+    threeway_summary_df.to_csv(threeway_path, index=False)
     univariate_twoway_final_df.to_csv(univariate_twoway_path, index=False)
     univariate_twoway_threeway_final_df.to_csv(univariate_twoway_threeway_path, index=False)
 
+    print(f"[INFO] Saved (univariate only) rankings to {uni_path}")
     print(f"[INFO] Saved (2-way only) rankings to {twoway_path}")
+    print(f"[INFO] Saved (3-way only) rankings to {threeway_path}")
     print(f"[INFO] Saved (univariate + 2-way) rankings to {univariate_twoway_path}")
     print(f"[INFO] Saved (univariate + 2-way + 3-way) rankings to {univariate_twoway_threeway_path}")
         
