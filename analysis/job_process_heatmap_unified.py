@@ -198,7 +198,7 @@ def main():
         axes = np.array([[axes]])  # ensure 2D
 
     # where to draw black lines separating RBA groups in each heatmap
-    separators = [2, 6, 11]
+    separators = [3, 7, 12]
     if is_core2wayEpistasis:
         # flipped so that y-axis is shown in ascending order from bottom to top
         for i, h in enumerate(sorted(h_values, reverse=True)):

@@ -7,7 +7,7 @@ import numpy as np
 from numpy.random import default_rng
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier, XGBRegressor
 import hashlib
 from functools import partial
 
@@ -122,7 +122,13 @@ def process_mutual_info(file_path):
     process_and_save_results(file_path, fs, "MutualInfo")
 
 def process_xgboost(file_path):
-    fs = XGBClassifier(enable_categorical=True, tree_method='hist', random_state=42, n_jobs=1) # tree_method='hist' explictly used for categorical features (default of tree_method is auto, which uses hist in current XGBoost version)
+    df = pd.read_csv(file_path, sep='\t')
+    # counting the number of labels in the 'Class' column to determine whether this is a classification or regression problem:
+    num_labels = df['Class'].nunique()
+    if num_labels <= 10:
+        fs = XGBClassifier(enable_categorical=True, tree_method='hist', random_state=42, n_jobs=1) # tree_method='hist' explictly used for categorical features (default of tree_method is auto, which uses hist in current XGBoost version)
+    else:
+        fs = XGBRegressor(enable_categorical=True, tree_method='hist', random_state=42, n_jobs=1)
     process_and_save_results(file_path, fs, "XGBoost")
 
 def process_relieff10(file_path):
